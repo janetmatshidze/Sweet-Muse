@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Company>Singular Systems (Pty) Ltd</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>$([System.DateTime]::Now.ToString(yyyy)) by $(Company)</Copyright>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo.Azure.KeyVault" />
+    <PackageReference Include="Neo.Core.Testing" />
+    <PackageReference Include="Neo.Identity.Api" />
+    <PackageReference Include="Neo.Model.App" />
+    <PackageReference Include="Neo.Model.Swagger" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NeoTemplate.App\NeoTemplate.App.csproj" />
+    <ProjectReference Include="..\NeoTemplate.Models.Migrations\NeoTemplate.Models.Migrations.csproj" />
+  </ItemGroup>
+
+</Project>

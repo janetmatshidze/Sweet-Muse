@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../NuGet.Config" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Dockerfile" />
+    <File Path="exclusions.dic" />
+  </Folder>
+  <Project Path="NeoTemplate.DbScriptRunner/NeoTemplate.DbScriptRunner.csproj" />
+</Solution>

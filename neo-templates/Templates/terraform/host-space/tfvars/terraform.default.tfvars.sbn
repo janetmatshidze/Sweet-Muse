@@ -1,0 +1,99 @@
+{{-
+locationMap = {
+  ne  : "northeurope",
+  we  : "westeurope",
+  zan : "southafricanorth",
+  zaw : "southafricawest"
+}
+
+environmentFriendlyNameMap = {
+  dev : "Development",
+  stg : "Staging",
+  prd : "Production",
+  dr  : "Disaster Recovery",
+}
+
+locationName        = locationMap[pipeline.location]
+projectPrefix       = blueprint.names.prefix
+environment         = pipeline.host
+databasePrefix      = (string.upcase(projectPrefix) + "." + string.upcase(environment) + ".")
+environmentName     = (environmentFriendlyNameMap[environment] | object.default string.upcase(environment))
+isProductionLikeEnv = array.contains(["prd", "dr"], environment)
+isDevelopment       = string.contains('dev', environment)
+
+vm_size           = (isProductionLikeEnv ? "Standard_E2ads_v5" : "Standard_B2ms")
+vm_os_disk_size   = (isProductionLikeEnv ? 128 : 64)
+vm_data_disk_size = (isDevelopment ? 64 : (isProductionLikeEnv ? 256 : 128))
+vm_logs_disk_size = (isDevelopment ? 64 : (isProductionLikeEnv ? 256 : 128))
+vm_sql_rsv_policy = (isDevelopment ? "DevSqlBackupPolicy" : (isProductionLikeEnv ? "ProductionSqlBackupPolicy" : "StagingSqlBackupPolicy"))
+
+if object.has_key(blueprint.iac.variableSets, pipeline.host)
+  subscriptionIdComment = ""
+  subscriptionId = blueprint.iac.variableSets[pipeline.host].AZURE_SUBSCRIPTION_ID
+else
+  subscriptionId = "2e538ecd-e2f2-40d9-bc8a-272df8f5e2f7"
+  subscriptionIdComment = "# NOTE: Subscription couldn't be determined. Defaulted to Singular Cloud Staging."
+end
+~}}
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │ {{ environmentName }} host-space tfvars file                                      │
+# └─────────────────────────────────────────────────────────────────────┘
+
+prefixes = {
+  core           = "sc"
+  shared_hosts   = "{{ pipeline.host }}"
+  client_project = "{{ projectPrefix }}"
+  host_space     = "{{ pipeline.host }}"
+}
+
+
+azure = {
+  tenant_id                = "c9871c9d-7fe6-4b1d-a97a-22b172b872e7"
+  subscription_id          = "{{ subscriptionId }}" {{ subscriptionIdComment }}
+  location                 = "{{ locationName }}"
+  location_prefix          = "{{ pipeline.location }}"
+  purge_protection_enabled = false
+}
+
+sql_servers = {
+  sql01 = {
+    enable_secure_enclaves = true
+    enable_alerts          = true
+
+    vm_size        = "{{ vm_size }}"
+    os_disk_type   = "Standard_LRS"
+    os_disk_size   = {{ vm_os_disk_size }}
+    data_disk_type = "StandardSSD_LRS"
+    data_disk_size = {{ vm_data_disk_size }}
+    logs_disk_type = "StandardSSD_LRS"
+    logs_disk_size = {{ vm_logs_disk_size }}
+
+    image = {
+      offer     = "sql2022-ws2022"
+      publisher = "MicrosoftSQLServer"
+      sku       = "web-gen2"
+      version   = "latest"
+    }
+
+    public_access = {
+      # Entries in ips_whitelist are merged with this list. Add any case-specific IPs here.
+      allowed_inbound_ips = []
+    }
+
+    recovery_services_vault = {
+      policies = {
+        sql_server = "{{ vm_sql_rsv_policy }}"
+      }
+    }
+  }
+}
+
+{{- if (isProductionLikeEnv && !isDrEnv) }}
+prevent_destroy = {
+  resource_locks          = true # This is the base resource_locks module
+  key_vault               = true
+  sql_machines            = true
+  ops_machines            = true
+  recovery_services_vault = true
+}
+{{- end }}

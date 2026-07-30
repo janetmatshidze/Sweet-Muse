@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  role_name: cloudflare-warp-cli
+  author: Singular Systems (Pty) Ltd
+  description: Installs Cloudflare WARP CLI for Linux on a Debian Linux machine
+  version: "1.0"
+
+argument_specs:
+  cloudflare_warp:
+    short_description: Configure and connect Cloudflare WARP CLI for Linux
+    required: yes
+    type: dict
+    options:
+      team_name:
+        type: "str"
+        required: true
+        description: "The Cloudflare Zero Trust organisation / team name"
+      service_token_client_id:
+        required: yes
+        type: str
+        description: "Client ID of a Cloudflare Access Service Token"
+      service_token_client_secret:
+        type: "str"
+        required: true
+        description: "Client Secret of a Cloudflare Access Service Token"

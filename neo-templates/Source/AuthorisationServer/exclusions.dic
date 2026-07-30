@@ -1,0 +1,5 @@
+appsettings
+nvarchar
+serilog
+startup
+uniqueidentifier

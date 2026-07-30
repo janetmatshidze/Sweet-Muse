@@ -1,0 +1,101 @@
+---
+- name: Install cli tools
+  ansible.builtin.apt:
+    state: present
+    update_cache: true
+    pkg:
+    - curl
+    - gnupg2
+
+- name: Checking Input...
+  debug:
+    msg: "Service Token Client ID is {{ cloudflare_warp.service_token_client_id }}"
+
+# Ensure the device posture folder exists
+- name: Ensure device posture folder exists
+  ansible.builtin.file:
+    path: "~/.config/device_posture"
+    state: directory
+
+# Copy device posture files to the host
+- name: Copy Device Posture Files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "~/.config/device_posture/{{ item | basename }}"
+  loop: "{{ cloudflare_warp.device_posture_files }}"
+  when: cloudflare_warp.device_posture_files is defined
+
+# In order to avoid DNS lookup issues, we need to enable the 'ResolveUnicastSingleLabel' flag in the resolved service, as per this reference:
+# https://developers.cloudflare.com/cloudflare-one/faq/troubleshooting/#warp-on-linux-shows-dns-connectivity-check-failed-with-reason-dnslookupfailed
+- name: Update the resolved.conf file to enable 'ResolveUnicastSingleLabel' flag
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: "^ResolveUnicastSingleLabel="
+    line: "ResolveUnicastSingleLabel=yes"
+    state: present
+
+- name: Restart the Systemd Resolved service
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    daemon_reload: true
+    state: restarted
+
+# Install Cloudflare WARP CLI for Linux
+- name: Check if Cloudflare Repository GPG Key is installed
+  stat:
+    path: /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+  register: apt_repo_gpg_key
+
+- name: Install the Cloudflare Repository GPG Key
+  ansible.builtin.shell: curl https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+  when: not apt_repo_gpg_key.stat.exists
+
+- name: Add the Cloudflare Repository to Apt Sources
+  ansible.builtin.shell: echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+  when: not apt_repo_gpg_key.stat.exists
+
+- name: Install Cloudflare WARP CLI for Linux
+  ansible.builtin.apt:
+    name: cloudflare-warp
+    state: present
+    update_cache: yes
+
+- name: Ensure cloudflare-warp config directory exists
+  ansible.builtin.file:
+    path: /var/lib/cloudflare-warp
+    state: directory
+
+- name: Create MDM configuration file for Cloudflare WARP
+  copy:
+    dest: "/var/lib/cloudflare-warp/mdm.xml"
+    content: |
+      <dict>
+        <key>organization</key>
+        <string>{{ cloudflare_warp.team_name }}</string>
+        <key>service_mode</key>
+        <string>warp</string>
+        <key>auto_connect</key>
+        <string>1</string>
+        <key>auth_client_id</key>
+        <string>{{ cloudflare_warp.service_token_client_id }}</string>
+        <key>auth_client_secret</key>
+        <string>{{ cloudflare_warp.service_token_client_secret }}</string>
+      </dict>
+
+- name: Connect the WARP client
+  ansible.builtin.shell: sudo warp-cli --accept-tos connect
+
+# The following duplicated tasks are to get past a the DNS Lookup error still being thrown by the WARP client
+# even with the earlier restart of the resolved service. Restarting the resolved client a second time, and then
+# reconnecting the WARP client fixes the issue.
+- name: Restart the Systemd Resolved service
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    daemon_reload: true
+    state: restarted
+
+- name: Disconnect the WARP client
+  ansible.builtin.shell: sudo warp-cli --accept-tos disconnect
+
+- name: Connect the WARP client
+  ansible.builtin.shell: sudo warp-cli --accept-tos connect

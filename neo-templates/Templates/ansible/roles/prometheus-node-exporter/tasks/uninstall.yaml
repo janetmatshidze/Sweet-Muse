@@ -1,0 +1,58 @@
+- name: Stop the node_exporter service
+  ansible.builtin.systemd:
+    name: node_exporter.service
+    state: stopped
+  ignore_errors: true
+
+- name: Remove the node_exporter binary and systemd unit"
+  ansible.builtin.file:
+    path: "{{ item_to_remove }}"
+    state: absent
+  loop:
+    - "{{ node_exporter_binary_path }}/node_exporter"
+    - "/etc/systemd/system/node_exporter.service"
+  loop_control:
+    loop_var: item_to_remove
+
+- name: Reload systemd to apply changes
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Remove node_exporter textfile dir"
+  ansible.builtin.file:
+    path: "{{ node_exporter_textfile_path }}"
+    state: absent
+  when: node_exporter_textfile_path is defined
+
+- name: Remove the node_exporter system user
+  ansible.builtin.user:
+    name: "{{ node_exporter_user }}"
+    force: true
+    state: absent
+
+- name: Remove node_exporter system group
+  ansible.builtin.group:
+    name: "{{ node_exporter_group  }}"
+    state: absent
+
+
+- name: Disable UFW (Uncomplicated Firewall) rule
+  community.general.ufw:
+    rule: deny
+    port: "{{ node_exporter_listen_port }}"
+    proto: tcp
+  become: true
+  environment:
+    # This is a workaround to prevent UFW steps from failing.
+    # (Suspect the /sbin -> /usr/sbin symlink is confusing the module)
+    PATH: /usr/sbin:{{ ansible_env.PATH }}
+  when: node_exporter_add_ufw_allow_rule
+
+- name: Restart UFW
+  community.general.ufw:
+    state: reloaded
+  environment:
+    # This is a workaround to prevent UFW steps from failing.
+    # (Suspect the /sbin -> /usr/sbin symlink is confusing the module)
+    PATH: /usr/sbin:{{ ansible_env.PATH }}
+  when: node_exporter_add_ufw_allow_rule

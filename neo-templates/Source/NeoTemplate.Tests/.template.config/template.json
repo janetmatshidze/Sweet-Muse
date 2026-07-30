@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Singular Systems",
+    "classifications": [ "Neo", "Test" ],
+    "identity": "NeoTemplate.Tests",
+    "name": "Neo XUnit Test Project",
+    "shortName": "neotst",
+	"preferNameDirectory" : true,
+	"sourceName": "NeoTemplate.Tests",
+	"sources": [
+		{
+		  "modifiers": [
+			{
+			  "exclude": [ ".vs/**" ]
+			}
+		  ]
+		}
+	  ]
+}

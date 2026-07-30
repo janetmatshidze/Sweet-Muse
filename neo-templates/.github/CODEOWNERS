@@ -1,0 +1,6 @@
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+* @SingularSystems/neo-reviewers
+
+# Also have the DevOps Team as reviewers on the Templates folder (Contains templates for blueprints)
+/Templates/ @SingularSystems/neo-reviewers @SingularSystems/neo-templates-neo-devops-iac-reviewers

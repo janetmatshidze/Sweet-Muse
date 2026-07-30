@@ -1,0 +1,16 @@
+{{func isApp(project)
+  ret (project.type == "DotNet" && project.dotNet.type == "WebApi") || (project.type == "React")
+end}}
+
+{{- names = blueprint.names }}
+{{- prefix = names.prefix | string.downcase }}
+
+{{- for project in blueprint.projects ~}}
+{{~ if isApp(project) ~}}
+{{~ pipelineName = project.name | string.replace "-" "_" ~}}
+
+pipeline-yaml-here
+
+{SplitFile:{{ prefix}}_{{ pipelineName }}.yaml}
+{{~ end ~}}
+{{~ end ~}}

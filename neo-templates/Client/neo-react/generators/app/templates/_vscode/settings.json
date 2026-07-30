@@ -1,0 +1,15 @@
+{
+    "singular-neo.modelGeneration": {
+        "singleApi": true,
+        <%_ if(hasModules) { _%>
+        "typePathConfig": "App.Config"
+        <%_ } _%>
+        <%_ if(!hasModules) { _%>
+        "typePathConfig": "Config"
+        <%_ } _%>
+    },
+    "singular-neo.templating": {
+        "usesCards": true
+    },
+    "window.title": "${dirty}${activeEditorShort}${separator}<%= projectName %>",
+}

@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Company>Singular Systems (Pty) Ltd</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>$([System.DateTime]::Now.ToString(yyyy)) by $(Company)</Copyright>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <UserSecretsId>userSecretsId</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+    <DockerfileFile>..\Dockerfile</DockerfileFile>
+    <DockerfileFastModeStage>debug</DockerfileFastModeStage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\**" />
+    <Content Remove="Controllers\**" />
+    <EmbeddedResource Remove="Controllers\**" />
+    <None Remove="Controllers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Certificates\neo-localhost.pfx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Certificates\neo-localhost.pfx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo.Azure.KeyVault" />
+    <PackageReference Include="Neo.Identity.Api" />
+    <PackageReference Include="Neo.Model.App" />
+    <PackageReference Include="Neo.Model.Swagger" />
+    <PackageReference Include="Neo.Reporting.Api" />
+    <PackageReference Include="Neo.Reporting.Notifications" />
+    <PackageReference Include="Neo.Reporting.IronPdf2022" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NeoTemplate.App\NeoTemplate.App.csproj" />
+    <ProjectReference Include="..\NeoTemplate.Models.Migrations\NeoTemplate.Models.Migrations.csproj" />
+    <ProjectReference Include="..\NeoTemplate.RazorReports\NeoTemplate.RazorReports.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+  </ItemGroup>
+
+  <Target Name="IncludeSymbolFromReferences" AfterTargets="ResolveAssemblyReferences" Condition="@(ReferenceCopyLocalPaths) != ''">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="%(ReferenceCopyLocalPaths.RelativeDir)%(ReferenceCopyLocalPaths.Filename).pdb" DestinationSubDirectory="%(ReferenceCopyLocalPaths.DestinationSubDirectory)" />
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="!Exists('%(FullPath)')" />
+    </ItemGroup>
+  </Target>
+
+</Project>

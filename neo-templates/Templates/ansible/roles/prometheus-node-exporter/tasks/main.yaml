@@ -1,0 +1,20 @@
+---
+# Install Prometheus Node Exporter on a Linux VM
+# (https://github.com/prometheus/node_exporter)
+
+- name: Determine Node Exporter versions
+  ansible.builtin.include_tasks:
+    file: version.yaml
+
+- name: Install Node Exporter
+  ansible.builtin.include_tasks:
+    file: install.yaml
+  when: node_exporter_state | default('present') == 'present'    
+
+- name: Uninstall Node Exporter
+  ansible.builtin.include_tasks:
+    file: uninstall.yaml
+  when: node_exporter_state | default('present') == 'absent'
+
+# This role is largely based on the OSS implementation here (MIT license):
+# https://github.com/voidquark/node_exporter

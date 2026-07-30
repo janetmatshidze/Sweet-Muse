@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Singular Systems",
+  "classifications": [ "Tools" ],
+  "identity": "NeoTemplate.ServiceRunner",
+  "name": "Neo ServiceRunner",
+  "shortName": "neotoolssr",
+  "preferNameDirectory": false,
+  "sourceName": "NeoTemplate",
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [ ".vs/**" ]
+        }
+      ]
+    }
+  ]
+}

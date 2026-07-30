@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../Directory.Packages.props" />
+    <File Path="../NuGet.Config" />
+    <File Path=".dockerignore" />
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Dockerfile" />
+    <File Path="exclusions.dic" />
+    <File Path="global.json" />
+    <File Path="ReadMe.md" />
+    <File Path="testenvironments.json" />
+  </Folder>
+  <Project Path="NeoTemplate.IdentityServer.App/NeoTemplate.IdentityServer.App.csproj" />
+  <Project Path="NeoTemplate.IdentityServer.Clients/NeoTemplate.IdentityServer.Clients.csproj" />
+  <Project Path="NeoTemplate.IdentityServer.Contracts/NeoTemplate.IdentityServer.Contracts.csproj" />
+  <Project Path="NeoTemplate.IdentityServer.Models.Migrations/NeoTemplate.IdentityServer.Models.Migrations.csproj" />
+  <Project Path="NeoTemplate.IdentityServer.Models/NeoTemplate.IdentityServer.Models.csproj" />
+  <Project Path="NeoTemplate.IdentityServer.Tests/NeoTemplate.IdentityServer.Tests.csproj" />
+  <Project Path="NeoTemplate.IdentityServer/NeoTemplate.IdentityServer.csproj" />
+</Solution>

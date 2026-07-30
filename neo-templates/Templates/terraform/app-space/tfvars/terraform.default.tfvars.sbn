@@ -1,0 +1,131 @@
+{{-
+locationMap = {
+  ne  : "northeurope",
+  we  : "westeurope",
+  zan : "southafricanorth",
+  zaw : "southafricawest"
+}
+
+environmentFriendlyNameMap = {
+  test : "Test",
+  dev  : "Development",
+  qa   : "QA",
+  uat  : "UAT",
+  ppt  : "PreProdTest",
+  pp   : "PreProd",
+  prd  : "Production",
+  dr   : "Disaster Recovery"
+}
+
+locationName        = locationMap[pipeline.location]
+projectPrefix       = blueprint.names.prefix
+environment         = pipeline.environment
+databasePrefix      = (string.upcase(projectPrefix) + "." + string.upcase(environment) + ".")
+environmentName     = (environmentFriendlyNameMap[environment] | object.default string.upcase(environment))
+isProductionLikeEnv = array.contains(["ppt", "pp", "prd", "dr"], environment)
+isProductionEnv     = string.contains("prd", environment)
+isDrEnv             = string.contains("dr", environment)
+domain              = (isProductionEnv ? "singular-cloud.com" : (environment + "-singular-cloud.com"))
+
+if object.has_key(blueprint.iac.variableSets, pipeline.host)
+  subscriptionIdComment = ""
+  subscriptionId = blueprint.iac.variableSets[pipeline.host].AZURE_SUBSCRIPTION_ID
+else
+  subscriptionId = "2e538ecd-e2f2-40d9-bc8a-272df8f5e2f7"
+  subscriptionIdComment = "# NOTE: Subscription couldn't be determined. Defaulted to Singular Cloud Staging."
+end
+
+excludedDatabases = (isDrEnv ?[] : ["IdentityServer", "AuthorisationServer", "Notifications"])
+~}}
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │ {{ environmentName }} app-space tfvars file                            │
+# └─────────────────────────────────────────────────────────────────────┘
+
+prefixes = {
+  project    = "{{ projectPrefix }}"
+  host_space = "{{ pipeline.host }}"
+}
+
+azure = {
+  tenant_id                = "c9871c9d-7fe6-4b1d-a97a-22b172b872e7"
+  subscription_id          = "{{ subscriptionId }}" {{ subscriptionIdComment }}
+  location                 = "{{ locationName }}"
+  location_prefix          = "{{ pipeline.location }}"
+  purge_protection_enabled = false
+}
+
+access = {
+  # ZTN access to AKS, Owner RBAC
+  admins = {
+    principals = []
+  }
+  # Cluster and RG access
+  managers = {
+    principals = []
+  }
+  readers = {
+    principals = []
+  }
+  # ZTN access to VM instances
+  data_readers = {
+    principals = []
+  }
+  data_writers = {
+    principals = []
+  }
+}
+
+storage_accounts = [
+  {
+    name             = "documents"
+    clear_operations = { allowed = false }
+    copy_operations = {
+      outbound_enabled        = true
+      allow_inbound_copy      = {{ isProductionEnv ? false : true }}
+      allow_inbound_overwrite = {{ isProductionEnv ? false : true }}
+    }
+  }
+]
+
+dns_zone = {
+  enabled             = true
+  domain              = "{{ domain }}"
+  sub_domains         = ["{{ projectPrefix }}"]
+  primary_sub_domain  = "{{ projectPrefix }}"
+  proxying_enabled    = true # Should proxying be create on automatically generated DNS Records (E.g. AKS or App Service A records)
+}
+
+apps = [
+  {
+    name                       = "web-app"
+    requires_identity          = false
+    requires_api_client_secret = false
+  },
+  {
+    name = "identity-server"
+  },
+  {
+    name                 = "domain"
+    storage_write_access = ["documents"]
+  }
+]
+
+sql_servers = {
+  sql01 = {
+    type            = "{{ isProductionLikeEnv ? 'dedicated' : 'shared' }}"
+    database_prefix = "{{ databasePrefix }}"
+    sql_host_type   = "private-ip"
+    restore_settings = {
+      excluded_databases = {{ excludedDatabases }}
+      overwrite_existing = {{ isProductionEnv ? false : true }}
+    }
+  }
+}
+
+{{- if (isProductionLikeEnv && !isDrEnv) }}
+prevent_destroy = {
+  resource_locks   = true
+  storage_accounts = true
+  key_vault        = true
+}
+{{- end }}

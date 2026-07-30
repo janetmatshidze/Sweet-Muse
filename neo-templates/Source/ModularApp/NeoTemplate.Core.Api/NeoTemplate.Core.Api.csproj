@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Company>Singular Systems (Pty) Ltd</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>$([System.DateTime]::Now.ToString(yyyy)) by $(Company)</Copyright>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <UserSecretsId>NeoTemplate.Core.Api</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+    <DockerfileFile>..\Dockerfile</DockerfileFile>
+    <DockerfileFastModeStage>debug</DockerfileFastModeStage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Certificates\neo-localhost.pfx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Certificates\neo-localhost.pfx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+    <PackageReference Include="Neo.Azure.KeyVault" />
+    <PackageReference Include="Neo.Files" />
+    <PackageReference Include="Neo.Identity.Api.OpenIddict" />
+    <PackageReference Include="Neo.Identity.Clients.OpenIddict" />
+    <PackageReference Include="Neo.Jobs" />
+    <PackageReference Include="Neo.Model.App" />
+    <PackageReference Include="Neo.Model.Serilog" />
+    <PackageReference Include="Neo.Model.Swagger" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.MSSqlServer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\NeoTemplate.IdentityServer\NeoTemplate.IdentityServer.Clients\NeoTemplate.IdentityServer.Clients.csproj" />
+    <ProjectReference Include="..\NeoTemplate.AuthorisationServer\NeoTemplate.AuthorisationServer.Api\NeoTemplate.AuthorisationServer.Api.csproj" />
+    <ProjectReference Include="..\NeoTemplate.Core.App\NeoTemplate.Core.App.csproj" />
+    <ProjectReference Include="..\NeoTemplate.Core.Models.Migrations\NeoTemplate.Core.Models.Migrations.csproj" />
+    <ProjectReference Include="..\NeoTemplate.Notifications\NeoTemplate.Notifications.App\NeoTemplate.Notifications.App.csproj" />
+    <ProjectReference Include="..\NeoTemplate.Reporting\NeoTemplate.Reporting.App\NeoTemplate.Reporting.App.csproj" />
+  </ItemGroup>
+
+</Project>

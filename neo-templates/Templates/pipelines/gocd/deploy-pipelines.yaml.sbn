@@ -1,0 +1,232 @@
+{{func notNullOrEmpty(value)
+   ret value != null && value != ""
+end}}
+
+{{func isApp(project)
+  ret (project.type == "DotNet" && project.dotNet.type == "WebApi") || (project.type == "React")
+end}}
+
+{{func approvalType(deployPipeline)
+  ret (deployPipeline.trigger == "auto" ? "success" : "manual")
+end}}
+
+{{func relativeBasePath(folder)
+  $parts = (folder | string.replace "\\" "/" | string.split "/")
+  $path = ""
+  for $part in $parts
+    $path += "../"
+  end
+  ret $path
+end}}
+
+{{func getProject(name)
+  for $project in blueprint.projects
+    if ($project.name == name)
+      ret $project
+    end
+  end
+
+  ret null
+end}}
+
+{{func pipelineProjectName(project)
+  ret (project.name | string.replace "-" "_")
+end}}
+
+{{func buildPipelineName(project, deployPipeline)
+  ret ([blueprint.names.prefix, "build", deployPipeline.build, pipelineProjectName(project)] | array.join "_" )
+end}}
+
+{{func deployPipelineName(project, deployPipeline)
+  ret ([blueprint.names.prefix, "deploy", deployPipeline.build , deployPipeline.environment, pipelineProjectName(project), deployPipeline.name] | array.compact | array.join "_" )
+end}}
+
+{{func getParentDeployPipeline(childPipeline)
+  for $pipeline in blueprint.iac.deployPipelines
+    if $pipeline.build == childPipeline.build && $pipeline.environment == childPipeline.parent
+      ret $pipeline
+    end
+  end
+
+  ret null
+end}}
+
+{{func getParentPipelines(project, deployPipeline, parents)
+  $parentPipeline = getParentDeployPipeline(deployPipeline)
+  if ($parentPipeline)
+    $pipelineName = deployPipelineName(project, $parentPipeline)
+    parents = array.add parents $pipelineName
+    ret (getParentPipelines(project, $parentPipeline, parents))
+  else
+    if ((project.useBuildFrom == null) || (project.useBuildFrom | string.empty))
+      parents = array.add parents buildPipelineName(project, deployPipeline)
+    else
+      otherProject = getProject(project.useBuildFrom)
+      parents = array.add parents buildPipelineName(otherProject, deployPipeline)
+    end
+  end
+
+  ret parents
+end}}
+
+{{func getEnvironment(environment)
+  for $environment in blueprint.iac.environments
+    if ($environment.name == environment)
+      ret $environment
+    end
+  end
+
+  ret null
+end}}
+
+{{func getEnvironmentVariables(environment)
+  $environment = getEnvironment(environment)
+  $variables = []
+  for $variableSetName in $environment.variableSets
+    $variableSet = blueprint.iac.variableSets[$variableSetName]
+    for $name in (object.keys $variableSet)
+      $variables = array.add $variables { name: $name, value: $variableSet[$name] }
+    end
+  end
+
+  ret $variables
+end}}
+
+{{func shouldGeneratePipelineForProject(pipeline, projectName)
+  ret (pipeline.projects == null) || (pipeline.projects | array.contains projectName)
+end}}
+
+{{func getEnvironmentVariablesArray(variableSets)
+  $environmentVariables = []
+    for $variable in variableSets
+      $variableSet = blueprint.iac.variableSets[$variable]
+        for $name in (object.keys $variableSet)
+          $environmentVariables = array.add $environmentVariables { name: $name, value: $variableSet[$name] }
+        end
+    end
+  ret $environmentVariables
+end}}
+
+{{- counter = 1 }}
+{{- names = blueprint.names }}
+{{- iac = blueprint.iac }}
+{{- prefix = names.prefix | string.downcase }}
+{{- shellCommand = iac.agentOS == "windows" ? "pwsh" : "sh" }}
+{{- for project in blueprint.projects ~}}
+{{~ if isApp(project) ~}}
+# {{ blueprint.names.shortName }}.{{ project.name | string.replace "-" " " | string.capitalizewords | string.replace " " "" }} Deployment Pipelines
+format_version: 9
+pipelines:
+{{~ pipelineName = pipelineProjectName(project) }}
+{{- for deployPipeline in iac.deployPipelines ~}}
+  {{- if shouldGeneratePipelineForProject(deployPipeline, project.name) ~}}
+  {{- parentPipelines = getParentPipelines(project, deployPipeline, []) ~}}
+  {{- resourcePrefix = ([prefix, deployPipeline.environment] | array.filter @notNullOrEmpty) | array.join "-" ~}}
+  {{ deployPipelineName(project, deployPipeline) }}:
+    group: {{ prefix }}_deploy_{{ deployPipeline.build }}_{{ deployPipeline.environment }}
+    label_template: ${build}
+    lock_behavior: unlockWhenFinished
+    display_order: {{ counter }}
+    environment_variables:
+      ProjectPrefix: {{ prefix }}
+      HostPrefix: {{ deployPipeline.host }}
+      LocationPrefix: {{ deployPipeline.location }}
+      EnvironmentPrefix: {{ deployPipeline.environment }}
+    {{~ for variable in getEnvironmentVariablesArray(deployPipeline.variableSets) ~}}
+      {{ variable.name }}: "{{ variable.value }}"
+    {{~ end ~}}
+    materials:
+      build:
+        ignore_for_scheduling: false
+        pipeline: {{ parentPipelines[0] }}
+        stage: {{ parentPipelines | array.size == 1 ? "build" : "deploy" }}
+    stages:
+    - deploy:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: {{ approvalType(deployPipeline) }}
+          allow_only_on_success: false
+        jobs:
+          deploy:
+            timeout: 0
+            tasks:
+              - fetch:
+                  is_file: false
+                  source: IaC
+                  pipeline: {{ parentPipelines | array.reverse | array.join "/" }}
+                  stage: build
+                  job: package
+                  artifact_origin: gocd
+                  run_if: passed
+            {{~ for task in deployPipeline.tasks ~}}
+              - exec:
+                  arguments:
+                {{~ if iac.agentOS == "linux" ~}}
+                  {{~ if task == "deploy-helm-chart" ~}}
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-helm-chart.ps1" -AppName "{{ project.name }}" -Chart "./IaC/helm/neo-web-app" -ImageTag "$GO_PIPELINE_LABEL"
+                  {{~ end ~}}
+                  {{~ if task == "deploy-azure-app-service" ~}}
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-azure-app-service.ps1" -ServiceName "{{ project.name }}" -Registry "{{ iac.containerRegistry}}" -ImageTag "$GO_PIPELINE_LABEL"
+                  {{~ end ~}}
+                {{~ end ~}}
+                {{~ if iac.agentOS == "windows" ~}}
+                  {{~ if task == "deploy-helm-chart" ~}}
+                  - -c "./IaC/scripts/deploy/deploy-helm-chart.ps1"
+                  - -AppName "{{ project.name }}"
+                  - -Chart "./IaC/helm/neo-web-app"
+                  - -ImageTag "$GO_PIPELINE_LABEL"
+                  {{~ end ~}}
+                  {{~ if task == "deploy-azure-app-service" ~}}
+                  - -c "./IaC/scripts/deploy/deploy-azure-app-service.ps1"
+                  - -ServiceName "{{ project.name }}"
+                  - -Registry "{{ iac.containerRegistry}}"
+                  - -ImageTag "$GO_PIPELINE_LABEL"
+                  {{~ end ~}}
+                {{~ end ~}}
+                  command: {{ shellCommand }}
+                  working_directory: .
+                  run_if: passed
+
+            {{~ end ~}}
+  {{~ end ~}}
+  {{~ end ~}}
+{{- counter = counter + 1 -}}
+{SplitFile:{{ prefix}}_{{ pipelineName }}.yaml}
+{{~ end ~}}
+{{~ end ~}}
+environments:
+{{~ for environment in (iac.deployPipelines | array.map "environment" | array.uniq | array.sort) ~}}
+  {{ prefix }}_{{ environment }}_deploy:
+    environment_variables:
+      {{~ for variable in getEnvironmentVariables(environment) ~}}
+      {{ variable.name }}: "{{ variable.value }}"
+      {{~ end ~}}
+    agents:
+      # ZeroTrust01 - ZeroTrust08
+      - e31184ff-0dca-46fd-a917-11218a3cd840
+      - da6ff6f6-a8a0-48c7-b71a-9ec1c2b8628d
+      - 5ebf84ba-c240-4980-bf44-883cb6c4d5a8
+      - 4ee24cb8-9645-4a9d-a115-91856d194d23
+      - 834f8c54-2fa7-4a0e-9419-b9b1829d411c
+      - 3035c8f9-6650-46e7-93b8-1820c4749c2a
+      - 792d8d0b-525f-4c03-88a5-1859c6299272
+      - ddbb9e66-2fcd-4c37-bcd9-715e8efa9c77
+    pipelines:
+{{ for deployPipeline in (iac.deployPipelines | array.sort "environment") -}}
+  {{~ if deployPipeline.environment == environment ~}}
+    {{~ for project in (blueprint.projects | array.sort "name") ~}}
+    {{~ if isApp(project) ~}}
+    {{- if shouldGeneratePipelineForProject(deployPipeline, project.name) ~}}
+      - {{ deployPipelineName(project, deployPipeline) }}
+    {{~ end ~}}
+    {{~ end ~}}
+  {{~ end -}}
+{{~ end ~}}
+{{~ end ~}}
+
+{{~ end ~}}
+{SplitFile:environments.yaml}

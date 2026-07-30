@@ -5,32 +5,34 @@
 namespace Tuckshop.Core.Models.Migrations.Migrations
 {
     /// <inheritdoc />
-    public partial class AddOrders : Migration
+    public partial class AlterCancelledReasonMaxLength : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "CustomerName",
+                name: "Cancelled_Reason",
                 table: "Orders",
-                type: "nvarchar(100)",
-                maxLength: 100,
+                type: "nvarchar(255)",
+                maxLength: 255,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                oldType: "nvarchar(500)",
+                oldMaxLength: 500);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "CustomerName",
+                name: "Cancelled_Reason",
                 table: "Orders",
-                type: "nvarchar(max)",
+                type: "nvarchar(500)",
+                maxLength: 500,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(100)",
-                oldMaxLength: 100);
+                oldType: "nvarchar(255)",
+                oldMaxLength: 255);
         }
     }
 }

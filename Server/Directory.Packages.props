@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.6.3" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
     <PackageVersion Include="Flurl.Http" Version="4.0.2" />
     <PackageVersion Include="IronPdf" Version="2026.6.1" />
     <PackageVersion Include="IronPdf.Native.Chrome.Linux" Version="2026.6.1" />
@@ -54,6 +55,7 @@
     <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="Serilog.Sinks.MSSqlServer" Version="9.0.3" />
+    <PackageVersion Include="xunit.extensibility.core" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
   </ItemGroup>

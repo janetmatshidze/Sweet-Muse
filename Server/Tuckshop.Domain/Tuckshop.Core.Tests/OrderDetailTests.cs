@@ -1,4 +1,4 @@
-﻿namespace Tuckshop.Core.Api.Tests
+﻿namespace Tuckshop.Core.Tests
 {
 
   using Tuckshop.Core.Models.Orders;
@@ -12,7 +12,7 @@
     [InlineData(100, 5, 500, 65.22)]
     public void ValueAndVATCorrect(int quantity, decimal price, decimal correctValue, decimal correctVAT)
     {
-      var order = new Order();
+      var order = new Order("Test Customer");
       var orderDetail = order.AddDetail(1, quantity, price);
       Assert.Equal(correctValue, orderDetail.Value);
       Assert.Equal(correctVAT, orderDetail.VAT);

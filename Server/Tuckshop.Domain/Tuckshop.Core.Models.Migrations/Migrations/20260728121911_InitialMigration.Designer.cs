@@ -12,7 +12,7 @@ using Tuckshop.Core.Models;
 namespace Tuckshop.Core.Models.Migrations.Migrations
 {
     [DbContext(typeof(ModelDbContext))]
-    [Migration("20241113071049_InitialMigration")]
+    [Migration("20260728121911_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -129,6 +129,80 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Tuckshop.Core.Models.Orders.Order", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("OrderedOn")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("OrderId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Tuckshop.Core.Models.Orders.OrderDetail", b =>
+                {
+                    b.Property<int>("OrderDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailId"));
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("VAT")
+                        .HasColumnType("money");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("money");
+
+                    b.HasKey("OrderDetailId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderDetails");
+                });
+
+            modelBuilder.Entity("Tuckshop.Core.Models.Product", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("money");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ProductId");
+
+                    b.ToTable("Products");
+                });
+
             modelBuilder.Entity("Tuckshop.Core.Models.Files.FileDescriptor", b =>
                 {
                     b.OwnsOne("Neo.Model.ValueObjects.AuditValues", "Audit", b1 =>
@@ -157,6 +231,79 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
                         });
 
                     b.Navigation("Audit");
+                });
+
+            modelBuilder.Entity("Tuckshop.Core.Models.Orders.Order", b =>
+                {
+                    b.OwnsOne("Tuckshop.Core.Models.ReasonedUserEvent", "Cancelled", b1 =>
+                        {
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("By")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime?>("On")
+                                .HasColumnType("datetime");
+
+                            b1.Property<string>("Reason")
+                                .IsRequired()
+                                .HasMaxLength(500)
+                                .HasColumnType("nvarchar(500)");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.OwnsOne("Tuckshop.Core.Models.UserEvent", "Completed", b1 =>
+                        {
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("By")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime?>("On")
+                                .HasColumnType("datetime");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("Cancelled")
+                        .IsRequired();
+
+                    b.Navigation("Completed")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Tuckshop.Core.Models.Orders.OrderDetail", b =>
+                {
+                    b.HasOne("Tuckshop.Core.Models.Orders.Order", null)
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tuckshop.Core.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Tuckshop.Core.Models.Orders.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

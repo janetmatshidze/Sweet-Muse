@@ -26,7 +26,7 @@
     {
       this.ProductId = productId;
       this.Quantity = quantity;
-      this.Value = price * quantity; // Calculate the total value based on price and quantity.
+      this.Value = quantity * price; // Calculate the total value based on price and quantity.
       this.VAT = Math.Round(this.Value - (this.Value / 1.15m), 2, MidpointRounding.AwayFromZero);// Calculate the VAT based on the value, assuming a VAT rate of 15%, two decimal places with rounding away from zero.
       this.TrackingState = TrackableEntities.Common.Core.TrackingState.Added;// Set the tracking state to Added for new entities
     }

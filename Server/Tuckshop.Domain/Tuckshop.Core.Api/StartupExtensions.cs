@@ -66,6 +66,8 @@
       services.AddScoped<CatalogueModelService>();
 
       services.AddScoped<OrdersModelService>();
+      services.AddScoped<OrdersCommandService>();
+      services.AddScoped<IProductPricesService, ProductPricesService>();
 
       return services;
     }

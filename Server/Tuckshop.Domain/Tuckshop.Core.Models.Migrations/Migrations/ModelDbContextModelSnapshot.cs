@@ -134,9 +134,6 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-                    b.Property<DateTime?>("CompletedOn")
-                        .HasColumnType("datetime");
-
                     b.Property<string>("CustomerName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -231,6 +228,58 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
                         });
 
                     b.Navigation("Audit");
+                });
+
+            modelBuilder.Entity("Tuckshop.Core.Models.Orders.Order", b =>
+                {
+                    b.OwnsOne("Neo.Model.ValueObjects.ReasonedUserEvent", "Cancelled", b1 =>
+                        {
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("By")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime?>("On")
+                                .HasColumnType("datetime");
+
+                            b1.Property<string>("Reason")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.OwnsOne("Neo.Model.ValueObjects.UserEvent", "Completed", b1 =>
+                        {
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("By")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime?>("On")
+                                .HasColumnType("datetime");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("Cancelled")
+                        .IsRequired();
+
+                    b.Navigation("Completed")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tuckshop.Core.Models.Orders.OrderDetail", b =>

@@ -65,6 +65,17 @@ namespace Tuckshop.Core.Models.Initializers
           new Product() { ProductName = "Tomato Chips", Price = 6 },
         };
 
+        if(this.environment == null)
+        {
+          int i = 1;
+
+          // this is test, give these products Ids.
+          foreach (var product in products)
+          {
+            product.ProductId = i++;
+          }
+        }
+
         this.context.Products.AddRange(products);
 
         await this.context.SaveChangesAsync().ConfigureAwait(false);

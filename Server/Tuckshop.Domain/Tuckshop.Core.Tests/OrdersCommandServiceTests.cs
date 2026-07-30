@@ -1,0 +1,110 @@
+﻿namespace Tuckshop.Core.Tests
+{
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+  using Neo.Testing;
+  using Tuckshop.Core.App.Services;
+  using Tuckshop.Core.Models;
+  using Tuckshop.Core.Models.Identity;
+  using Tuckshop.Core.Models.Orders;
+  using Tuckshop.Core.Models.Orders.Commands;
+  using Xunit;
+
+  /// <summary>
+  /// Tests for the OrdersCommandService class.
+  /// </summary>
+  public class OrdersCommandServiceTests
+  {
+    private ModelDbContext context;
+
+    [Fact]
+    public async Task CreateOrderAsync()
+    {
+      var service = await this.CreateOrdersCommandServiceAsync().ConfigureAwait(false);
+      Order order = await CreateOrderWithCommandAsync(service, "Create Cmd").ConfigureAwait(false);
+      Assert.Equal("Create Cmd", order.CustomerName);
+      Assert.Equal(2, order.OrderDetails.Count);
+      Assert.Null(order.Completed.On);
+      Assert.Null(order.Completed.By);
+      Assert.Null(order.Cancelled.On);
+      Assert.Null(order.Cancelled.By);
+    }
+
+    private async Task<Order> CreateOrderWithCommandAsync(
+      OrdersCommandService service,
+      string customerName)
+    {
+      var createCommand = new CreateOrder()
+      {
+        CustomerName = customerName,
+        OrderDetails = new List<CreateOrder.NewOrderDetail>()
+        {
+          new CreateOrder.NewOrderDetail() { ProductId = 1, Quantity = 5 },
+          new CreateOrder.NewOrderDetail() { ProductId = 2, Quantity = 3 },
+        }
+      };
+
+      var order = await service.CreateOrderAsync(createCommand).ConfigureAwait(false);
+      this.context.DetachAllEntities();
+      return order;
+    }
+
+    private async Task<OrdersCommandService> CreateOrdersCommandServiceAsync()
+    {
+
+      var unitTestHelper = await UnitTestHelper.InitWithContextAsync(generateSeedData: true).ConfigureAwait(false);
+      this.context = unitTestHelper.DbContext;
+      var modelService = new OrdersModelService(this.context);
+      var priceService = new ProductPricesService(this.context);
+      var userResolver = new TestUserResolver<User>(1);
+      var service = new OrdersCommandService(modelService, priceService, userResolver);
+      return service;
+    }
+
+    [Fact]
+    public async Task CompleteOrderAsync()
+    {
+      OrdersCommandService service = await CreateOrdersCommandServiceAsync().ConfigureAwait(false);
+
+      Order order = await CreateOrderWithCommandAsync(service, "Complete Cmd").ConfigureAwait(false);
+
+      var completeCommand = new Models.Orders.Commands.CompleteOrder()
+      {
+        OrderId = order.OrderId
+      };
+
+      await service.CompleteOrderAsync(completeCommand).ConfigureAwait(false);
+      this.context.DetachAllEntities();
+
+      // Assert that the order is completed
+      var completeOrder = await this.context.Orders.FindAsync(order.OrderId).ConfigureAwait(false);
+      Assert.NotNull(completeOrder);
+      Assert.NotNull(completeOrder.Completed.On);
+      Assert.NotNull(completeOrder.Completed.By);
+
+    }
+
+    [Fact]
+    public async Task CancelOrderAsync()
+    {
+      OrdersCommandService service = await CreateOrdersCommandServiceAsync().ConfigureAwait(false);
+      Order order = await CreateOrderWithCommandAsync(service, "Cancel Cmd").ConfigureAwait(false);
+
+      var cancelCommand = new Models.Orders.Commands.CancelOrder()
+      {
+        OrderId = order.OrderId,
+        Reason = "Insufficient stock",
+      };
+      await service.CancelOrderAsync(cancelCommand).ConfigureAwait(false);
+      this.context.DetachAllEntities();
+
+      // Assert that the order is cancelled
+      var cancelledOrder = await this.context.Orders.FindAsync(order.OrderId).ConfigureAwait(false);
+      Assert.NotNull(cancelledOrder);
+      Assert.NotNull(cancelledOrder.Cancelled.On);
+      Assert.NotNull(cancelledOrder.Cancelled.By);
+      Assert.Equal("Insufficient stock", cancelledOrder.Cancelled.Reason);
+    }
+  }
+}
+

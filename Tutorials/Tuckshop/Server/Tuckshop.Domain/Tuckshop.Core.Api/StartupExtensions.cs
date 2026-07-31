@@ -68,6 +68,7 @@
       services.AddScoped<OrdersModelService>();
       services.AddScoped<OrdersCommandService>();
       services.AddScoped<IProductPricesService, ProductPricesService>();
+      services.AddScoped<OrdersQueryService>(); // Service is Scoped since it depends on the DbContext
 
       return services;
     }

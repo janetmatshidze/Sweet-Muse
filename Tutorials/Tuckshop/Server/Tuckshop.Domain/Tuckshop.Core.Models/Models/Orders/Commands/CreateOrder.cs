@@ -41,7 +41,7 @@
     protected override void AddBusinessRules(ValidationRules<CreateOrder> rules)
     {
       rules.FailWhen(
-      o => o.OrderDetails == null || o.OrderDetails.Count == 0,
+      ord => ord.OrderDetails == null || ord.OrderDetails.Count == 0,
       "Order details are required");
     }
   }

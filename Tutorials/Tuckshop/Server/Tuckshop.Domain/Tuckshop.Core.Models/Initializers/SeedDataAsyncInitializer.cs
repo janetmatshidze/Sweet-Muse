@@ -9,6 +9,7 @@ namespace Tuckshop.Core.Models.Initializers
   using Neo.Model.Identity.SystemUser;
   using Neo.NotificationServer.Services;
   using Tuckshop.Core.Models.Identity;
+  using Tuckshop.Core.Models.Orders;
 
   /// <summary>
   /// Seed data generation service.
@@ -45,9 +46,10 @@ namespace Tuckshop.Core.Models.Initializers
     /// Will generate the appropriate seed data for the given environment.
     /// </summary>
     /// <returns>A task awaiting the seed data generation.</returns>
-    public Task GenerateSeedDataAsync()
+    public async Task GenerateSeedDataAsync()
     {
-      return this.GenerateProductSeedDataAsync();
+      await this.GenerateProductSeedDataAsync();
+      await this.GenerateOrderSeedDataAsync();
     }
 
     private async Task GenerateProductSeedDataAsync()
@@ -65,7 +67,7 @@ namespace Tuckshop.Core.Models.Initializers
           new Product() { ProductName = "Tomato Chips", Price = 6 },
         };
 
-        if(this.environment == null)
+        if (this.environment == null)
         {
           int i = 1;
 
@@ -77,6 +79,30 @@ namespace Tuckshop.Core.Models.Initializers
         }
 
         this.context.Products.AddRange(products);
+
+        await this.context.SaveChangesAsync().ConfigureAwait(false);
+      }
+    }
+
+    private async Task GenerateOrderSeedDataAsync()
+    {
+      if (this.environment.IsDevelopment() && !await this.context.Orders.AnyAsync().ConfigureAwait(false)) // Here the code checks if the environment Isdevelopment() and the orders table is empty, and if so adds 3 orders (one for each state).
+
+      {
+        var pendingOrder = new Order("Pending Order");
+        pendingOrder.AddDetail(1, 1, 10);
+        pendingOrder.AddDetail(2, 4, 9);
+
+        var completedOrder = new Order("Completed Order");
+        completedOrder.AddDetail(3, 2, 8.5m);
+        completedOrder.AddDetail(4, 1, 2.5m);
+        completedOrder.Complete(1);
+
+        var cancelledOrder = new Order("Cancelled Order");
+        cancelledOrder.AddDetail(5, 1, 5);
+        cancelledOrder.Cancel(1, "Don't like peanuts");
+
+        this.context.Orders.AddRange(pendingOrder, completedOrder, cancelledOrder);
 
         await this.context.SaveChangesAsync().ConfigureAwait(false);
       }

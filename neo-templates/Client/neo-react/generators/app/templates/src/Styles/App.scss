@@ -1,0 +1,32 @@
+//Main scss
+@import "./Variables.scss";
+@import "./Variables-Bootstrap.scss";
+@import "./Variables-Neo.scss";
+@import '~bootstrap/scss/bootstrap.scss';
+
+// Neo component styles
+@import "~@singularsystems/neo-react/styles/Neo.scss";
+<%_ if(hasModules) { _%>
+@import "~@singularsystems/neo-authorisation/styles/authorisation.scss";
+<%_ } _%>
+<%_ if(includeNeoServices) { _%>
+@import "~@singularsystems/neo-canvas-grid/Styles/index.scss";
+@import "~@singularsystems/neo-notifications/styles/notifications.scss";
+@import "~@singularsystems/neo-react-services/styles/audit.scss";
+@import "~@singularsystems/neo-react-services/styles/catalogue.scss";
+@import "~@singularsystems/neo-reporting/styles/reporting.scss";
+<%_ } _%>
+
+// Component scss
+@import "./Components/Misc.scss";
+@import "./Components/Sidebar.scss";
+@import "./Components/Forms.scss";
+@import "./Components/Buttons.scss";
+@import "./Components/Grids.scss";
+@import "./Components/Modals.scss";
+
+//Views
+@import "./MasterPage.scss";
+
+// Include this if you want cards to collapse on mobile screen sizes to save space.
+// @import "./Components/MobileSpaceSaver.scss";

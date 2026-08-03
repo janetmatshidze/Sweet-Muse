@@ -1,0 +1,43 @@
+---
+- name: Determine what version of the node exporter to install
+  block: 
+  - name: Get details about the latest node_exporter release
+    ansible.builtin.uri:
+      url: "https://api.github.com/repos/prometheus/node_exporter/releases/latest"
+      method: GET
+      body_format: json
+    delegate_to: localhost
+    run_once: true
+    become: false
+    register: node_exporter_version_details
+
+  - name: Extract the version number from the node_exporter details
+    ansible.builtin.set_fact:
+      node_exporter_version: "{{ node_exporter_version_details.json.tag_name | replace('v', '') }}"
+    when: node_exporter_version == "latest"
+
+  - name: Output the selected node_exporter version
+    ansible.builtin.debug:
+      msg: "Installing node_exporter version {{ node_exporter_version }}"
+
+- name: Check installed version
+  block:
+    - name: Check if the node_exporter binary already exists
+      ansible.builtin.stat:
+        path: "{{ node_exporter_binary_path }}/node_exporter"
+      register: node_exporter_stat
+  
+    - name: Get the deployed version
+      ansible.builtin.command:
+        cmd: "{{ node_exporter_binary_path }}/node_exporter --version"
+      changed_when: false
+      register: current_node_exporter_version_query
+      when: node_exporter_stat.stat.exists | bool
+
+    - name: Set the deployed version
+      ansible.builtin.set_fact:
+        current_node_exporter_version: "{{ (current_node_exporter_version_query.stdout | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') | join('') ) if node_exporter_stat.stat.exists else '0.0.0' }}"
+
+- name: Output the selected node_exporter version
+  ansible.builtin.debug:
+    msg: "Existing node_exporter version: {{ current_node_exporter_version | default('None') }}"

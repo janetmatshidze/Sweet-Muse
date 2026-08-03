@@ -1,0 +1,19 @@
+﻿{
+    "name": "NeoTemplate",
+    "basePath": ".",
+    "publishPathTemplate": "NeoTemplate.{key}\\NeoTemplate.{key}.Api\\bin\\publish",
+    "dllNameTemplate": "NeoTemplate.{key}.Api.dll",
+	"environmentVariables": [
+		{ "key": "ASPNETCORE_ENVIRONMENT", "value": "DevStaging" }
+	],
+    "serviceGroups": [{
+            "name": "IDS",
+            "services": [{
+                    "name": "IdentityServer",
+					"publishPath": "NeoTemplate.IdentityServer\\NeoTemplate.IdentityServer\\bin\\publish",
+                    "dllName": "NeoTemplate.IdentityServer.dll"
+                }
+            ]
+        }
+    ]
+}

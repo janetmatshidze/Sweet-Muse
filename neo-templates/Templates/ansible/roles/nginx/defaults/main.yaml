@@ -1,0 +1,9 @@
+# Version of nginx to install (Default = latest)
+# Use "apt policy nginx" on the host to list available images
+# nginx_version: "=1.24.0-1~bookworm"
+
+# The default configuration will be used if this is undefined.
+nginx_config_files: []
+
+# Certificate files to install into the proxy (Optional)
+nginx_certificate_files: []

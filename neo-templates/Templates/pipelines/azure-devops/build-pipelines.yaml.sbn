@@ -1,0 +1,32 @@
+{{func isApp(project)
+  ret (project.type == "DotNet" && project.dotNet.type == "WebApi") || (project.type == "React")
+end}}
+
+{{- names = blueprint.names }}
+{{- prefix = names.prefix | string.downcase }}
+ 
+{{- for project in blueprint.projects ~}}
+{{~ if isApp(project) ~}}
+{{~ pipelineName = project.name | string.replace "-" "_" ~}}
+
+trigger:
+  - main
+
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+  - task: build
+    inputs:
+      repository: 
+      mavenPomFile: 'pom.xml'
+      mavenOptions: '-Xmx3072m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.11'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: false
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'package'
+{SplitFile:{{ prefix}}_{{ pipelineName }}.yaml}
+{{~ end ~}}
+{{~ end ~}}

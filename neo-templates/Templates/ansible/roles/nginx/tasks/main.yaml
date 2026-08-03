@@ -1,0 +1,70 @@
+---
+- name: Install Prerequisites
+  ansible.builtin.apt:
+    update_cache: true
+    name: ca-certificates
+    state: present
+
+# This installs the Nginx version bundled with the Debian distribution
+- name: Install Nginx
+  ansible.builtin.apt:
+    update_cache: yes
+    name: nginx{{ nginx_version | default('') }}
+    state: present
+
+- name: Install additional Nginx modules
+  ansible.builtin.apt:
+    name:
+      - libnginx-mod-http-set-misc
+    state: present
+
+- name: Remove default nginx configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Upload Nginx configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/nginx/sites-available/{{ item | basename }}"
+  loop: "{{ nginx_config_files }}"
+  when: nginx_config_files is defined
+
+- name: Publish Nginx configuration files
+  file:
+    src: "/etc/nginx/sites-available/{{ item | basename }}"
+    dest: "/etc/nginx/sites-enabled/{{ item | basename }}"
+    state: link
+  loop: "{{ nginx_config_files }}"
+  when: nginx_config_files is defined
+
+- name: Ensure the Nginx SSL directory exists
+  ansible.builtin.file:
+    path: /etc/nginx/ssl
+    state: directory
+    mode: '0755'
+
+- name: Copy certificate files to the SSL directory
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/nginx/ssl/{{ item | basename }}"
+    mode: '0644'
+  loop: "{{ nginx_certificate_files }}"
+  when: nginx_certificate_files is defined
+
+- name: Install any '.crt' certificates into the certificate store
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/usr/local/share/ca-certificates/{{ item | basename }}"
+    mode: '0644'
+  loop: "{{ nginx_certificate_files | select('search', '\\.crt$') | list }}"
+
+- name: Update CA certificates
+  command: update-ca-certificates
+  become: yes
+
+- name: Restart Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
+    enabled: true

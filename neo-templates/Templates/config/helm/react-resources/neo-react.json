@@ -1,0 +1,9 @@
+{
+  "dev"     : { "cpuRequest": "5m" , "memoryRequest": "5Mi" , "memoryLimit": "20Mi" },
+  "qa"      : { "cpuRequest": "40m", "memoryRequest": "15Mi", "memoryLimit": "30Mi" },
+  "uat"     : { "cpuRequest": "40m", "memoryRequest": "15Mi", "memoryLimit": "30Mi" },
+  "pp"      : { "cpuRequest": "40m", "memoryRequest": "15Mi", "memoryLimit": "30Mi" },
+  "prd"     : { "cpuRequest": "80m", "memoryRequest": "30Mi", "memoryLimit": "30Mi" },
+  "dr"      : { "cpuRequest": "80m", "memoryRequest": "30Mi", "memoryLimit": "30Mi" },
+  "default" : { "cpuRequest": "40m", "memoryRequest": "10Mi", "memoryLimit": "30Mi" }
+}

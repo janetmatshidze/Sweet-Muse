@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Singular Systems",
+  "classifications": [ "Database" ],
+  "identity": "NeoTemplate.DbScriptRunner",
+  "name": "Neo Database Script Runner",
+  "shortName": "neodbsr",
+  "preferNameDirectory": false,
+  "sourceName": "NeoTemplate",
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [ ".vs/**" ]
+        }
+      ]
+    }
+  ]
+}

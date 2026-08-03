@@ -1,0 +1,634 @@
+{{- defaultStageName = "stage" }}
+{{- defaultJobName = "job" }}
+
+{{func notNull(value)
+  ret value != null
+end}}
+
+{{func notNullOrEmpty(value)
+  ret value != null && value != ""
+end}}
+
+{{func notNullOrEmptyArray(value)
+  ret ((object.default value [] | array.compact | array.size) > 0)
+end}}
+
+{{func getPipelineName(prefix, name)
+  ret (([prefix, name] | array.join "_" )  | string.replace "-" "_")
+end}}
+
+{{func getPipeline(name, hasPrefix)
+  for $pipeline in blueprint.iac.operationalPipelines
+    $pipelineName = $pipeline.name
+    if (hasPrefix)
+      $pipelineName = getPipelineName(blueprint.names.prefix, $pipeline.name)
+    end
+
+    if (name == $pipelineName)
+      ret $pipeline
+    end
+  end
+
+  ret null
+end}}
+
+{{func getParentPipeline(childPipeline)
+  for $pipeline in blueprint.iac.operationalPipelines
+    if ($pipeline.name == childPipeline.parent)
+      ret $pipeline
+    end
+  end
+
+  ret null
+end}}
+
+{{func getParentPipelines(pipeline, parents)
+  $parentPipeline = getParentPipeline(pipeline)
+  if ($parentPipeline)
+    $pipelineName = getPipelineName(blueprint.names.prefix, $parentPipeline.name)
+    parents = array.add parents $pipelineName
+    ret (getParentPipelines($parentPipeline, parents))
+  end
+
+  ret parents
+end}}
+
+{{func getParentPipelinePath(parentNames, rootPipelineName)
+  $includedParents = []
+  for $parentName in parentNames
+    if ($parentName != rootPipelineName)
+      $includedParents = array.add $includedParents $parentName
+    else
+      $includedParents = array.add $includedParents $parentName
+      ret $includedParents | array.reverse | array.join "/"
+    end
+  end
+
+  # Could not locate the root pipeline
+  # (Would prefer to throw an error here, but scriban doesn't seem to support this?)
+  ret null
+end}}
+
+{{func getEnvironmentVariables(variableSets)
+  $environmentVariables = []
+  for $variable in variableSets
+    $variableSet = blueprint.iac.variableSets[$variable]
+      for $name in (object.keys $variableSet)
+        $environmentVariables = array.add $environmentVariables { name: $name, value: $variableSet[$name] }
+      end
+  end
+
+  ret $environmentVariables
+end}}
+
+{{func getVariableSets(environmentName)
+
+  for $environment in blueprint.iac.environments
+    if ($environment.name == environmentName)
+      ret $environment.variableSets
+    end
+  end
+
+  ret null
+end}}
+
+{{func getStages(pipeline)
+  $stages = (object.default pipeline.stages [])
+
+  for $task in pipeline.tasks
+    $stageName = (object.default $task.stage defaultStageName)
+
+    # If the stage is not present in the stages array, create one using default settings
+    if (!(array.map $stages "name" | array.contains $stageName))
+      $stages = array.add $stages { name: $stageName, autoTrigger: false }
+    end
+  end
+
+  ret $stages
+end}}
+
+
+{{func getJobs(pipeline, stageName)
+  # Get jobs defined directly on the pipeline
+  $jobs = []
+  for $job in (object.default pipeline.jobs [])
+    $stageName = (object.default $job.stage defaultStageName)
+    if ($stageName == stageName)
+      $jobs = array.add $jobs $job
+    end
+  end
+
+  for $task in pipeline.tasks
+    $stageName = (object.default $task.stage defaultStageName)
+    if ($stageName == stageName)
+      $jobName = (object.default $task.job defaultJobName)
+
+      # If the job is not present in the jobs array, create one using default settings
+      if (!(array.map $jobs "name" | array.contains $jobName))
+        $jobs = array.add $jobs { name: $jobName, stage: $stageName }
+      end
+    end
+  end
+
+  ret $jobs
+end}}
+
+{{func getTasks(pipeline, stageName, jobName)
+  $tasks = []
+  for $task in pipeline.tasks
+    $stageName = (object.default $task.stage defaultStageName)
+    $jobName = (object.default $task.job defaultJobName)
+    if ($stageName == stageName && $jobName == jobName)
+      $tasks = array.add $tasks $task
+    end
+  end
+
+  ret $tasks
+end}}
+
+{{func getLabelTemplate(pipeline, parentPipelines)
+  if notNullOrEmpty(pipeline.labelTemplate)
+    ret pipeline.labelTemplate
+  else if notNullOrEmptyArray(parentPipelines)
+    ret "${parent}"
+  else
+    ret "${COUNT}"
+  end
+end}}
+
+{{func joinPropertiesOfObjectsInArray(objectsArray, properties, separator, arrayPropertySeparator)
+  $joinedObjectProperties = []
+
+  for $object in objectsArray
+    $objectProperties = []
+    for $property in properties
+      if (($object[$property] | object.typeof) == "array")
+        $objectProperties = array.add $objectProperties ($object[$property] | array.join arrayPropertySeparator)
+      else
+        $objectProperties = array.add $objectProperties $object[$property]
+      end
+    end
+    $joinedObjectProperties = array.add $joinedObjectProperties ($objectProperties | array.join separator)
+  end
+
+  ret $joinedObjectProperties
+end}}
+
+{{- names = blueprint.names }}
+{{- iac = blueprint.iac }}
+{{- prefix = names.prefix | string.downcase }}
+{{~ for environment in (iac.operationalPipelines | array.map "environment" | array.uniq | array.sort) ~}}
+{{- counter = 1 }}
+format_version: 9
+pipelines:
+  {{- for operationalPipeline in iac.operationalPipelines ~}}
+  {{~ if operationalPipeline.environment == environment ~}}
+  {{- pipelineName = getPipelineName(prefix, operationalPipeline.name) ~}}
+  {{- parentPipelines = getParentPipelines(operationalPipeline, []) }}
+  {{ pipelineName }}:
+    group: {{ prefix }}_{{ operationalPipeline.environment | string.replace "-" "_"}}_operations
+    label_template: "{{ getLabelTemplate(operationalPipeline, parentPipelines) }}"
+    lock_behavior: unlockWhenFinished
+    display_order: {{ counter }}
+    environment_variables:
+    {{~ for variable in getEnvironmentVariables(operationalPipeline.variableSets) ~}}
+      {{ variable.name }}: "{{ variable.value }}"
+    {{~ end ~}}
+    {{~ if notNullOrEmpty(operationalPipeline.cronTrigger) ~}}
+    timer:
+      spec: {{ operationalPipeline.cronTrigger }}
+      only_on_changes: false
+    {{~ end ~}}
+    materials:
+      {{~ if notNullOrEmptyArray(parentPipelines) ~}}
+      parent:
+        ignore_for_scheduling: false
+        pipeline: {{ parentPipelines[0] }}
+        {{~ # Get the name of the last task in the parent pipeline ~}}
+        stage: {{ object.default (getPipeline(parentPipelines[0], true).tasks | array.reverse | array.first).stage defaultStageName }}
+      {{~ else ~}}
+      source:
+        ignore_for_scheduling: true
+        git: {{ iac.repoUrl }}
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        {{~ if notNullOrEmptyArray(operationalPipeline.buildIncludes) ~}}
+        includes:
+          {{~ for buildInclude in operationalPipeline.buildIncludes ~}}
+          - {{ buildInclude | string.replace "\\" "/" }}
+          {{~ end ~}}
+        whitelist:
+          {{~ for buildInclude in operationalPipeline.buildIncludes ~}}
+          - {{ buildInclude | string.replace "\\" "/" }}
+          {{~ end ~}}
+        {{~ else ~}}
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+        {{~ end ~}}
+      {{~ end ~}}
+    stages:
+    {{~ for stage in getStages(operationalPipeline) ~}}
+    - {{ stage.name }}:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+        {{~ if stage.autoTrigger == true || operationalPipeline.trigger == "auto" ~}}
+          type: "success"
+          allow_only_on_success: false
+        {{~ else ~}}
+          type: "manual"
+          allow_only_on_success: true
+        {{~ end ~}}
+          {{~ if notNullOrEmptyArray(stage.approvalRoles) ~}}
+          roles:
+            {{~ for role in stage.approvalRoles ~}}
+            - {{ role }}
+            {{~ end ~}}
+          {{~ end ~}}
+          {{~ if notNullOrEmptyArray(stage.approvalUsers) ~}}
+          users:
+            {{~ for user in stage.approvalUsers ~}}
+            - {{ user }}
+            {{~ end ~}}
+          {{~ end ~}}
+        jobs:
+        {{~ jobs = getJobs(operationalPipeline, stage.name) ~}}
+        {{~ for job in jobs ~}}
+          {{~ tasks = getTasks(operationalPipeline, stage.name, job.name) ~}}
+          {{ job.name }}:
+            timeout: 0
+            {{~
+              func isStoreArtifact; ret ($0.type == "store-artifact"); end
+              storeArtifactTasks = (tasks | array.filter @isStoreArtifact)
+            ~}}
+            {{~ if storeArtifactTasks | array.size > 0 ~}}
+            artifacts:
+            {{~ for task in storeArtifactTasks ~}}
+              - {{ object.default task.storeArtifact.type "build" }}:
+                  source: {{ task.storeArtifact.source }}
+                  {{~ if notNullOrEmpty(task.storeArtifact.destination) ~}}
+                  destination: {{ task.storeArtifact.destination }}
+                  {{~ end ~}}
+            {{~ end ~}}
+            {{~ end ~}}
+            tasks:
+              {{~ for task in getTasks(operationalPipeline, stage.name, job.name) ~}}
+              {{~ if !(array.contains ["store-artifact", "fetch-artifact"] task.type) ~}}
+              - exec:
+              {{~ if task.type == "azure-rsv-sqlserver-database-restore" && notNull(task.azRsvSqlDatabaseRestore) ~}}
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-databases-restore.ps1
+                    - -Project
+                    - "{{ prefix }}"
+                    - -SourceLocation
+                    - "{{ operationalPipeline.location }}"
+                    - -SourceEnvironment
+                    - "{{ task.azRsvSqlDatabaseRestore.from }}"
+                  {{~ if notNullOrEmpty(task.azRsvSqlDatabaseRestore.sourceDbPrefix) ~}}
+                    - -SourceDbPrefix
+                    - "{{ task.azRsvSqlDatabaseRestore.sourceDbPrefix }}"
+                  {{~ end ~}}
+                    - -TargetLocation
+                    - "{{ task.azRsvSqlDatabaseRestore.targetLocation }}"
+                    - -TargetEnvironment
+                    - "{{ task.azRsvSqlDatabaseRestore.to}}"
+                  {{~ if notNullOrEmpty(task.azRsvSqlDatabaseRestore.targetDbPrefix) ~}}
+                    - -TargetDbPrefix
+                    - "{{ task.azRsvSqlDatabaseRestore.targetDbPrefix }}"
+                  {{~ end ~}}
+                  {{~ if notNullOrEmpty(task.azRsvSqlDatabaseRestore.targetSqlHostType) ~}}
+                    - -TargetSqlHostType
+                    - "{{ task.azRsvSqlDatabaseRestore.targetSqlHostType }}"
+                  {{~ end ~}}
+                  {{~ if notNullOrEmpty(task.azRsvSqlDatabaseRestore.targetPointInTime) ~}}
+                    - -TargetPointInTime
+                    - "{{ task.azRsvSqlDatabaseRestore.targetPointInTime }}"
+                  {{~ end ~}}
+                  {{~ if notNull(task.azRsvSqlDatabaseRestore.excludedDatabases) ~}}
+                    - -ExcludedDatabases
+                    - "{{ task.azRsvSqlDatabaseRestore.excludedDatabases | array.join "," }}"
+                  {{~ end ~}}
+                {{~ if notNullOrEmpty(task.azRsvSqlDatabaseRestore.fromSql) && notNullOrEmpty(task.azRsvSqlDatabaseRestore.toSql) ~}}
+                    - -FromSqlKey
+                    - "{{ task.azRsvSqlDatabaseRestore.fromSql }}"
+                    - -ToSqlKey
+                    - "{{ task.azRsvSqlDatabaseRestore.toSql }}"
+                {{~ end ~}}
+                  {{~ if task.azRsvSqlDatabaseRestore.overwriteExisting == true ~}}
+                    - -OverwriteExisting
+                  {{~ end ~}}
+                  {{~ if task.azRsvSqlDatabaseRestore.skipDatabaseRekeyProcess == true ~}}
+                    - -SkipDatabaseRekeyProcess
+                  {{~ end ~}}
+                    - -AutoApprove
+                  command: pwsh
+              {{~ end ~}}
+              {{~ if task.type == "azure-rsv-sqlserver-manage-backups" && notNull(task.azRsvSqlBackupManagement) ~}}
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-manage-backups.ps1
+                    - -Project
+                    - "{{ prefix }}"
+                    - -Location
+                    - "{{ task.azRsvSqlBackupManagement.location }}"
+                    - -Environment
+                    - "{{ task.azRsvSqlBackupManagement.environment }}"
+                  {{~ if task.azRsvSqlBackupManagement.enableBackups ~}}
+                    - -EnableRsvBackups
+                  {{~ end ~}}
+                  {{~ if task.azRsvSqlBackupManagement.enableAutoProtection ~}}
+                    - -EnableAutoProtect
+                  {{~ end ~}}
+                  {{~ if task.azRsvSqlBackupManagement.disableBackups ~}}
+                    - -DisableRsvBackups
+                  {{~ end ~}}
+                  {{~ if task.azRsvSqlBackupManagement.purgeBackups ~}}
+                    - -PurgeBackups
+                  {{~ end ~}}
+                  command: pwsh
+              {{~ end ~}}
+              {{~ if task.type == "azure-storage-accounts-clear" && notNull(task.azStorageClear) ~}}
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-blob-storage-accounts-clear.ps1
+                    - -Project
+                    - "{{ prefix }}"
+                  {{~ if notNull(task.azStorageClear.targetLocation) ~}}
+                    - -Location
+                    - "{{ task.azStorageClear.targetLocation }}"
+                  {{~ else ~}}
+                    - -Location
+                    - "{{ operationalPipeline.location }}"
+                  {{~ end ~}}
+                    - -Environment
+                    - "{{ task.azStorageClear.target}}"
+                  {{~ if notNull(task.azStorageClear.excludedStorageAccounts) ~}}
+                    - -ExcludedStorageAccounts
+                    - "{{ task.azStorageClear.excludedStorageAccounts | array.join "," }}"
+                  {{~ end ~}}
+                  {{~ if task.azStorageClear.forceClear == true ~}}
+                    - -ForceClear
+                  {{~ end ~}}
+                    - -AutoApprove
+                  command: pwsh
+              {{~ end ~}}
+              {{~ if task.type == "azure-storage-accounts-copy" && notNull(task.azStorageCopy) ~}}
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-blob-storage-accounts-copy.ps1
+                    - -Project
+                    - "{{ prefix }}"
+                    - -SourceLocation
+                    - "{{ operationalPipeline.location }}"
+                    - -SourceEnvironment
+                    - "{{ task.azStorageCopy.from}}"
+                    - -TargetLocation
+                    - "{{ task.azStorageCopy.targetLocation }}"
+                    - -TargetEnvironment
+                    - "{{ task.azStorageCopy.to}}"
+                  {{~ if notNull(task.azStorageCopy.excludedStorageAccounts) ~}}
+                    - -ExcludedStorageAccounts
+                    - "{{ task.azStorageCopy.excludedStorageAccounts | array.join "," }}"
+                  {{~ end ~}}
+                  {{~ if task.azStorageCopy.overwriteExisting == true ~}}
+                    - -OverwriteExisting
+                  {{~ end ~}}
+                  {{~ if task.azStorageCopy.forceCopy == true ~}}
+                    - -ForceCopy
+                  {{~ end ~}}
+                    - -AutoApprove
+                  command: pwsh
+              {{~ end ~}}
+              {{~ if task.type == "azure-keyvault-secret-copy" && notNull(task.azKvSecretCopy) ~}}
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-keyvault-secret-copy.ps1
+                    - -Project
+                    - "{{ prefix }}"
+                  {{~ if notNullOrEmpty(task.azKvSecretCopy.sourceLocation) ~}}
+                    - -SourceLocation
+                    - "{{ task.azKvSecretCopy.sourceLocation }}"
+                  {{~ else ~}}
+                    - -SourceLocation
+                    - "{{ operationalPipeline.location }}"
+                  {{~ end ~}}
+                    - -SourceEnvironment
+                    - "{{ task.azKvSecretCopy.sourceEnvironment }}"
+                    - -TargetLocation
+                    - "{{ task.azKvSecretCopy.targetLocation}}"
+                    - -TargetEnvironment
+                    - "{{ task.azKvSecretCopy.targetEnvironment}}"
+                  command: pwsh
+              {{~ end ~}}
+              {{~ if task.type == "execute-db-script-runner" && notNull(task.executeDbScriptRunner) ~}}
+                  arguments:
+                    - IaC\scripts\operational\execute-db-script-runner.ps1
+                    - -ProjectPrefix
+                    - "{{ prefix }}"
+                    - -LocationPrefix
+                    - "{{ operationalPipeline.location }}"
+                    - -Environment
+                    - "{{ task.executeDbScriptRunner.environment }}"
+                    - -Servers
+                    - "{{ task.executeDbScriptRunner.servers | array.join "," }}"
+                    {{~ if notNullOrEmpty(task.executeDbScriptRunner.allowedDbNamePrefixes) ~}}
+                    - -AllowedDbNamePrefixes
+                    - "{{ task.executeDbScriptRunner.allowedDbNamePrefixes | array.join "," }}"
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.executeDbScriptRunner.allowedAffectedDbNamePrefixes) ~}}
+                    - -AllowedAffectedDbNamePrefixes
+                    - "{{ task.executeDbScriptRunner.allowedAffectedDbNamePrefixes | array.join "," }}"
+                    {{~ end ~}}
+                    - -DatabaseName
+                    - "{{ task.executeDbScriptRunner.auditDatabaseName ?? "DbUpdates" }}"
+                    {{~ if notNullOrEmpty(task.executeDbScriptRunner.defaultTimeoutSeconds) ~}}
+                    - -DefaultTimeoutSeconds
+                    - {{ task.executeDbScriptRunner.defaultTimeoutSeconds }}
+                    {{~ end ~}}
+                    {{~ if task.executeDbScriptRunner.validateOnly == true ~}}
+                    - -ValidateOnly
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.executeDbScriptRunner.executionMode) ~}}
+                    - -ExecutionMode
+                    - "{{ task.executeDbScriptRunner.executionMode }}"
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.executeDbScriptRunner.folder) ~}}
+                    - -Folder
+                    - "{{ task.executeDbScriptRunner.folder }}"
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.executeDbScriptRunner.subFolder) ~}}
+                    - -SubFolder
+                    - "{{ task.executeDbScriptRunner.subFolder }}"
+                    {{~ end ~}}
+                    {{~ if notNullOrEmptyArray(task.executeDbScriptRunner.scripts) ~}}
+                    # Scripts passed as array of individual CLI arguments to the PowerShell script,
+                    # which joins them into a semicolon-delimited SCRIPTS env var for DbScriptRunner
+                    - -Scripts
+                    - "{{ array.join task.executeDbScriptRunner.scripts ";" }}"
+                    {{~ end ~}}
+                  working_directory:
+                  command: pwsh
+              {{~ end ~}}
+              {{~ if task.type == "run-script" && notNull(task.runScript) ~}}
+                  arguments:
+                  {{~ if notNullOrEmpty(task.runScript.container) ~}}
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    {{~ if notNullOrEmpty(task.runScript.container.authType) ~}}
+                    - -Sr_ContainerRegistryAuthType
+                    - {{ task.runScript.container.authType }}
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.runScript.container.registry) ~}}
+                    - -Sr_ContainerRegistry
+                    - {{ task.runScript.container.registry }}
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.runScript.container.repository) ~}}
+                    - -Sr_ContainerRepository
+                    - {{ task.runScript.container.repository }}
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.runScript.container.imageTag) ~}}
+                    - -Sr_ContainerImageTag
+                    - {{ task.runScript.container.imageTag }}
+                    {{~ end ~}}
+                    {{~ if notNullOrEmptyArray(task.runScript.container.volumeMappings) ~}}
+                    - -Sr_VolumeMappings
+                    - {{ task.runScript.container.volumeMappings | array.join "," }}
+                    {{~ end ~}}
+                    {{~ if notNullOrEmptyArray(task.runScript.container.environmentVariables) ~}}
+                    - -Sr_EnvironmentVariables
+                    - {{ task.runScript.container.environmentVariables | array.join "," }}
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.runScript.shell) ~}}
+                    - -Sr_Shell
+                    - {{ task.runScript.shell }}
+                    {{~ end ~}}
+                    - -Sr_ScriptPath
+                  {{~ end ~}}
+                    {{~ if task.runScript.container == null ~}}
+                    - {{ task.runScript.script }}
+                    {{~ else ~}}
+                    - {{ task.runScript.workingPath }}/{{ task.runScript.script }}
+                    {{~ end ~}}
+                    {{~ for argument in task.runScript.arguments ~}}
+                    - {{ argument }}
+                    {{~ end ~}}
+                  {{~ if task.runScript.container == null ~}}
+                  working_directory: {{ task.runScript.workingPath }}
+                  {{~ end ~}}
+                  {{~ if task.runScript.container == null ~}}
+                  command: {{ task.runScript.shell ?? "pwsh" }}
+                  {{~ else ~}}
+                  command: {{ "pwsh" }}
+                  {{~ end ~}}
+              {{~ end ~}}
+              {{~ if task.type == "run-terraform" && notNull(task.runTerraform) ~}}
+                  arguments:
+                    - {{task.runTerraform.modulePath}}/run.ps1
+                    - -Location
+                    - {{ task.runTerraform.location }}
+                    - -Env
+                    - {{ task.runTerraform.environment }}
+                    - -Action
+                    - {{ task.runTerraform.action }}
+                    - -ProjectPrefix
+                    - {{ names.prefix }}
+                    - -AutoApprove
+                    {{~ if notNullOrEmpty(task.runTerraform.terraformVersion) ~}}
+                    - -TerraformVersion
+                    - {{ task.runTerraform.terraformVersion }}
+                    {{~ end ~}}
+                    {{~ if task.runTerraform.usePlanFile == true ~}}
+                    - -UsePlanFile
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.runTerraform.planMode) ~}}
+                    - -PlanMode
+                    - {{ task.runTerraform.planMode }}
+                    {{~ end ~}}
+                    {{~ if notNullOrEmpty(task.runTerraform.envVariant) ~}}
+                    - -EnvVariant
+                    - {{ task.runTerraform.envVariant }}
+                    {{~ end ~}}
+                    {{~ for argument in task.runTerraform.arguments ~}}
+                    - {{ argument }}
+                    {{~ end ~}}
+                  working_directory:
+                  command: pwsh
+              {{~ end ~}}
+              {{~ if task.type == "run-pipelines" && notNull(task.runPipelines) ~}}
+                  arguments:
+                    - IaC\scripts\operational\run-pipelines.ps1
+                    - -PipelineNames
+                    - "{{ task.runPipelines.pipelines | array.join "," }}"
+                    {{~ if notNullOrEmpty(task.runPipelines.prefix) ~}}
+                    - -PipelinePrefix
+                    - {{ task.runPipelines.prefix }}
+                    {{~ end ~}}
+                  working_directory:
+                  command: pwsh
+              {{~ end ~}}
+                  run_if: passed
+              {{~ end ~}}
+              {{~ if task.type == "fetch-artifact" ~}}
+              - fetch:
+                  artifact_origin: gocd
+                  source: {{ task.fetchArtifact.source }}
+                  {{~ if notNullOrEmpty(task.fetchArtifact.destination) ~}}
+                  destination: {{ task.fetchArtifact.destination}}
+                  {{~ end ~}}
+                  is_file: {{ object.default task.fetchArtifact.isFile false }}
+                  {{~ if (task.fetchArtifact.pipeline == operationalPipeline.name) ~}}
+                  pipeline: {{ pipelineName }}
+                  {{~ else ~}}
+                  {{~ # Scan parents for matching pipeline ~}}
+                  pipeline: {{ getParentPipelinePath(parentPipelines, getPipelineName(prefix, task.fetchArtifact.pipeline)) }}
+                  {{~ end ~}}
+                  stage: {{ object.default task.fetchArtifact.stage defaultStageName }}
+                  job: {{ object.default task.fetchArtifact.job defaultJobName }}
+                  run_if: passed
+              {{~ end ~}}
+              {{~ end ~}}
+        {{~ end ~}}
+    {{~ end ~}}
+    {{- counter = counter + 1 -}}
+    {{~ end ~}}
+{{~ end ~}}
+{SplitFile:{{ prefix }}_{{ environment | string.replace "-" "_" }}.yaml}
+{{~ end # environment ~}}
+
+environments:
+{{~ for environment in (iac.operationalPipelines | array.map "environment" | array.uniq | array.sort) ~}}
+  {{ prefix }}_ops_{{ environment | string.replace "host-" "" | string.strip }}:
+    environment_variables:
+      {{- variableSets =  getVariableSets(environment) }}
+      {{~ for variable in getEnvironmentVariables(variableSets) ~}}
+      {{ variable.name }}: "{{ variable.value }}"
+      {{~ end ~}}
+    agents:
+      # ZeroTrust01 - ZeroTrust08
+      - e31184ff-0dca-46fd-a917-11218a3cd840
+      - da6ff6f6-a8a0-48c7-b71a-9ec1c2b8628d
+      - 5ebf84ba-c240-4980-bf44-883cb6c4d5a8
+      - 4ee24cb8-9645-4a9d-a115-91856d194d23
+      - 834f8c54-2fa7-4a0e-9419-b9b1829d411c
+      - 3035c8f9-6650-46e7-93b8-1820c4749c2a
+      - 792d8d0b-525f-4c03-88a5-1859c6299272
+      - ddbb9e66-2fcd-4c37-bcd9-715e8efa9c77
+    pipelines:
+    {{~ for operationalPipeline in (iac.operationalPipelines | array.sort "environment") -}}
+      {{~ if operationalPipeline.environment == environment ~}}
+      - {{ getPipelineName(prefix, operationalPipeline.name) }}
+      {{~ end ~}}
+    {{~ end }}
+{{~ end ~}}
+{SplitFile:environments.yaml}

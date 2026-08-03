@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Singular Systems",
+  "classifications": [ "WebApi", "Model", "Reporting" ],
+  "identity": "NeoTemplate.ReportingApi",
+  "name": "Neo Reporting Api",
+  "shortName": "neoreporting",
+  "defaultName": "Reporting",
+  "preferNameDirectory": false,
+  "sourceName": "NeoTemplate",
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [ ".vs/**" ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "NeoTemplate.AuthorisationServer.Api": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "launchUrl": "index.html",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5999"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://host.docker.internal:{ServicePort}",
+      "publishAllPorts": true,
+      "useSSL": true,
+      "sslPort": 5999,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DEBUG_ENVIRONMENT": "Docker"
+      }
+    }
+  }
+}

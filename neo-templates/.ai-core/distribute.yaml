@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://files.singular-devops.com/schemas/ai-core/v1/distribute-v1.0.0.json
+
+CreateInclude:
+  - .github/instructions/project/*.instructions.md
+UpdateInclude:
+  - .ai-core/agents/**/*.md
+  - .ai-core/checklists/**/*.md
+  - .ai-core/commands/**/*.md
+  - .ai-core/data/**/*.md
+  - .ai-core/guides/**/*.md
+  - .ai-core/scripts/**/*.*
+  - .ai-core/shell/**/*.md
+  - .ai-core/skills/**/*.*
+  - .ai-core/standards/**/*.md
+  - .ai-core/statusline/**/*.md
+  - .ai-core/templates/**/*.md
+  - .claude/CLAUDE.md
+  - .claude/rules/**/*.md
+  - .claude/skills/**/*.*
+  - .github/agents/**/*.agent.md
+  - .github/chatmodes/**/*.chatmode.md
+  - .github/copilot-instructions.md
+  - .github/instructions/**/*.instructions.md
+  - .github/prompts/**/*.prompt.md
+  - .github/skills/**/*.*
+  - .github/workflows/copilot-setup-steps.yml
+UpdateExclude:
+  - .github/instructions/project/*.instructions.md
+RemoveInclude:
+  - "**/*/.github/**/*" # Any file in a .github folder that is NOT in the repository root
+  - .github/*-instructions.md # Any *-instructions.md file in the root .github folder (other than the excluded .github/copilot-instructions.md)
+  - .github/*.instructions.md # Any *.instructions.md file in the root .github folder
+  - .github/instructions/frontend-instructions/**/*.*
+  - .github/instructions/authentication-authorization-backend.instructions.md
+  - .github/instructions/catalogue-backend.instructions.md
+  - .github/instructions/exception-handling.instructions.md
+  - .github/instructions/logging.instructions.md
+  - .github/instructions/project.instructions.md
+  - .github/instructions/sql.instructions.md
+RemoveExclude:
+  - .github/copilot-instructions.md

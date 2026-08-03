@@ -1,0 +1,41 @@
+import React from 'react';
+import { Neo, NeoGrid, Views } from '@singularsystems/neo-react';
+import ProductsVM from './ProductsVM';
+import { observer } from 'mobx-react';
+import { Misc } from '@singularsystems/neo-core';
+
+class ProductsParams {
+    // TODO: Add parameters here in the form: public paramName = { isQuery?: boolean, required?: boolean };
+}
+
+@observer
+export default class ProductsView extends Views.ViewBase<ProductsVM, ProductsParams> {
+   public static params = new ProductsParams();
+
+    constructor(props: unknown) {
+        super("Products", ProductsVM, props);
+    }
+
+    protected viewParamsUpdated() {
+
+    }
+
+    public render() {
+        return (
+            <div>
+			    <NeoGrid.Grid items={this.viewModel.products} showAddButton>
+    {(product, productMeta) => (
+        <NeoGrid.Row>
+            <NeoGrid.Column display={productMeta.productId} />
+            <NeoGrid.Column bind={productMeta.productName} />
+            <NeoGrid.Column bind={productMeta.price} numProps={{format: Misc.NumberFormat.CurrencyDecimals}} />
+            <NeoGrid.ButtonColumn showDelete />
+        </NeoGrid.Row>
+    )}
+</NeoGrid.Grid>
+                
+
+            </div>
+        );
+    }
+}

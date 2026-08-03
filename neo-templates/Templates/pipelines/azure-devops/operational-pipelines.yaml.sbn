@@ -1,0 +1,9 @@
+{{-
+# Azure DevOps - Operational Pipelines Template
+
+# This is a Scriban Template which produces a YAML file.
+# (See: https://github.com/scriban/scriban/tree/master/doc)
+
+~}}
+
+# ToDo: Add support for generating same the pipelines as GoCD

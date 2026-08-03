@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Singular Systems",
+  "classifications": [ "WebApi", "Authorisation" ],
+  "identity": "NeoTemplate.AuthorisationServer",
+  "name": "Neo Authorisation Server",
+  "shortName": "neoauthsvr",
+  "preferNameDirectory": false,
+  "sourceName": "NeoTemplate",
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [ ".vs/**", "Server/.vs/**" ]
+        }
+      ]
+    }
+  ]
+}

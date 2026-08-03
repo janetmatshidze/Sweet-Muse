@@ -1,0 +1,163 @@
+- name: Create the node_exporter system group
+  ansible.builtin.group:
+    name: "{{ node_exporter_group }}"
+    system: true
+    state: present
+
+- name: Create the node_exporter system user
+  ansible.builtin.user:
+    name: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_group }}"
+    shell: "/sbin/nologin"
+    system: true
+    create_home: false
+    state: present
+
+- name: Create directory for node_exporter binary
+  ansible.builtin.file:
+    path: "{{ node_exporter_binary_path }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_group }}"
+
+- name: Create textfile directory for node_exporter
+  ansible.builtin.file:
+    path: "{{ node_exporter_textfile_path }}"
+    state: directory
+    mode: "0755"
+
+- name: Install node_exporter
+  block:
+    - name: Create a temporary directory for the node_exporter archive
+      ansible.builtin.tempfile:
+        path: "/tmp"
+        suffix: ".node_exporter"
+        state: directory
+      register: node_exporter_temp_folder
+
+    - name: Download node_exporter archive from remote URL
+      ansible.builtin.get_url:
+        url: "{{ node_exporter_download_url }}"
+        dest: "{{ node_exporter_temp_folder.path }}"
+        mode: "0750"
+        owner: "{{ node_exporter_user }}"
+        group: "{{ node_exporter_group }}"
+
+    - name: Extract the node_exporter binary to the temporary directory
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "{{ node_exporter_temp_folder.path }}/node_exporter-{{ node_exporter_version }}.linux-{{ node_exporter_architecture }}.tar.gz"
+        dest: "{{ node_exporter_temp_folder.path }}"
+        creates: "{{ node_exporter_temp_folder.path }}/node_exporter-{{ node_exporter_version }}.linux-{{ node_exporter_architecture }}/node_exporter"
+        owner: "{{ node_exporter_user }}"
+        group: "{{ node_exporter_group }}"
+
+    - name: Copy the node_exporter binary from the temporary directory to "{{ node_exporter_binary_path }}"
+      ansible.builtin.copy:
+        src: "{{ node_exporter_temp_folder.path }}/node_exporter-{{ node_exporter_version }}.linux-{{ node_exporter_architecture }}/node_exporter"
+        dest: "{{ node_exporter_binary_path }}"
+        mode: "0750"
+        owner: "{{ node_exporter_user }}"
+        group: "{{ node_exporter_group }}"
+        remote_src: true
+
+  always:
+    - name: Remove temporary directory
+      ansible.builtin.file:
+        path: "{{ node_exporter_temp_folder.path }}"
+        state: absent
+
+  when: (current_node_exporter_version | length == 0) or (node_exporter_version not in current_node_exporter_version)
+
+- name: Allow node_exporter through UFW (Uncomplicated Firewall)
+  ufw:
+    rule: allow
+    port: "{{ node_exporter_listen_port }}"
+    proto: tcp
+  become: true
+  environment:
+    # This is a workaround to prevent UFW steps from failing.
+    # (Suspect the /sbin -> /usr/sbin symlink is confusing the module)
+    PATH: /usr/sbin:{{ ansible_env.PATH }}
+  when: node_exporter_add_ufw_allow_rule
+
+- name: Restart UFW
+  community.general.ufw:
+    state: reloaded
+  environment:
+    # This is a workaround to prevent UFW steps from failing.
+    # (Suspect the /sbin -> /usr/sbin symlink is confusing the module)
+    PATH: /usr/sbin:{{ ansible_env.PATH }}
+  when: node_exporter_add_ufw_allow_rule
+
+- name: Configure a systemd service to run node_exporter
+  ansible.builtin.template:
+    src: node_exporter.service.j2
+    dest: "/etc/systemd/system/node_exporter.service"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
+- name: Reload systemd to ensure the new service is found before we enable it
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Ensure the service is set to run the service on startup and reload systemd again to apply the change
+  ansible.builtin.systemd:
+    name: node_exporter
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+- name: Start the node_exporter service
+  ansible.builtin.systemd:
+    name: node_exporter
+    state: restarted
+
+- name: Verify that node_exporter is up and running
+  ansible.builtin.uri:
+    url: "http://{{ node_exporter_web_listen_address }}:{{ node_exporter_listen_port }}"
+    method: GET
+  register: node_exporter_verify_url_status_code
+  retries: 5
+  delay: 5
+  until: node_exporter_verify_url_status_code.status == 200
+
+# Install Custom Metrics scripts
+- name: Ensure cron is installed
+  ansible.builtin.package:
+    name: cron
+    state: present
+    update_cache: yes
+
+- name: Ensure custom metric scripts directory exists
+  file:
+    path: /opt/metrics-scripts
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  when: node_exporter_custom_metrics_scripts is defined and node_exporter_custom_metrics_scripts | length > 0
+
+- name: Deploy custom metric collection scripts
+  template:
+    src: "{{ item.script }}"
+    dest: "/opt/metrics-scripts/{{ item.script | basename }}"
+    owner: root
+    group: root
+    mode: '0755'
+  loop: "{{ node_exporter_custom_metrics_scripts }}"
+  when: node_exporter_custom_metrics_scripts is defined and node_exporter_custom_metrics_scripts | length > 0
+
+- name: Schedule custom metric collection scripts via cron
+  cron:
+    name: "Run {{ item.script | basename }} metrics collection script"
+    minute: "{{ item.interval.split()[0] }}"
+    hour: "{{ item.interval.split()[1] }}"
+    day: "{{ item.interval.split()[2] }}"
+    month: "{{ item.interval.split()[3] }}"
+    weekday: "{{ item.interval.split()[4] }}"
+    job: "/opt/metrics-scripts/{{ item.script | basename }}"
+  loop: "{{ node_exporter_custom_metrics_scripts }}"
+  when: node_exporter_custom_metrics_scripts is defined and node_exporter_custom_metrics_scripts | length > 0

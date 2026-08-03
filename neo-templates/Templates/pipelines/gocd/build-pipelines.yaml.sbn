@@ -1,0 +1,183 @@
+{{func isApp(project)
+  ret (project.type == "DotNet" && project.dotNet.type == "WebApi") || (project.type == "React")
+end}}
+
+{{func relativeBasePath(folder)
+  $parts = (folder | string.replace "\\" "/" | string.split "/")
+  $path = ""
+  for $part in $parts
+    $path += "../"
+  end
+  ret $path
+end}}
+
+{{func pipelineLabel(buildPipeline, counterVariableName)
+  ret (buildPipeline.versioning != null && !buildPipeline.versioning.disabled ? buildPipeline.versioning.prefix + counterVariableName + buildPipeline.versioning.suffix : counterVariableName)
+end}}
+
+{{func dockerTag(buildPipeline)
+  ret (buildPipeline.versioning != null && !buildPipeline.versioning.disabled ? "$GO_PIPELINE_LABEL" : "")
+end}}
+
+{{func shouldGeneratePipelineForProject(pipeline, project)
+  ret (((pipeline.projects == null) || (pipeline.projects | array.contains project.name)) && (project.useBuildFrom == null || (project.useBuildFrom | string.empty)))
+end}}
+
+{{func getEnvironmentVariables(variableSets)
+  $environmentVariables = []
+    for $variable in variableSets
+      $variableSet = blueprint.iac.variableSets[$variable]
+        for $name in (object.keys $variableSet)
+          $environmentVariables = array.add $environmentVariables { name: $name, value: $variableSet[$name] }
+        end
+    end
+  ret $environmentVariables
+end}}
+
+{{- counter = 1 }}
+{{- names = blueprint.names }}
+{{- iac = blueprint.iac }}
+{{- prefix = names.prefix | string.downcase }}
+{{- shellCommand = iac.agentOS == "windows" ? "pwsh" : "sh" }}
+{{- for project in blueprint.projects ~}}
+{{- buildIncludes = project.buildIncludes ?? [] -}}
+{{- projectName = project.name | string.replace "-" " " | string.capitalizewords | string.replace " " "" -}}
+{{- clientName = names.clientName | string.downcase | string.capitalizewords | string.replace " " "" -}}
+{{~ if isApp(project) ~}}
+# {{ blueprint.names.shortName }}.{{ projectName }} Build Pipelines
+format_version: 9
+pipelines:
+{{~ pipelineName = project.name | string.replace "-" "_" ~}}
+{{- for buildPipeline in iac.buildPipelines ~}}
+  {{- if shouldGeneratePipelineForProject(buildPipeline, project) ~}}
+  {{ prefix }}_build_{{ buildPipeline.name }}_{{ pipelineName }}:
+    group: {{ prefix }}_build_{{ buildPipeline.name }}
+    label_template: {{ pipelineLabel(buildPipeline, "${COUNT}") }}
+    lock_behavior: unlockWhenFinished
+    display_order: {{ counter }}
+    environment_variables:
+    {{~ for variable in getEnvironmentVariables(buildPipeline.variableSets) ~}}
+      {{ variable.name }}: "{{ variable.value }}"
+    {{~ end ~}}
+    materials:
+      git:
+        git: {{ iac.repoUrl }}
+        shallow_clone: true
+        auto_update: {{ buildPipeline.enablePolling ?? false }}
+        branch: {{ buildPipeline.branch }}
+        # Only trigger if the app folder, app config or IaC scripts were modified
+        includes:
+          - {{ project.folder }}/**/*
+          - IaC/config/apps/{{ project.name }}/**/*
+          - IaC/config/apps/{{ project.name }}.*
+          {{~ if project.type == "DotNet" ~}}
+          - Server/Directory.Packages.props
+          {{~ end ~}}
+          {{~ for buildInclude in buildIncludes ~}}
+          - {{ buildInclude | string.replace "\\" "/" }}
+          {{~ end ~}}
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - {{ project.folder }}/**/*
+          - IaC/config/apps/{{ project.name }}/**/*
+          - IaC/config/apps/{{ project.name }}.*
+          {{~ if project.type == "DotNet" ~}}
+          - Server/Directory.Packages.props
+          {{~ end ~}}
+          {{~ for buildInclude in buildIncludes ~}}
+          - {{ buildInclude | string.replace "\\" "/" }}
+          {{~ end ~}}
+    stages:
+    - build:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: false
+        jobs:
+          build:
+            timeout: 0
+            tasks:
+            {{~ for task in buildPipeline.tasks ~}}
+              - exec:
+                  arguments:
+                  {{~ if task == "build-container" && iac.agentOS == "linux" ~}}
+                  - -c
+                  - pwsh "{{ relativeBasePath(workingDirectory) }}IaC/scripts/build/build.ps1" -ProjectName "{{ projectName }}" -ClientName "{{ clientName }}" -ProjectPath "{{ project.folder }}" -Repository "{{prefix}}.{{ project.name }}" -Tag "{{ dockerTag(buildPipeline) }}"
+                  {{~ end ~}}
+                  {{~ if task == "build-container" && iac.agentOS == "windows" ~}}
+                  - -c "{{ relativeBasePath(workingDirectory) }}/IaC/scripts/build/build.ps1"
+                  - -Repository "{{ project.name }}"
+                  - -Tag "{{ dockerTag(buildPipeline) }}"
+                  - -ProjectName "{{ projectName }}"
+                  - -ProjectPath "{{ project.folder }}"
+                  {{~ end ~}}
+                  {{~ if task == "push-container" && iac.agentOS == "linux" ~}}
+                  - -c
+                  - pwsh "{{ relativeBasePath(workingDirectory) }}IaC/scripts/build/push-image.ps1" -Repository "{{prefix}}.{{ project.name }}" -Tag "{{ dockerTag(buildPipeline) }}"
+                  {{~ end ~}}
+                  {{~ if task == "push-container" && iac.agentOS == "windows" ~}}
+                  - -c "{{ relativeBasePath(workingDirectory) }}/IaC/scripts/build/push-image.ps1"
+                  - -Repository "{{ project.name }}"
+                  - -Tag "{{ dockerTag(buildPipeline) }}"
+                  {{~ end ~}}
+                  command: {{ shellCommand }}
+                  working_directory:
+                  run_if: passed
+            {{~ end ~}}
+          package:
+            timeout: 0
+            artifacts:
+            - build:
+                source: IaC/**/*
+                destination: IaC
+            tasks:
+              - exec:
+                  arguments:
+                  {{~ if iac.agentOS == "linux" ~}}
+                  - -c
+                  - pwsh -c "Write-Host Packaging IaC Resources"
+                  {{~ end ~}}
+                  {{~ if iac.agentOS == "windows" ~}}
+                  - -c "Write-Host Packaging IaC Resources"
+                  {{~ end ~}}
+                  command: {{ shellCommand }}
+                  working_directory: {{ workingDirectory }}
+                  run_if: passed
+
+  {{~ end ~}}
+  {{~ end ~}}
+{{- counter = counter + 1 -}}
+{SplitFile:{{ prefix}}_{{ pipelineName }}.yaml}
+{{~ end ~}}
+{{~ end ~}}
+environments:
+  {{ prefix }}_build:
+    environment_variables:
+      {{~ for variable in getEnvironmentVariables(blueprint.iac.buildPipelinesVariableSets) ~}}
+      {{ variable.name }}: "{{ variable.value }}"
+      {{~ end ~}}
+    agents:
+      # LinuxAgent01 - LinuxAgent09
+      - 9ec5dc2d-8f51-451e-90da-0d9d79cfebf9
+      - b9293d3f-de6a-4b4b-82cf-592ee7818ba7
+      - b555da96-be19-4d1d-946b-26a94fea20e7
+      - 64839167-ebc4-45bc-86d6-f81e8a35205b
+      - f737ffb4-3d24-48a4-90ac-7224e8c1a320
+      - 16de8aa2-2127-4393-aa87-008e89fd205a
+      - f44bdbff-f872-4a0a-861e-04e84d202d69
+      - 0e611950-4998-4e66-9529-87c30fd8a7aa
+      - 50dc5f29-0ba4-4da5-b718-a8822f732bc3
+    pipelines:
+{{ for project in blueprint.projects -}}
+{{~ if isApp(project) ~}}
+  {{~ pipelineName = project.name | string.replace "-" "_" ~}}
+  {{~ for buildPipeline in iac.buildPipelines ~}}
+  {{- if shouldGeneratePipelineForProject(buildPipeline, project) ~}}
+      - {{ prefix }}_build_{{ buildPipeline.name }}_{{ pipelineName }}
+  {{~ end ~}}
+  {{~ end -}}
+{{~ end ~}}
+{{~ end ~}}
+{SplitFile:environments.yaml}

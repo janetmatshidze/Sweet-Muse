@@ -14,9 +14,9 @@ export default class ProductsVM extends Views.ViewModelBase {
         this.makeObservable();
     }
     public products = new List(Product);
-    
+
     public async initialise() {
-    
+
     const response = await this.taskRunner.waitFor(axios.get("https://localhost:5001/api/products"));
     this.products.set(response.data);
     }

@@ -23,7 +23,7 @@
             "**/.yarn": true,
             "**/.pnp.*": true
         },
-        "editor.tabSize": 4,
+		"editor.tabSize": 4,
         "js/ts.tsdk.path": ".yarn/sdks/typescript/lib"
     }
 }

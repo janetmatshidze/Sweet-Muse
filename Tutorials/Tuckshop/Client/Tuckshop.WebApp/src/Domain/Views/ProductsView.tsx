@@ -10,7 +10,7 @@ class ProductsParams {
 
 @observer
 export default class ProductsView extends Views.ViewBase<ProductsVM, ProductsParams> {
-   public static params = new ProductsParams();
+    public static params = new ProductsParams();
 
     constructor(props: unknown) {
         super("Products", ProductsVM, props);
@@ -23,18 +23,28 @@ export default class ProductsView extends Views.ViewBase<ProductsVM, ProductsPar
     public render() {
         return (
             <div>
-			    <NeoGrid.Grid items={this.viewModel.products} showAddButton>
-    {(product, productMeta) => (
-        <NeoGrid.Row>
-            <NeoGrid.Column display={productMeta.productId} />
-            <NeoGrid.Column bind={productMeta.productName} />
-            <NeoGrid.Column bind={productMeta.price} numProps={{format: Misc.NumberFormat.CurrencyDecimals}} />
-            <NeoGrid.ButtonColumn showDelete />
-        </NeoGrid.Row>
-    )}
-</NeoGrid.Grid>
-                
 
+                <Neo.Form model={this.viewModel.products} onSubmit={() => this.viewModel.saveProducts()} showSummaryModal>
+
+
+                    <NeoGrid.Grid items={this.viewModel.products} showAddButton>
+                        {(product, productMeta) => (
+                            <NeoGrid.Row>
+                                <NeoGrid.Column display={productMeta.productId} />
+                                <NeoGrid.Column bind={productMeta.productName} />
+                                <NeoGrid.Column bind={productMeta.price} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} />
+                                <NeoGrid.ButtonColumn showDelete />
+                            </NeoGrid.Row>
+                        )}
+                    </NeoGrid.Grid>
+
+                    <div className="mb-3">
+                        <Neo.Button isSubmit variant="success" icon="check">Save</Neo.Button>
+
+                         
+
+                    </div>
+                </Neo.Form>
             </div>
         );
     }

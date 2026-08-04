@@ -19,6 +19,10 @@ namespace Tuckshop.Core.Models.Orders.Queries
     public decimal OrderTotalExcl { get; set; }
     public decimal OrderTotal { get; set; }
     public object Items { get; set; }
+    public string? CompletedByFirstName { get; set; }
+    public string? CompletedByLastName { get; set; }
+    public string? CancelledByFirstName { get; set; }
+    public string? CancelledByLastName { get; set; }
 
     public OrderLookup WithDetails(IEnumerable<OrderDetailLookup> orderDetails)
     {

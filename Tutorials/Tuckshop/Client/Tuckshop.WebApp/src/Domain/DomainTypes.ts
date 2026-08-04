@@ -3,11 +3,17 @@ import { AppService, Types as AppTypes } from '../App/Services/AppService';
 import { DomainExportedTypes } from './DomainExportedTypes';
 import { DomainDataCache } from './Services/DomainDataCache';
 import { ICatalogueApiClient } from "./ApiClients/CatalogueApiClient";
+import { IProductsApiClient } from './ApiClients/ProductsApiClient';
+import { IOrdersCommandApiClient } from './ApiClients/OrdersCommandApiClient';
 
 // Symbols specific to this module.
 const DomainTypes = {
     ApiClients: {
         Catalogue: new AppServices.ServiceIdentifier<ICatalogueApiClient>("Domain.ApiClients.Catalogue"),
+
+        OrdersCommandApiClient : new AppServices.ServiceIdentifier<IOrdersCommandApiClient>("Domain.ApiClients.OrdersCommandApiClient"),
+
+        ProductsApiClient : new AppServices.ServiceIdentifier<IProductsApiClient>("Domain.ApiClients.ProductsApiClient"),
     },
     Services: {
         ...DomainExportedTypes.Services,

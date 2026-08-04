@@ -34,5 +34,13 @@ export default class OrderLookup extends LookupBase {
 
     public readonly items: object | null = null;
 
+    public readonly completedByFirstName: string | null = null;
+
+    public readonly completedByLastName: string | null = null;
+
+    public readonly cancelledByFirstName: string | null = null;
+
+    public readonly cancelledByLastName: string | null = null;
+
     // Client only properties / methods
 }

@@ -13,6 +13,7 @@
     /// <summary>
     /// Gets and sets the Customer Name.
     /// </summary>
+    [Required]
     [MaxLength(100)]
     public string CustomerName { get; set; } = string.Empty;
 
@@ -24,7 +25,7 @@
     /// <summary>
     /// Represents a new order detail, which includes the product ID  and the Quantityfor the order.
     /// </summary>
-    public class NewOrderDetail
+    public class NewOrderDetail : ModelBase<NewOrderDetail>
     {
       /// <summary>
       /// Gets or sets the Order Detail Id.

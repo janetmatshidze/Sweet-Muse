@@ -9,14 +9,17 @@ export class CreateOrder extends ModelBase {
     }
 
     @Rules.StringLength(100)
+    @Rules.Required()
     public customerName: string = "";
 
     public orderDetails = new List(NewOrderDetail);
 
     // Client only properties / methods
 
-    protected static addBusinessRules(rules: Validation.Rules<CreateOrder>) {
+    addBusinessRules(rules: Validation.Rules<this>) {
         super.addBusinessRules(rules);
+
+        rules.failWhen(c => !c.orderDetails.find(od => od.quantity > 0), "You must order at least one item.");
     }
 
     public toString(): string {
@@ -28,7 +31,13 @@ export class CreateOrder extends ModelBase {
     }
 }
 
-export class NewOrderDetail {
+export class NewOrderDetail extends ModelBase {
+    static typeName = "NewOrderDetail";
+
+    constructor() {
+        super();
+        this.makeObservable();
+    }
 
     public productId: number = 0;
 
@@ -36,4 +45,31 @@ export class NewOrderDetail {
     public quantity: number = 0;
 
     // Client only properties / methods
+    @Attributes.NoTracking()
+    public productName: string ="";
+
+    @Attributes.NoTracking()
+    @Attributes.Float()
+    public price: number = 0;
+
+    @Attributes.Float()
+    public get value() {
+      return this.quantity * this.price;
+    }
+
+    protected canSerialise(shouldSerialise: boolean) {
+        return this.quantity > 0; // only serialise if quantity is greater than 0  
+    }
+
+    protected static addBusinessRules(rules: Validation.Rules<NewOrderDetail>) {
+        super.addBusinessRules(rules);
+    }
+
+    public toString(): string {
+        if (this.isNew) {
+            return "New new order detail";
+        } else {
+            return "New Order Detail";
+        }
+    }
 }

@@ -4,9 +4,7 @@
   using System.Threading.Tasks;
   using Microsoft.AspNetCore.Authorization;
   using Microsoft.AspNetCore.Mvc;
-  using Microsoft.EntityFrameworkCore;
   using Tuckshop.Core.App.Services;
-  using Microsoft.EntityFrameworkCore;
   using Tuckshop.Core.Models.Orders.Queries;
 
   /// <summary>

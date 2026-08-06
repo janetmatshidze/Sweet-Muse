@@ -33,20 +33,20 @@
     {
       var flatOrderList =
           await (from o in this.dbContext.Orders
-              from od in o.OrderDetails
-              join p in this.dbContext.Products on od.ProductId equals p.ProductId
+                 from od in o.OrderDetails
+                 join p in this.dbContext.Products on od.ProductId equals p.ProductId
                  join completedBy in this.dbContext.Users on o.Completed.By equals completedBy.UserId into completedByGroup
-              from completedBy in completedByGroup.DefaultIfEmpty()
+                 from completedBy in completedByGroup.DefaultIfEmpty()
                  join cancelledBy in this.dbContext.Users on o.Cancelled.By equals cancelledBy.UserId into cancelledByGroup
-              from cancelledBy in cancelledByGroup.DefaultIfEmpty()
-              where (criteria.OrderStatus == null
+                 from cancelledBy in cancelledByGroup.DefaultIfEmpty()
+                 where (criteria.OrderStatus == null
                      || (criteria.OrderStatus == OrderStatus.Pending && o.Completed.On == null && o.Cancelled.On == null)
                      || (criteria.OrderStatus == OrderStatus.Completed && o.Completed.On != null)
                      || (criteria.OrderStatus == OrderStatus.Cancelled && o.Cancelled.On != null))
                 && (criteria.StartDate == null || o.OrderedOn >= criteria.StartDate)
                 && (criteria.EndDate == null || o.OrderedOn < criteria.EndDate.Value.AddDays(1))
-              select new
-              {
+                 select new
+                 {
                    Order = new OrderLookup()
                    {
                      OrderId = o.OrderId,
@@ -73,7 +73,7 @@
 
       return flatOrderList
         .GroupBy(c => c.Order.OrderId)
-        .Select(c => c.First().Order)
+        .Select(g => g.First().Order.WithDetails(g.Select(c => c.OrderDetail)))
         .ToList();
     }
   }

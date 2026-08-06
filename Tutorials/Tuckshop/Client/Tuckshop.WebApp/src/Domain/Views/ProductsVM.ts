@@ -17,23 +17,61 @@ export default class ProductsVM extends Views.ViewModelBase {
     }
     public products = new List(Product);
 
+    public editingProduct: Product | null = null;
+
     public async initialise() {
 
-    // Load products from the API , used WaitFor to show progress bar while records are being loaded.
-    const response = await this.taskRunner.waitFor(this.productsApiClient.get());
-    this.products.set(response.data);
-    }
-    
-    // task Runner used to run async code in a safe way . Progress bar will be shown whie records are being saved.
-        saveProducts() {
-        this.taskRunner.run(async () => { 
-        const response = await this.productsApiClient.saveList(this.products.toJSArray());
+        // Load products from the API , used WaitFor to show progress bar while records are being loaded.
+        const response = await this.taskRunner.waitFor(this.productsApiClient.get());
         this.products.set(response.data);
-        this.notifications.addSuccess("Products saved", "Products saved successfully", 4);
-        this.dataCache.products.expire(); // Expire the cache so that next time products are loaded from the API.
-
-    });
-    
-    
     }
+
+    public addProduct() {
+        this.editingProduct = new Product();
+    }
+
+    public editProduct(product: Product) {
+        const edit = new Product();
+        edit.set(product.toJSObject());
+        this.editingProduct = edit;
+    }
+
+    public cancelEdit() {
+        this.editingProduct = null;
+    }
+
+    public saveProduct() {
+        if (!this.editingProduct) {
+            return;
+        }
+
+        this.taskRunner.run(async () => { 
+            const response = await this.productsApiClient.save(this.editingProduct!.toJSObject());
+
+            const existing = this.products.find(p => p.productId === response.data.productId);
+            if(existing) {
+                existing.set(response.data);
+            } else {
+                const newProduct = new Product();
+                newProduct.set(response.data);
+                this.products.push(newProduct);
+            }
+
+            this.notifications.addSuccess("Products saved", "Products saved successfully", 4);
+            this.dataCache.products.expire();
+            this.editingProduct = null;
+        });
+    }
+
+    // task Runner used to run async code in a safe way . Progress bar will be shown whie records are being saved.
+    //     saveProducts() {
+    //     this.taskRunner.run(async () => { 
+    //     const response = await this.productsApiClient.saveList(this.products.toJSArray());
+    //     this.products.set(response.data);
+    //     this.notifications.addSuccess("Products saved", "Products saved successfully", 4);
+    //     this.dataCache.products.expire(); // Expire the cache so that next time products are loaded from the API.
+
+    // });
+
+
 }

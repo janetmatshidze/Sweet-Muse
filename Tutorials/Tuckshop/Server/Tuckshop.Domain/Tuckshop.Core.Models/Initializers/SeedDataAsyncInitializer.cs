@@ -50,7 +50,9 @@ namespace Tuckshop.Core.Models.Initializers
     {
       await this.GenerateProductSeedDataAsync();
       await this.GenerateOrderSeedDataAsync();
+      await this.GenerateCategorySeedDataAsync();
     }
+
 
     private async Task GenerateProductSeedDataAsync()
     {
@@ -58,13 +60,13 @@ namespace Tuckshop.Core.Models.Initializers
       {
         var products = new List<Product>()
         {
-          new Product() { ProductName = "Coke", Price = 10 },
-          new Product() { ProductName = "Bar One", Price = 9 },
-          new Product() { ProductName = "Smarties", Price = 8.5M },
-          new Product() { ProductName = "Popcorn", Price = 2.5M },
-          new Product() { ProductName = "Peanuts", Price = 5 },
-          new Product() { ProductName = "Cappuccino", Price = 10 },
-          new Product() { ProductName = "Tomato Chips", Price = 6 },
+          new Product() { ProductName = "Coke", Price = 10, CategoryId = 1, Description = "A refreshing cola drink", ImageUrl = "https://ik.imagekit.io/klp8c8odo/Morning%20Theory/Coke.jpg", Stock = 100 },
+          new Product() { ProductName = "Bar One", Price = 9, CategoryId = 2, Description = "A delicious chocolate bar", ImageUrl = "https://ik.imagekit.io/klp8c8odo/Morning%20Theory/Bar%20One.png", Stock = 10 },
+          new Product() { ProductName = "Smarties", Price = 8.5M, CategoryId = 2, Description = "Colorful bite-sized candies", ImageUrl = "https://ik.imagekit.io/klp8c8odo/Morning%20Theory/Smarties.png", Stock = 68 },
+          new Product() { ProductName = "Popcorn", Price = 2.5M, CategoryId = 2, Description = "Light and crispy snack", ImageUrl = "https://ik.imagekit.io/klp8c8odo/Morning%20Theory/Popcorn.png", Stock = 12 },
+          new Product() { ProductName = "Peanuts", Price = 5, CategoryId = 2, Description = "Roasted and salted peanuts", ImageUrl = "https://ik.imagekit.io/klp8c8odo/Morning%20Theory/Salted%20Peanuts.png", Stock = 8 },
+          new Product() { ProductName = "Cappuccino", Price = 10, CategoryId = 1, Description = "A rich and creamy coffee drink", ImageUrl = "https://ik.imagekit.io/klp8c8odo/Morning%20Theory/Cappuccino.png", Stock = 2 },
+          new Product() { ProductName = "Tomato Chips", Price = 6, CategoryId = 2, Description = "Tangy and crispy tomato-flavored chips", ImageUrl = "https://ik.imagekit.io/klp8c8odo/Morning%20Theory/Tomato%20Chips.png", Stock = 30 },
         };
 
         if (this.environment == null)
@@ -104,6 +106,21 @@ namespace Tuckshop.Core.Models.Initializers
 
         this.context.Orders.AddRange(pendingOrder, completedOrder, cancelledOrder);
 
+        await this.context.SaveChangesAsync().ConfigureAwait(false);
+      }
+    }
+
+    private async Task GenerateCategorySeedDataAsync()
+    {
+      if ((this.environment == null || this.environment.IsDevelopment()) && !await this.context.Categories.AnyAsync().ConfigureAwait(false))
+      {
+        var categories = new List<Category>()
+        {
+          new Category() { CategoryName = "Beverages" },
+          new Category() { CategoryName = "Snacks" },
+          new Category() { CategoryName = "Desserts" },
+        };
+        this.context.Categories.AddRange(categories);
         await this.context.SaveChangesAsync().ConfigureAwait(false);
       }
     }

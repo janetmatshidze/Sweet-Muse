@@ -33,6 +33,16 @@
     public DateTime OrderedOn { get; private set; }
 
     /// <summary>
+    /// Gets or sets Customer Id.
+    /// </summary>
+    public int? CustomerId { get; private set; } // nullable FK to Customer , null when IsCashSale is true then CustomerId is not applicable.
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the order is a cash sale.
+    /// If true, CustomerId is not applicable because the customer is either one time or makeing a cash sale.
+    /// </summary>
+    public bool IsCashSale { get; set; } = false;
+    /// <summary>
     /// Gets or sets Customer Name.
     /// </summary>
     [Required(AllowEmptyStrings = false)]

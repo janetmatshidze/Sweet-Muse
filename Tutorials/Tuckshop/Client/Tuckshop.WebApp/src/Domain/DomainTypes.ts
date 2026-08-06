@@ -5,6 +5,7 @@ import { DomainDataCache } from './Services/DomainDataCache';
 import { ICatalogueApiClient } from "./ApiClients/CatalogueApiClient";
 import { IProductsApiClient } from './ApiClients/ProductsApiClient';
 import { IOrdersCommandApiClient } from './ApiClients/OrdersCommandApiClient';
+import { IOrdersQueryApiClient } from './ApiClients/OrdersQueryApiClient';
 
 // Symbols specific to this module.
 const DomainTypes = {
@@ -14,6 +15,8 @@ const DomainTypes = {
         OrdersCommandApiClient : new AppServices.ServiceIdentifier<IOrdersCommandApiClient>("Domain.ApiClients.OrdersCommandApiClient"),
 
         ProductsApiClient : new AppServices.ServiceIdentifier<IProductsApiClient>("Domain.ApiClients.ProductsApiClient"),
+
+        OrdersQueryApiClient : new AppServices.ServiceIdentifier<IOrdersQueryApiClient>("Domain.ApiClients.OrdersQueryApiClient")
     },
     Services: {
         ...DomainExportedTypes.Services,

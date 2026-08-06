@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tuckshop.Core.Models;
 
@@ -11,9 +12,11 @@ using Tuckshop.Core.Models;
 namespace Tuckshop.Core.Models.Migrations.Migrations
 {
     [DbContext(typeof(ModelDbContext))]
-    partial class ModelDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260806094341_CategoryModelAndProductUpdate")]
+    partial class CategoryModelAndProductUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,7 +48,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                     b.HasKey("Token");
 
-                    b.ToTable("OneTimeTokens", (string)null);
+                    b.ToTable("OneTimeTokens");
                 });
 
             modelBuilder.Entity("Tuckshop.Core.Models.Category", b =>
@@ -63,7 +66,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Tuckshop.Core.Models.Files.FileDescriptor", b =>
@@ -99,7 +102,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                     b.HasKey("FileDescriptorId");
 
-                    b.ToTable("FileDescriptors", (string)null);
+                    b.ToTable("FileDescriptors");
                 });
 
             modelBuilder.Entity("Tuckshop.Core.Models.Identity.User", b =>
@@ -141,7 +144,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
                     b.HasIndex("IdentityGuid", "ClientId")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Tuckshop.Core.Models.Orders.Order", b =>
@@ -168,7 +171,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Tuckshop.Core.Models.Orders.OrderDetail", b =>
@@ -200,7 +203,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails", (string)null);
+                    b.ToTable("OrderDetails");
                 });
 
             modelBuilder.Entity("Tuckshop.Core.Models.Product", b =>
@@ -237,7 +240,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                     b.HasKey("ProductId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Tuckshop.Core.Models.Files.FileDescriptor", b =>
@@ -261,7 +264,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                             b1.HasKey("FileDescriptorId");
 
-                            b1.ToTable("FileDescriptors", (string)null);
+                            b1.ToTable("FileDescriptors");
 
                             b1.WithOwner()
                                 .HasForeignKey("FileDescriptorId");
@@ -290,7 +293,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Orders", (string)null);
+                            b1.ToTable("Orders");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -309,7 +312,7 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Orders", (string)null);
+                            b1.ToTable("Orders");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");

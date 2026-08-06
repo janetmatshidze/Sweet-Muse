@@ -1,10 +1,7 @@
 ﻿namespace Tuckshop.Core.Models
 {
-  using System;
-  using System.Collections.Generic;
   using System.ComponentModel.DataAnnotations;
   using System.ComponentModel.DataAnnotations.Schema;
-  using System.Text;
   using Neo.Model;
   using Neo.Model.Validation;
 
@@ -22,8 +19,29 @@
     /// Gets or sets Product Name.
     /// </summary>
     [Required]
-    [MaxLength(100)]
+    [StringLength(100)]
     public string ProductName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the Product description.
+    /// </summary>
+    [Required]
+    [StringLength(250)]
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets stock which is the available quantity of the product.
+    /// </summary>
+    public int Stock { get; set; }
+
+    public int CategoryId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Image url.
+    /// </summary>
+    [Required]
+    [MaxLength(500)]
+    public string ImageUrl { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets Price.

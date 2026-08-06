@@ -23,29 +23,67 @@ export default class ProductsView extends Views.ViewBase<ProductsVM, ProductsPar
     public render() {
         return (
             <div>
+               <div className="mb-3 text-right mt-3">
+                <Neo.Button variant="primary" icon="plus" onClick={() => this.viewModel.addProduct()}>
+                    Add Product
+                </Neo.Button>
+                   </div>
 
-                <Neo.Form model={this.viewModel.products} onSubmit={() => this.viewModel.saveProducts()} showSummaryModal>
-
-
-                    <NeoGrid.Grid items={this.viewModel.products} showAddButton>
+                    <NeoGrid.Grid items={this.viewModel.products}>
                         {(product, productMeta) => (
                             <NeoGrid.Row>
                                 <NeoGrid.Column display={productMeta.productId} />
-                                <NeoGrid.Column bind={productMeta.productName} />
-                                <NeoGrid.Column bind={productMeta.price} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} />
-                                <NeoGrid.ButtonColumn showDelete />
+                                 <NeoGrid.Column label="Image">
+                                     <img
+                                     src={product.imageUrl}
+                                     alt={product.productName}
+                                     className="product-image"
+                                 />
+                                </NeoGrid.Column>
+                                <NeoGrid.Column display={productMeta.productName} />
+                                <NeoGrid.Column display={productMeta.price} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} />
+                                <NeoGrid.Column display={productMeta.description}/>
+                                {/* <NeoGrid.ButtonColumn showDelete /> */}
+                                <NeoGrid.ButtonColumn>
+                                    <Neo.Button icon="edit" className="edit-icon" onClick={() => this.viewModel.editProduct(product)}/>
+                                </NeoGrid.ButtonColumn> 
                             </NeoGrid.Row>
                         )}
                     </NeoGrid.Grid>
 
-                    <div className="mb-3">
-                        <Neo.Button isSubmit variant="success" icon="check">Save</Neo.Button>
+                      {this.viewModel.editingProduct && 
+                      <Neo.Modal 
+                          show={!!this.viewModel.editingProduct}
+                          title={this.viewModel.editingProduct.productId? "Edit Product" : "Add Product"}
+                          onClose={() => this.viewModel.cancelEdit()}>
 
-                         
+                          <Neo.Form model={this.viewModel.editingProduct} onSubmit={() => this.viewModel.saveProduct()}>
+                            {(product, productMeta) => (
+                                <div>
+                                    <Neo.FormGroupInline bind={productMeta.productName} />
+                                    <Neo.FormGroupInline bind={productMeta.price} />
+                                    <Neo.FormGroupInline bind={productMeta.description} />
+                                    <Neo.FormGroupInline bind={productMeta.imageUrl} />
+                                    <Neo.FormGroupInline bind={productMeta.stock} />
+                                    {/* CategoryId dropdown - add once category list is wired up */}
 
-                    </div>
-                </Neo.Form>
-            </div>
-        );
+                                    <div className="text-right mt-3">
+                                        <Neo.Button variant="secondary" onClick={() => this.viewModel.cancelEdit()} className="mr-2">
+                                            Cancel
+                                        </Neo.Button>
+                                        <Neo.Button isSubmit variant="success" icon="check">
+                                            Save
+                                        </Neo.Button>
+                                    </div>
+                                </div>
+                            )}
+                        </Neo.Form>
+                    </Neo.Modal>
     }
+            </div>
+         
+        );
+        
+    }
+    
 }

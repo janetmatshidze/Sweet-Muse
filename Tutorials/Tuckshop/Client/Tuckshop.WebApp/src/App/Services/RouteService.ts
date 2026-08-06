@@ -49,7 +49,7 @@ export class RouteService {
     private getMenuRoutes(): IAppMenuItem[] {
         return [
             {
-                name: "Home", path: '/', component: Home, icon: "home", exact: true, allowAnonymous: true
+                name: "Dashboard", path: '/', component: Home, icon: "dashboard", exact: true, allowAnonymous: true
             },
             ...ReportingRoutes.MenuRoutes,
 			...DomainRoutes.MenuRoutes,

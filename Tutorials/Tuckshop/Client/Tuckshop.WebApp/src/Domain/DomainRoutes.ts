@@ -3,6 +3,10 @@ import CatalogueView from "./Views/Catalogue/CatalogueView";
 import * as CatalogueRoles from "./Models/Security/CatalogueRoles";
 import ProductsView from "./Views/ProductsView";
 import CreateOrderView from './Views/Orders/CreateOrderView';
+import ViewOrdersView from './Views/Orders/ViewOrdersView';
+
+
+export const viewOrdersRoute = { name: "View orders", path: '/viewOrders', component:ViewOrdersView, icon:"search"};
 
 const MenuRoutes: IAppMenuItem[] = 
     [
@@ -15,11 +19,12 @@ const MenuRoutes: IAppMenuItem[] =
                  { 
                     name: "Create Order", path: "/order/create", icon: "receipt-long", component: CreateOrderView
                 },
+                viewOrdersRoute,
                 { 
                     name: "Catalogue", 
                     path: "/catalogue", 
                     component: CatalogueView,
-                    icon: "browse",
+                    icon: "coffee",
                     role: CatalogueRoles.CataloguePage.View,
                     routeChildren: CatalogueView.getRouteChildren()
                 }
@@ -34,3 +39,4 @@ export {
     MenuRoutes, 
     PureRoutes 
 }
+

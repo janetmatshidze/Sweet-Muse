@@ -15,6 +15,11 @@ export default class Order extends ModelBase {
     @Attributes.Date()
     public orderedOn: Date | null = null;
 
+    @Attributes.Nullable()
+    public customerId: number | null = null;
+
+    public isCashSale: boolean = false;
+
     @Rules.Required()
     @Rules.StringLength(100)
     public customerName: string = "";

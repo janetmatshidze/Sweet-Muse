@@ -6,6 +6,7 @@ import CatalogueEditService from './Services/CatalogueEditService';
 import CatalogueApiClient from "./ApiClients/CatalogueApiClient";
 import ProductsApiClient from './ApiClients/ProductsApiClient';
 import OrdersCommandApiClient from './ApiClients/OrdersCommandApiClient';
+import OrdersQueryApiClient from './ApiClients/OrdersQueryApiClient';
 
 export const DomainAppModule = new AppServices.Module("Domain", container => {
 
@@ -13,7 +14,8 @@ export const DomainAppModule = new AppServices.Module("Domain", container => {
     container.bind(DomainTypes.ApiClients.Catalogue).to(CatalogueApiClient).inSingletonScope();
     container.bind(DomainTypes.ApiClients.ProductsApiClient).to(ProductsApiClient).inSingletonScope();
     container.bind(DomainTypes.ApiClients.OrdersCommandApiClient).to(OrdersCommandApiClient).inSingletonScope();
-    
+    container.bind(DomainTypes.ApiClients.OrdersQueryApiClient).to(OrdersQueryApiClient).inSingletonScope();
+
     // Services
     container.bind(DomainTypes.Services.DataCache).to(DomainDataCache).inSingletonScope();
     container.bind(NeoServicesTypes.Catalogue.CatalogueEditService).to(CatalogueEditService).inSingletonScope();

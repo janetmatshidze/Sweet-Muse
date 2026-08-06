@@ -14,6 +14,19 @@ export default class Product extends ModelBase {
     @Rules.StringLength(100)
     public productName: string = "";
 
+    @Rules.Required()
+    @Rules.StringLength(250)
+    public description: string = "";
+
+    @Attributes.Integer()
+    public stock: number = 0;
+
+    public categoryId: number = 0;
+
+    @Rules.Required()
+    @Rules.StringLength(500)
+    public imageUrl: string = "";
+
     @Attributes.Float()
     public price: number = 0;
 

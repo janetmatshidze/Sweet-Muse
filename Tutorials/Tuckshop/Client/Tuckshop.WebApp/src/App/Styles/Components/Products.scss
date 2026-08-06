@@ -1,0 +1,19 @@
+@import "../Variables.scss";
+
+.background{
+    background-color: $blush-petal-200;
+    stroke: pink;
+    stroke-width: 1rem;
+}
+
+.product-image{
+    height: 100px;
+    width: 150px;
+    object-fit: cover;
+}
+
+.edit-icon{
+    height: 1rem;
+    width: 50px;
+    color: $blush-petal-200;
+}

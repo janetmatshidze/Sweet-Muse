@@ -6,6 +6,8 @@ import { ICatalogueApiClient } from "./ApiClients/CatalogueApiClient";
 import { IProductsApiClient } from './ApiClients/ProductsApiClient';
 import { IOrdersCommandApiClient } from './ApiClients/OrdersCommandApiClient';
 import { IOrdersQueryApiClient } from './ApiClients/OrdersQueryApiClient';
+import { ICategoriesApiClient } from './ApiClients/CategoriesApiClient';
+import ImageKitApiClient from './ApiClients/ImageKitApiClient';
 
 // Symbols specific to this module.
 const DomainTypes = {
@@ -16,7 +18,11 @@ const DomainTypes = {
 
         ProductsApiClient : new AppServices.ServiceIdentifier<IProductsApiClient>("Domain.ApiClients.ProductsApiClient"),
 
-        OrdersQueryApiClient : new AppServices.ServiceIdentifier<IOrdersQueryApiClient>("Domain.ApiClients.OrdersQueryApiClient")
+        OrdersQueryApiClient : new AppServices.ServiceIdentifier<IOrdersQueryApiClient>("Domain.ApiClients.OrdersQueryApiClient"),
+
+        CategoriesApiClient : new AppServices.ServiceIdentifier<ICategoriesApiClient>("Domain.ApiClients.CategoriesApiClient"),
+
+        ImageKitApiClient : new AppServices.ServiceIdentifier<ImageKitApiClient>("Domain.ApiClients.ImageKitApiClient")
     },
     Services: {
         ...DomainExportedTypes.Services,

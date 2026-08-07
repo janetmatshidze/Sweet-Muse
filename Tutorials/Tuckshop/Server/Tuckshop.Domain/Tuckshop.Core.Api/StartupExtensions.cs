@@ -69,6 +69,7 @@
       services.AddScoped<OrdersCommandService>();
       services.AddScoped<IProductPricesService, ProductPricesService>();
       services.AddScoped<OrdersQueryService>(); // Service is Scoped since it depends on the DbContext
+      services.AddScoped<ImageKitService>();
 
       return services;
     }
@@ -337,6 +338,7 @@
       // Add controllers.
       var mvcBuilder = services.AddNeoControllers(environment, configuration, startupOptions);
       services.AddNeoUpdateableController<Product, ModelDbContext, int>(p => p.ProductId);
+      services.AddNeoUpdateableController<Category, ModelDbContext, int>(c => c.CategoryId);
 
       // Add modules.
       mvcBuilder.AddTuckshopAuthorisationMvc(environment, configuration);

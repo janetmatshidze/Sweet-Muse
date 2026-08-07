@@ -7,13 +7,45 @@
 }
 
 .product-image{
-    height: 100px;
+    height: 150px;
     width: 150px;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .edit-icon{
-    height: 1rem;
-    width: 50px;
-    color: $blush-petal-200;
+    .neo-icon{
+    color: blue;
+    font-size: 24px;
+    }
+}
+
+.delete-icon {
+    .neo-icon {
+        color: red;
+        font-size: 24px;
+    }
+}
+
+.products-view {
+    table {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        width: 100%;
+
+        thead th {
+            background-color: $blush-petal-100;
+            font-weight: 500;
+            padding: 20px;
+        }
+
+        tbody td {
+            vertical-align: middle;
+            padding: 12px;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(#B46A72, 0.1);
+        }
+    }
 }

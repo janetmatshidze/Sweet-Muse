@@ -16,7 +16,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Imagekit" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Tuckshop.Core.Models\Tuckshop.Core.Models.csproj" />

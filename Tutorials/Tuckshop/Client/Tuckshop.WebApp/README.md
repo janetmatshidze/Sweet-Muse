@@ -36,7 +36,7 @@ The react dev server is configured to use the neo localhost certificate (configu
 
 * Run `yarn install` when pulling the repo, or when packages have been updated.
 
-> **Do not** run `npm install`. If you have a `package_lock.json` file in the project root, you have done something wrong. Delete this file, and node_modules and re-run `yarn install`.
+> **Do not** run `npm install`. If you have a `package_lock.json` file in the project root, you have done sometyarn starthing wrong. Delete this file, and node_modules and re-run `yarn install`.
 
 * To start in development mode, run `yarn start`.
 * To build a production version, run `yarn build`. The compiled output will go into the `dist` folder.

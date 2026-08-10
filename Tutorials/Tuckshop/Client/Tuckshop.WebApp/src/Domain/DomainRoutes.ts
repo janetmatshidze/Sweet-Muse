@@ -24,14 +24,6 @@ const MenuRoutes: IAppMenuItem[] =
                     name: "Create Order", path: "/order/create", icon: "receipt-long", component: CreateOrderView
                 },
                 viewOrdersRoute,
-                { 
-                    name: "Catalogue", 
-                    path: "/catalogue", 
-                    component: CatalogueView,
-                    icon: "coffee",
-                    role: CatalogueRoles.CataloguePage.View,
-                    routeChildren: CatalogueView.getRouteChildren()
-                }
                
             ]
         }

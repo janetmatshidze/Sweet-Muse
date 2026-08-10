@@ -6,7 +6,6 @@ import { ReportViewModal } from "@singularsystems/neo-reporting";
 import { observer, Observer } from 'mobx-react';
 import Sidebar from '../Components/Sidebar';
 import HeaderPanel from '../Components/HeaderPanel';
-import Footer from '../Components/Footer';
 import RouteView from '../Components/RouteView';
 import { AppService, Types } from '../Services/AppService';
 
@@ -44,8 +43,7 @@ export default class Layout extends React.Component {
                                             </React.Suspense>
                                         </div>
 
-                                        {showLayout && 
-                                            <Footer />}
+                                        
                                     </div>
                                 </>
                             )}

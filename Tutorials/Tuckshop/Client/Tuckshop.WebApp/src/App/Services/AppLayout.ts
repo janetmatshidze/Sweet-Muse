@@ -99,8 +99,8 @@ export default class AppLayout implements IAppLayout {
     public performLayout() {
         if (this.header) {
 
-            const footerMargin = parseInt(window.getComputedStyle(this.footer!).marginTop);
-            this.contentPanel!.style.minHeight = (window.innerHeight - this.footer!.clientHeight - footerMargin) + "px";
+            // const footerMargin = parseInt(window.getComputedStyle(this.footer!).marginTop);
+            // this.contentPanel!.style.minHeight = (window.innerHeight - this.footer!.clientHeight - footerMargin) + "px";
         }
     }
 
@@ -127,12 +127,12 @@ export default class AppLayout implements IAppLayout {
     }
 
     private header?: HTMLDivElement;
-    private footer?: HTMLDivElement;
+    // private footer?: HTMLDivElement;
     private contentPanel?: HTMLDivElement;
 
     public setup() {
         this.header = document.getElementById("header-panel") as HTMLDivElement;
-        this.footer = document.getElementById("footer-panel") as HTMLDivElement;
+        // this.footer = document.getElementById("footer-panel") as HTMLDivElement;
         this.contentPanel = document.getElementById("content-panel") as HTMLDivElement;
         this.contentPadding = parseInt(window.getComputedStyle(this.contentPanel).paddingTop);
 

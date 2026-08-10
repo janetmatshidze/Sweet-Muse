@@ -7,14 +7,14 @@
 }
 
 .product-image{
-    height: 150px;
-    width: 150px;
+    height: 120px;
+    width: 120px;
     object-fit: contain;
 }
 
 .edit-icon{
     .neo-icon{
-    color: blue;
+    color: $midnight-lagoon-500;
     font-size: 24px;
     }
 }
@@ -34,7 +34,7 @@
         width: 100%;
 
         thead th {
-            background-color: $blush-petal-100;
+            background-color: $coffee-brown-50;
             font-weight: 500;
             padding: 20px;
         }
@@ -49,3 +49,34 @@
         }
     }
 }
+
+.product-name{
+    font-family: 'DM Sans';
+    font-weight: 500;
+    font-size: 20px;
+}
+
+.product-description{
+    font-size: 18px;
+}
+
+.numbers{
+    font-family: 'DM Mono';
+    font-size: 18px;
+}
+.category-pill {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.category-color-0 { background-color: $midnight-lagoon-50; color:$midnight-lagoon-500; } /* midnight lagoon */
+.category-color-1 { background-color: $sage-leaf-200; color: $sage-leaf-800; } /* sage leaf */
+.category-color-2 { background-color: $rosewood-100; color: $rosewood-500; } /* rosewood */
+.category-color-3 { background-color:$blush-petal-100; color: $blush-petal-800; } /* blush petal */
+.category-color-4 { background-color: $misty-sky-100; color: $misty-sky-500; } /* misty sky */
+.category-color-5 { background-color: $coffee-brown-100; color: $coffee-brown-500; } /* coffee brown */
+

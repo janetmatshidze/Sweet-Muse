@@ -1,5 +1,5 @@
 import React from "react";
-import { Neo, NeoGrid, Views } from "@singularsystems/neo-react";
+import { Neo, Views } from "@singularsystems/neo-react";
 import CreateOrderVM from "./CreateOrderVM";
 import { observer } from "mobx-react";
 import Link from "@singularsystems/neo-react/dist/ReactComponents/Link";
@@ -24,7 +24,7 @@ export default class CreateOrderView extends Views.ViewBase<
 
     public render() {
         return (
-            <div className="sweet-muse-create-order mt-3">
+            <div className="sweet-muse-create-order">
 
                 {this.viewModel.newOrder && (
                     <Neo.Form
@@ -63,110 +63,320 @@ export default class CreateOrderView extends Views.ViewBase<
 
                                 </div>
 
-                                <div className="order-products-card">
+                                <div className="create-order-layout">
 
-                                    <div className="order-products-header">
-                                        <div>
-                                            <h2>Products</h2>
-                                            <p>
-                                                Select the quantity of each product for this order.
-                                            </p>
+                                    <div className="products-section">
+
+                                        <div className="products-section-header">
+                                            <div>
+                                                <h2>Products</h2>
+
+                                                <p>
+                                                    Select products to add to the order.
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="order-products-grid">
+                                        <div className="product-cards">
 
-                                        <NeoGrid.Grid items={order.orderDetails}>
+                                            {this.viewModel.products.map(product => (
+                                                <div
+                                                    className="product-card"
+                                                    key={product.productId}
+                                                >
 
-                                            {(orderDetail, orderDetailMeta) => (
-                                                <NeoGrid.Row>
+                                                    <div className="product-image-wrapper">
 
-                                                    <NeoGrid.Column label="Product">
-                                                        <div className="order-product">
+                                                        <img
+                                                            src={product.imageUrl}
+                                                            alt={product.productName}
+                                                            className="product-image"
+                                                        />
 
-                                                            <div className="order-product-name">
-                                                                {orderDetail.productName}
+                                                    </div>
+
+                                                    <div className="product-card-content">
+
+                                                        <div className="product-card-info">
+
+                                                            <h3>
+                                                                {product.productName}
+                                                            </h3>
+
+                                                            <p>
+                                                                {product.description}
+                                                            </p>
+
+                                                        </div>
+
+                                                        <div className="product-card-footer">
+
+                                                            <span className="product-price">
+                                                                R{Number(product.price).toFixed(2)}
+                                                            </span>
+
+                                                            <div className="product-card-actions">
+
+                                                                <div className="product-quantity">
+
+                                                                    <Neo.Button
+                                                                        type="button"
+                                                                        className="quantity-button"
+                                                                        onClick={() =>
+                                                                            this.viewModel.decreaseProductQuantity(
+                                                                                product.productId
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        −
+                                                                    </Neo.Button>
+
+                                                                    <span className="quantity-value">
+                                                                        {this.viewModel.productQuantities[
+                                                                            product.productId
+                                                                        ] || 1}
+                                                                    </span>
+
+                                                                    <Neo.Button
+                                                                        type="button"
+                                                                        className="quantity-button"
+                                                                        onClick={() =>
+                                                                            this.viewModel.increaseProductQuantity(
+                                                                                product.productId
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        +
+                                                                    </Neo.Button>
+
+                                                                </div>
+
+                                                                <Neo.Button
+                                                                    type="button"
+                                                                    className="add-to-cart-button"
+                                                                    onClick={() =>
+                                                                        this.viewModel.addToCart(product)
+                                                                    }
+                                                                >
+                                                                    Add to Cart
+                                                                </Neo.Button>
+
                                                             </div>
 
                                                         </div>
-                                                    </NeoGrid.Column>
 
-                                                    <NeoGrid.Column
-                                                        label="Price"
-                                                        display={orderDetailMeta.price}
-                                                    />
+                                                    </div>
 
-                                                    <NeoGrid.Column label="Quantity">
-                                                        <div className="quantity-control">
+                                                </div>
+                                            ))}
 
-                                                            <Neo.Button
-                                                                type="button"
-                                                                className="quantity-button"
-                                                                onClick={() => {
-                                                                    if (orderDetail.quantity > 0) {
-                                                                        orderDetail.quantity =
-                                                                            orderDetail.quantity - 1;
-                                                                    }
-                                                                }}
-                                                            >
-                                                                −
-                                                            </Neo.Button>
+                                        </div>
 
-                                                            <span className="quantity-value">
-                                                                {orderDetail.quantity}
-                                                            </span>
+                                    </div>
 
-                                                            <Neo.Button
-                                                                type="button"
-                                                                className="quantity-button"
-                                                                onClick={() => {
-                                                                    orderDetail.quantity =
-                                                                        orderDetail.quantity + 1;
-                                                                }}
-                                                            >
-                                                                +
-                                                            </Neo.Button>
+                                    <div className="shopping-cart">
 
-                                                        </div>
-                                                    </NeoGrid.Column>
+                                        <div className="shopping-cart-header">
 
-                                                    <NeoGrid.Column
-                                                        label="Subtotal"
-                                                        display={orderDetailMeta.value}
-                                                    />
+                                            <div>
+                                                <h2>Your Order</h2>
 
-                                                </NeoGrid.Row>
+                                                <p>
+                                                    {this.viewModel.cartItemCount} items
+                                                </p>
+                                            </div>
+
+                                            {order.orderDetails.length > 0 && (
+                                                <span className="cart-item-count">
+                                                    {order.orderDetails.length}
+                                                </span>
                                             )}
 
-                                        </NeoGrid.Grid>
+                                        </div>
 
-                                    </div>
+                                        {order.orderDetails.length === 0 ? (
 
-                                    <div className="order-total">
+                                            <div className="empty-cart">
 
-                                        <span className="order-total-label">
-                                            Total
-                                        </span>
+                                                <div className="empty-cart-icon">
+                                                    <Neo.Icon name="shopping_cart">
 
-                                        <span className="order-total-value">
-                                            {order.orderDetails
-                                                .reduce(
-                                                    (total, detail) =>
-                                                        total + (detail.value || 0),
-                                                    0
-                                                )
-                                                .toFixed(2)}
-                                        </span>
+                                                    </Neo.Icon>
+                                                </div>
 
-                                    </div>
+                                                <h3>
+                                                    Your cart is empty
+                                                </h3>
 
-                                    <div className="place-order-section">
+                                                <p>
+                                                    Add products to start creating this order.
+                                                </p>
+
+                                            </div>
+
+                                        ) : (
+
+                                            <div className="cart-items">
+
+                                                {order.orderDetails.map(
+                                                    (orderDetail, index) => {
+
+                                                        const product =
+                                                            this.viewModel.products.find(
+                                                                item =>
+                                                                    item.productId ===
+                                                                    orderDetail.productId
+                                                            );
+
+                                                        return (
+                                                            <div
+                                                                className="cart-item"
+                                                                key={
+                                                                    orderDetail.productId ||
+                                                                    index
+                                                                }
+                                                            >
+
+                                                                <div className="cart-item-image">
+
+                                                                    {product?.imageUrl && (
+                                                                        <img
+                                                                            src={product.imageUrl}
+                                                                            alt={
+                                                                                orderDetail.productName
+                                                                            }
+                                                                        />
+                                                                    )}
+
+                                                                </div>
+
+                                                                <div className="cart-item-details">
+
+                                                                    <div className="cart-item-top">
+
+                                                                        <div>
+                                                                            <h3>
+                                                                                {
+                                                                                    orderDetail.productName
+                                                                                }
+                                                                            </h3>
+
+                                                                            <span>
+                                                                                R
+                                                                                {Number(
+                                                                                    orderDetail.price
+                                                                                ).toFixed(2)}
+                                                                            </span>
+                                                                        </div>
+
+                                                                        <Neo.Button
+                                                                            type="button"
+                                                                            className="remove-item-button"
+                                                                            onClick={() =>
+                                                                                this.viewModel.removeFromCart(
+                                                                                    orderDetail
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <Neo.Icon name="close">
+
+                                                                            </Neo.Icon>
+                                                                        </Neo.Button>
+
+                                                                    </div>
+
+                                                                    <div className="cart-item-bottom">
+
+                                                                        <div className="cart-quantity">
+
+                                                                            <Neo.Button
+                                                                                type="button"
+                                                                                className="cart-quantity-button"
+                                                                                onClick={() =>
+                                                                                    this.viewModel.decreaseCartQuantity(
+                                                                                        orderDetail
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                −
+                                                                            </Neo.Button>
+
+                                                                            <span>
+                                                                                {
+                                                                                    orderDetail.quantity
+                                                                                }
+                                                                            </span>
+
+                                                                            <Neo.Button
+                                                                                type="button"
+                                                                                className="cart-quantity-button"
+                                                                                onClick={() =>
+                                                                                    this.viewModel.increaseCartQuantity(
+                                                                                        orderDetail
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                +
+                                                                            </Neo.Button>
+
+                                                                        </div>
+
+                                                                        <strong>
+                                                                            R
+                                                                            {Number(
+                                                                                orderDetail.value || 0
+                                                                            ).toFixed(2)}
+                                                                        </strong>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+                                                        );
+                                                    }
+                                                )}
+
+                                            </div>
+
+                                        )}
+
+                                        <div className="cart-summary">
+
+                                            <div className="summary-row">
+                                                <span>
+                                                    Subtotal
+                                                </span>
+
+                                                <span>
+                                                    R
+                                                    {this.viewModel.cartTotal.toFixed(2)}
+                                                </span>
+                                            </div>
+
+                                            <div className="summary-row total-row">
+
+                                                <strong>
+                                                    Total
+                                                </strong>
+
+                                                <strong>
+                                                    R
+                                                    {this.viewModel.cartTotal.toFixed(2)}
+                                                </strong>
+
+                                            </div>
+
+                                        </div>
 
                                         <Neo.Button
                                             isSubmit
                                             size="lg"
                                             icon="storefront"
                                             className="place-order-button"
+                                            disabled={
+                                                order.orderDetails.length === 0
+                                            }
                                         >
                                             Place Order
                                         </Neo.Button>
@@ -177,7 +387,6 @@ export default class CreateOrderView extends Views.ViewBase<
 
                             </div>
                         )}
-
                     </Neo.Form>
                 )}
 

@@ -26,6 +26,94 @@ export default class ProductsVM extends Views.ViewModelBase {
 
     public editingProduct: Product | null = null;
 
+    public searchTerm: string = "";
+
+    public selectedCategoryId: number | null = null;
+
+    public showCategoryFilter: boolean = false;
+
+    public toggleCategoryFilter() {
+    this.showCategoryFilter = !this.showCategoryFilter;
+}
+
+    public setSearchTerm(value: string) {
+        this.searchTerm = value;
+        this.currentPage = 1;
+    }
+
+    public setSelectedCategory(categoryId: number | null){
+        this.selectedCategoryId = categoryId;
+        this.currentPage = 1;
+        this.showCategoryFilter = false; // closes the dropdown after picking.
+    }
+
+    public get filteredProducts() {
+        let result = [...this.products];
+
+        const term = this.searchTerm.trim().toLowerCase();
+
+        if (term) {
+            result = result.filter(p => (p.productName ?? "").toLowerCase().includes(term)
+          );
+        } 
+        if(this.selectedCategoryId !==null){
+            result = result.filter(p => p.categoryId === this.selectedCategoryId);
+        }
+
+        return result;
+    }
+
+    // ---------- Pagination ----------
+
+    public readonly pageSize = 5;
+
+    public currentPage: number = 1;
+
+    public get totalPages() {
+
+        return Math.max(
+            1,
+            Math.ceil(this.filteredProducts.length / this.pageSize)
+        );
+    }
+
+    public get pagedProducts() {
+
+        const start = (this.currentPage - 1) * this.pageSize;
+
+        return this.filteredProducts.slice(start, start + this.pageSize);
+    }
+
+    public goToPage(page: number) {
+
+        if (page < 1 || page > this.totalPages) {
+
+            return;
+        }
+
+        this.currentPage = page;
+    }
+
+    public nextPage() {
+
+        this.goToPage(this.currentPage + 1);
+    }
+
+    public previousPage() {
+
+        this.goToPage(this.currentPage - 1);
+    }
+
+    private clampCurrentPage() {
+
+        if (this.currentPage > this.totalPages) {
+
+            this.currentPage = this.totalPages;
+        }
+    }
+    
+
+    // ---------- Data / CRUD ----------
 
     public async initialise() {
 
@@ -86,6 +174,7 @@ export default class ProductsVM extends Views.ViewModelBase {
                 this.products.remove(existing);
             }
 
+            this.clampCurrentPage();
 
             this.notifications.addSuccess(
                 "Product deleted",

@@ -1,8 +1,7 @@
 import React from "react";
-import { Neo, NeoGrid, Views } from "@singularsystems/neo-react";
+import { Neo, Views } from "@singularsystems/neo-react";
 import ProductsVM from "./ProductsVM";
 import { observer } from "mobx-react";
-import { Misc } from "@singularsystems/neo-core";
 import { getCategoryColorClass } from "../Utils/CategoryColors";
 
 class ProductsParams { }
@@ -21,6 +20,10 @@ export default class ProductsView extends Views.ViewBase<
     protected viewParamsUpdated() { }
 
     public render() {
+
+        const pagedProducts = this.viewModel.pagedProducts;
+        const emptySlots = this.viewModel.pageSize - pagedProducts.length;
+
         return (
             <div className="sweet-muse-products mt-3">
 
@@ -41,95 +44,194 @@ export default class ProductsView extends Views.ViewBase<
                     </Neo.Button>
                 </div>
 
+                 <div className="products-category-wrapper">
+
+                <div className="products-search-bar mb-2">
+                    <Neo.Icon name="search" className="products-search-icon" />
+                    <input
+                        type="text"
+                        className="products-search-input"
+                        placeholder="Search by product name..."
+                        value={this.viewModel.searchTerm}
+                        onChange={(e) => this.viewModel.setSearchTerm(e.target.value)}
+                    />
+                </div>
+
+                <div className="products-filter-wrapper">
+    <button
+        type="button"
+        className="products-filter-btn"
+        onClick={() => this.viewModel.toggleCategoryFilter()}
+    >
+        <Neo.Icon name="filter_list" />
+        <span>Filter</span>
+        {this.viewModel.selectedCategoryId !== null && (
+            <span className="filter-active-dot" />
+        )}
+    </button>
+
+    {this.viewModel.showCategoryFilter && (
+        <div className="products-filter-dropdown">
+            <button
+                type="button"
+                className={
+                    "filter-option" +
+                    (this.viewModel.selectedCategoryId === null ? " active" : "")
+                }
+                onClick={() => this.viewModel.setSelectedCategory(null)}
+            >
+                All Categories
+            </button>
+
+            {this.viewModel.categories.map((category) => (
+                <button
+                    key={category.categoryId}
+                    type="button"
+                    className={
+                        "filter-option" +
+                        (this.viewModel.selectedCategoryId === category.categoryId
+                            ? " active"
+                            : "")
+                    }
+                    onClick={() =>
+                        this.viewModel.setSelectedCategory(category.categoryId)
+                    }
+                >
+                    {category.categoryName}
+                </button>
+            ))}
+        </div>
+        
+    )}
+</div>
+</div>
                 <div className="products-grid">
-                    <NeoGrid.Grid items={this.viewModel.products}>
-                        {(product, productMeta) => (
-                            <NeoGrid.Row>
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Product Image</th>
+                                <th>Product Name</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Stock</th>
+                                <th>Price</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {pagedProducts.map((product) => {
+                                const category = this.viewModel.categories.find(
+                                    (c) => c.categoryId === product.categoryId
+                                );
 
-                                <NeoGrid.Column label="Product">
-                                    <div className="product-image-container">
-                                        <img
-                                            src={product.imageUrl}
-                                            alt={product.productName}
-                                            className="product-list-image"
-                                        />
-                                    </div>
-                                </NeoGrid.Column>
+                                return (
+                                    <tr key={product.productId}>
+                                        <td>
+                                            <div className="product-image-container">
+                                                <img
+                                                    src={product.imageUrl}
+                                                    alt={product.productName}
+                                                    className="product-list-image"
+                                                />
+                                            </div>
+                                        </td>
 
-                                <NeoGrid.Column
-                                    className="product-name"
-                                    display={productMeta.productName}
-                                />
+                                        <td className="product-name">
+                                            {product.productName}
+                                        </td>
 
-                                <NeoGrid.Column
-                                    className="product-description"
-                                    display={productMeta.description}
-                                />
+                                        <td className="product-description">
+                                            {product.description}
+                                        </td>
 
-                                <NeoGrid.Column
-                                    label="Category"
-                                    className="category"
-                                >
-                                    {(() => {
-                                        const category =
-                                            this.viewModel.categories.find(
-                                                (c) =>
-                                                    c.categoryId === product.categoryId
-                                            );
+                                        <td className="category">
+                                            {category && (
+                                                <span
+                                                    className={`category-pill ${getCategoryColorClass(
+                                                        category.categoryId
+                                                    )}`}
+                                                >
+                                                    {category.categoryName}
+                                                </span>
+                                            )}
+                                        </td>
 
-                                        if (!category) {
-                                            return null;
-                                        }
+                                        <td className="numbers product-stock">
+                                            {product.stock}
+                                        </td>
 
-                                        return (
-                                            <span
-                                                className={`category-pill ${getCategoryColorClass(
-                                                    category.categoryId
-                                                )}`}
-                                            >
-                                                {category.categoryName}
-                                            </span>
-                                        );
-                                    })()}
-                                </NeoGrid.Column>
+                                        <td className="numbers product-price">
+                                            R{product.price.toFixed(2)}
+                                        </td>
 
-                                <NeoGrid.Column
-                                    className="numbers product-price"
-                                    display={productMeta.price}
-                                    numProps={{
-                                        format:
-                                            Misc.NumberFormat.CurrencyDecimals,
-                                    }}
-                                />
+                                        <td>
+                                            <Neo.Button
+                                                icon="edit"
+                                                className="edit-icon"
+                                                onClick={() =>
+                                                    this.viewModel.editProduct(product)
+                                                }
+                                            />
+                                        </td>
 
-                                <NeoGrid.Column
-                                    className="numbers product-stock"
-                                    display={productMeta.stock}
-                                />
+                                        <td>
+                                            <Neo.Button
+                                                icon="delete"
+                                                className="delete-icon"
+                                                onClick={() =>
+                                                    this.viewModel.deleteProduct(product)
+                                                }
+                                            />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
 
-                                <NeoGrid.ButtonColumn>
-                                    <Neo.Button
-                                        icon="edit"
-                                        className="edit-icon"
-                                        onClick={() =>
-                                            this.viewModel.editProduct(product)
-                                        }
-                                    />
-                                </NeoGrid.ButtonColumn>
+                            {pagedProducts.length === 0 && (
+                                <tr className="filler-row">
+                                    <td colSpan={8} className="no-products-message">
+                                        No products found
+                                    </td>
+                                </tr>
+                            )}
 
-                                <NeoGrid.ButtonColumn>
-                                    <Neo.Button
-                                        icon="delete"
-                                        className="delete-icon"
-                                        onClick={() =>
-                                            this.viewModel.deleteProduct(product)
-                                        }
-                                    />
-                                </NeoGrid.ButtonColumn>
+                            {Array.from({
+                                length:
+                                    pagedProducts.length === 0
+                                        ? emptySlots - 1
+                                        : emptySlots,
+                            }).map((_, index) => (
+                                <tr key={`filler-${index}`} className="filler-row">
+                                    <td colSpan={8}>&nbsp;</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
 
-                            </NeoGrid.Row>
-                        )}
-                    </NeoGrid.Grid>
+                <div className="products-pagination">
+                    <Neo.Button
+                        className="pagination-btn"
+                        icon="keyboard_double_arrow_left"
+                        disabled={this.viewModel.currentPage === 1}
+                        onClick={() => this.viewModel.previousPage()}
+                    >
+                    </Neo.Button>
+
+                    <span className="pagination-info">
+                        Page {this.viewModel.currentPage} of {this.viewModel.totalPages}
+                    </span>
+
+                    <Neo.Button
+                        className="pagination-btn"
+                        icon="keyboard_double_arrow_right"
+                        disabled={
+                            this.viewModel.currentPage === this.viewModel.totalPages
+                        }
+                        onClick={() => this.viewModel.nextPage()}
+                    >
+                    </Neo.Button>
                 </div>
 
                 {this.viewModel.editingProduct && (
@@ -149,7 +251,7 @@ export default class ProductsView extends Views.ViewBase<
                             {(product, productMeta) => (
                                 <div className="product-form">
 
-                                    <div className="product-form-row">
+                                    <div className="">
                                         <div className="product-form-field product-name-field">
                                             <Neo.FormGroupInline
                                                 bind={productMeta.productName}
@@ -185,9 +287,9 @@ export default class ProductsView extends Views.ViewBase<
                                                 </div>
 
                                                 <label className="replace-image-box">
-                                                    <span className="replace-image-icon">
-                                                        ↻
-                                                    </span>
+                                                    <Neo.Icon
+                                                        name="laps"
+                                                    />
 
                                                     <span className="replace-image-title">
                                                         Replace image
@@ -215,7 +317,7 @@ export default class ProductsView extends Views.ViewBase<
                                             <label className="image-upload-box">
 
                                                 <span className="image-upload-icon">
-                                                    ↑
+                                                    <Neo.Icon name="cloud_upload" />
                                                 </span>
 
                                                 <span className="image-upload-title">
@@ -242,7 +344,6 @@ export default class ProductsView extends Views.ViewBase<
                                         )}
                                     </div>
 
-                                    <div className="product-form-row">
                                         <div className="product-form-field">
                                             <Neo.FormGroupInline
                                                 bind={productMeta.stock}
@@ -259,17 +360,11 @@ export default class ProductsView extends Views.ViewBase<
                                                 }}
                                             />
                                         </div>
-                                    </div>
+                                   
 
                                     <div className="product-form-actions">
-
-                                        <Neo.Button
-                                            className="modal-close-btn"
-                                            onClick={() => this.viewModel.cancelEdit()}
-                                        >
-                                            Close
-                                        </Neo.Button>
-
+                                     
+                                     
                                         <Neo.Button
                                             isSubmit
                                             variant="success"
@@ -288,7 +383,6 @@ export default class ProductsView extends Views.ViewBase<
                         </Neo.Form>
                     </Neo.Modal>
                 )}
-
             </div>
         );
     }

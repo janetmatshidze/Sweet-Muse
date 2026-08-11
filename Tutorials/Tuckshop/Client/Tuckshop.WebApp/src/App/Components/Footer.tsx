@@ -2,20 +2,31 @@ import React from 'react';
 import { observer } from 'mobx-react';
 
 interface IFooterProps {
-    
 }
 
 @observer
 export default class Footer extends React.Component<IFooterProps> {
 
-    constructor(props: IFooterProps) {
-        super(props);
-    }
-
     public render() {
         return (
-            <div>
-            </div>
+            <footer
+                id="footer-panel"
+                className="app-footer"
+            >
+
+                <span className="footer-brand">
+                    Sweet Muse
+                </span>
+
+                <span className="footer-divider">
+                    •
+                </span>
+
+                <span className="footer-text">
+                    Sweet moments, beautifully made.
+                </span>
+
+            </footer>
         );
     }
 }

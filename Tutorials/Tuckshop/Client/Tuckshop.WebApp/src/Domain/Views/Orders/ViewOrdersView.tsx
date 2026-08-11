@@ -8,11 +8,13 @@ import OrderLookup from '../../Models/Orders/Queries/OrderLookup';
 import CancelOrder from '../../Models/Orders/Commands/CancelOrder';
 
 class ViewOrdersParams {
-    // TODO: Add parameters here in the form: public paramName = { isQuery?: boolean, required?: boolean };
 }
 
 @observer
-export default class ViewOrdersView extends Views.ViewBase<ViewOrdersVM, ViewOrdersParams> {
+export default class ViewOrdersView extends Views.ViewBase<
+    ViewOrdersVM,
+    ViewOrdersParams
+> {
     public static params = new ViewOrdersParams();
 
     constructor(props: unknown) {
@@ -20,77 +22,226 @@ export default class ViewOrdersView extends Views.ViewBase<ViewOrdersVM, ViewOrd
     }
 
     protected viewParamsUpdated() {
-
     }
 
     public render() {
         return (
-            <div>
-                <Neo.Card title="Criteria">
-                    <Neo.Form model={this.viewModel.criteria} onSubmit={() => this.viewModel.findOrders()}>
+            <div className="sweet-muse-orders">
+
+                <Neo.Card className="orders-search-card">
+                    <div className="orders-section-heading">
+                        <div className="orders-heading-icon">
+                            <span className="orders-heading-symbol">⌕</span>
+                        </div>
+
+                        <div>
+                            <h2>Search Orders</h2>
+                            <p>Filter orders using the criteria below.</p>
+                        </div>
+                    </div>
+
+                    <Neo.Form
+                        model={this.viewModel.criteria}
+                        onSubmit={() => this.viewModel.findOrders()}
+                    >
                         {(criteria, criteriaMeta) => (
-                            <Neo.GridLayout md={2} lg={4}>
-                                <Neo.FormGroup bind={criteriaMeta.orderStatus} select={{ itemSource: Data.StaticDataSource.fromEnum(OrderStatus) }} />
-                                <Neo.FormGroup bind={criteriaMeta.startDate} />
-                                <Neo.FormGroup bind={criteriaMeta.endDate} />
-                                <Neo.Button icon="search" className="form-btn" isSubmit>Search</Neo.Button>
-                            </Neo.GridLayout>
+                            <div className="orders-search-grid">
+
+                                <Neo.FormGroup
+                                    bind={criteriaMeta.orderStatus}
+                                    select={{
+                                        itemSource:
+                                            Data.StaticDataSource.fromEnum(
+                                                OrderStatus
+                                            )
+                                    }}
+                                />
+
+                                <Neo.FormGroup
+                                    bind={criteriaMeta.startDate}
+                                />
+
+                                <Neo.FormGroup
+                                    bind={criteriaMeta.endDate}
+                                />
+
+                                <Neo.Button
+                                    icon="search"
+                                    className="orders-search-btn"
+                                    isSubmit
+                                >
+                                    Search
+                                </Neo.Button>
+
+                            </div>
                         )}
                     </Neo.Form>
                 </Neo.Card>
 
-                <Neo.Card title="Orders">
-                    <NeoGrid.Grid items={this.viewModel.foundOrders}>
-                        {(order, orderMeta) => (
-                            <NeoGrid.RowGroup expandProperty={orderMeta.isExpanded}>
-                                <NeoGrid.Row>
-                                    <NeoGrid.Column display={orderMeta.customerName} />
-                                    <NeoGrid.Column display={orderMeta.orderedOn} dateProps={{ formatString: "dd MMM - HH: mm" }} />
-                                    <NeoGrid.Column display={orderMeta.orderTotal} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} />
-                                    <NeoGrid.ButtonColumn>
-                                        {order.canAction &&
-                                            <>
-                                                <Neo.Button variant="danger" icon="times" onClick={() => this.cancelOrder(order)}>Cancel</Neo.Button>
-                                                <Neo.Button variant="success" icon="check" onClick={() => this.completeOrder(order)}>Complete</Neo.Button>
-                                            </>
-                                        }
-                                    </NeoGrid.ButtonColumn>
-                                </NeoGrid.Row>
-                                <NeoGrid.ChildRow>
-                                    <NeoGrid.Grid items={order.items}>
-                                        {(orderDetail, orderDetailMeta) => (
-                                            <NeoGrid.Row>
-                                                <NeoGrid.Column display={orderDetailMeta.product} />
-                                                <NeoGrid.Column display={orderDetailMeta.vat} />
-                                                <NeoGrid.Column display={orderDetailMeta.value} />
-                                            </NeoGrid.Row>
-                                        )}
-                                    </NeoGrid.Grid>
-                                </NeoGrid.ChildRow>
-                            </NeoGrid.RowGroup>
-                        )}
-                    </NeoGrid.Grid>
+                <Neo.Card className="orders-list-card">
+
+                    <div className="orders-section-heading">
+                        <div className="orders-heading-icon">
+                            <span className="orders-heading-symbol">▣</span>
+                        </div>
+
+                        <div>
+                            <h2>Orders</h2>
+                            <p>View and manage customer orders.</p>
+                        </div>
+                    </div>
+
+                    <div className="orders-table-wrapper">
+
+                        <NeoGrid.Grid
+                            items={this.viewModel.foundOrders}
+                        >
+                            {(order, orderMeta) => (
+                                <NeoGrid.RowGroup
+                                    expandProperty={orderMeta.isExpanded}
+                                >
+
+                                    <NeoGrid.Row>
+
+                                        <NeoGrid.Column
+                                            className="order-customer-column"
+                                            display={orderMeta.customerName}
+                                        />
+
+                                        <NeoGrid.Column
+                                            className="order-date-column"
+                                            display={orderMeta.orderedOn}
+                                            dateProps={{
+                                                formatString: "dd MMM yyyy - HH:mm"
+                                            }}
+                                        />
+
+                                        <NeoGrid.Column
+                                            className="order-total-column"
+                                            display={orderMeta.orderTotal}
+                                            numProps={{
+                                                format:
+                                                    Misc.NumberFormat
+                                                        .CurrencyDecimals
+                                            }}
+                                        />
+
+                                        <NeoGrid.ButtonColumn
+                                            className="order-actions-column"
+                                        >
+                                            {order.canAction && (
+                                                <div className="order-actions">
+
+                                                    <Neo.Button
+                                                        variant="danger"
+                                                        icon="times"
+                                                        className="cancel-order-btn"
+                                                        onClick={() =>
+                                                            this.cancelOrder(order)
+                                                        }
+                                                    >
+                                                        Cancel
+                                                    </Neo.Button>
+
+                                                    <Neo.Button
+                                                        variant="success"
+                                                        icon="check"
+                                                        className="complete-order-btn"
+                                                        onClick={() =>
+                                                            this.completeOrder(order)
+                                                        }
+                                                    >
+                                                        Complete
+                                                    </Neo.Button>
+
+                                                </div>
+                                            )}
+                                        </NeoGrid.ButtonColumn>
+
+                                    </NeoGrid.Row>
+
+                                    <NeoGrid.ChildRow>
+
+                                        <div className="order-details-container">
+
+                                            <div className="order-details-header">
+                                                <span>Product</span>
+                                                <span>VAT</span>
+                                                <span>Value</span>
+                                            </div>
+
+                                            <NeoGrid.Grid
+                                                items={order.items}
+                                            >
+                                                {(orderDetail, orderDetailMeta) => (
+                                                    <NeoGrid.Row>
+
+                                                        <NeoGrid.Column
+                                                            className="order-product-column"
+                                                            display={
+                                                                orderDetailMeta.product
+                                                            }
+                                                        />
+
+                                                        <NeoGrid.Column
+                                                            className="order-vat-column"
+                                                            display={
+                                                                orderDetailMeta.vat
+                                                            }
+                                                        />
+
+                                                        <NeoGrid.Column
+                                                            className="order-value-column"
+                                                            display={
+                                                                orderDetailMeta.value
+                                                            }
+                                                        />
+
+                                                    </NeoGrid.Row>
+                                                )}
+                                            </NeoGrid.Grid>
+
+                                        </div>
+
+                                    </NeoGrid.ChildRow>
+
+                                </NeoGrid.RowGroup>
+                            )}
+                        </NeoGrid.Grid>
+
+                    </div>
+
                 </Neo.Card>
+
             </div>
-
-
         );
     }
 
     public completeOrder(order: OrderLookup) {
-        ModalUtils.showYesNo("Complete order", "Are you sure you want to complete this order?",
-            () => this.viewModel.completeOrder(order));
+        ModalUtils.showYesNo(
+            "Complete order",
+            "Are you sure you want to complete this order?",
+            () => this.viewModel.completeOrder(order)
+        );
     }
+
     public async cancelOrder(order: OrderLookup) {
         const cancelInfo = new CancelOrder();
 
-        if ((await ModalUtils.showOkCancel(
-            "Cancel order",
-            <Neo.FormGroup bind={cancelInfo.meta.reason} label="Please enter a reason:" />,
-            cancelInfo)) === Misc.ModalResult.Yes) {
-
-            this.viewModel.cancelOrder(order, cancelInfo.reason);
-
+        if (
+            (await ModalUtils.showOkCancel(
+                "Cancel order",
+                <Neo.FormGroup
+                    bind={cancelInfo.meta.reason}
+                    label="Please enter a reason:"
+                />,
+                cancelInfo
+            )) === Misc.ModalResult.Yes
+        ) {
+            this.viewModel.cancelOrder(
+                order,
+                cancelInfo.reason
+            );
         }
     }
 }

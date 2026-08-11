@@ -3,7 +3,7 @@ html {
 }
 
 body {
-    font-family: "Inter", sans-serif;
+    font-family: "DM Sans", "Inter", sans-serif;
 }
 
 .app-header-panel {
@@ -11,7 +11,7 @@ body {
     background: #fff;
     font-size: 14px;
     box-shadow: $box-shadow-root;
-    border-radius: $component-border-radius;
+    border-radius: 12px;
 
     &.floating-header {
         position: fixed;
@@ -151,8 +151,8 @@ div.bread-crumb {
     width: $menu-width;
     z-index: 4;
     height: 100%;
-    background: $component-header-background;
-    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.14);
+    background: $rosewood-50;
+    box-shadow: 0 0 2px 0 rgba(76, 38, 42, 0.10);
     transition: width ease-in-out $menu-animation-speed,
         left ease-in-out $menu-animation-speed;
 }
@@ -168,22 +168,53 @@ div.bread-crumb {
 
 .app-right-panel {
     margin-left: $menu-width;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     background: $main-background;
     transition: margin-left ease-in-out $menu-animation-speed;
 }
 
+.app-content-area {
+    flex: 1 0 auto;
+}
+
 .app-footer {
-    padding: 13px 15px;
-    height: $footer-height;
+    flex: 0 0 auto;
+
+    min-height: 56px;
+    padding: 14px 24px;
+    margin-top: 20px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: $content-area-margin;
-    background: $white;
-    border-top-left-radius: $component-border-radius;
-    border-top-right-radius: $component-border-radius;
-    box-shadow: $box-shadow-root;
+    gap: 10px;
+
+    background: $rosewood-50;
+    border-top: 1px solid $rosewood-100;
+
+    color: $rosewood-500;
+
+    font-family: "DM Sans", "Inter", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
 }
+
+.footer-brand {
+    color: $rosewood-700;
+    font-weight: 700;
+}
+
+.footer-divider {
+    color: $blush-petal-600;
+    font-size: 14px;
+}
+
+.footer-text {
+    color: $rosewood-400;
+}
+
 
 .thin-sidebar {
     .app-left-panel {

@@ -1,0 +1,659 @@
+@import "./Variables.scss";
+
+.sweet-muse-products {
+  width: 100%;
+  min-height: 800px;
+  padding: 10px 4px 50px;
+  background-color: $blush-petal-50;
+  color: $rosewood-900;
+  font-family: "DM Sans", "Inter", sans-serif;
+}
+
+.products-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  padding-right: 24px;
+  margin-bottom: 28px;
+}
+
+.products-breadcrumb {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.breadcrumb-brand {
+  color: $rosewood-500;
+  font-weight: 600;
+}
+
+.breadcrumb-divider {
+  margin: 0 9px;
+  color: $rosewood-300;
+}
+
+.breadcrumb-current {
+  color: $rosewood-700;
+  font-weight: 500;
+}
+
+.products-title {
+  margin: 0;
+  color: $rosewood-900;
+  font-family: "DM Sans", "Inter", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  line-height: 1.2;
+}
+
+.products-title::after {
+  display: block;
+  width: 36px;
+  height: 4px;
+  margin-top: 9px;
+  content: "";
+  background-color: $blush-petal-600;
+  border-radius: 999px;
+}
+
+.sweet-muse-products .add-product-btn {
+  min-width: 0 !important;
+  padding: 10px 18px !important;
+  border: 1px solid $rosewood-500 !important;
+  border-radius: 10px !important;
+  background-color: $rosewood-500 !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 5px 14px rgba(180, 106, 113, 0.18);
+  transition: all 0.2s ease;
+}
+
+.sweet-muse-products .add-product-btn:hover {
+  background-color: $rosewood-600 !important;
+  border-color: $rosewood-600 !important;
+  transform: translateY(-1px);
+}
+
+.sweet-muse-products .products-grid {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow-x: auto;
+  overflow-y: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.sweet-muse-products .products-grid .table-responsive {
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: visible !important;
+}
+
+.sweet-muse-products .products-grid table.table {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid $rosewood-100 !important;
+  border-radius: 18px !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  box-shadow: none !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+.sweet-muse-products .products-grid table.table > thead {
+  background: transparent !important;
+}
+
+.sweet-muse-products
+  .products-grid
+  table.table
+  > thead
+  > tr
+  > th {
+  height: 48px;
+  padding: 10px 16px !important;
+  background-color: $coffee-brown-50 !important;
+  border-bottom: 1px solid $coffee-brown-100 !important;
+  color: $coffee-brown-500 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.sweet-muse-products
+  .products-grid
+  table.table
+  > thead
+  > tr
+  > th:first-child {
+  border-top-left-radius: 18px !important;
+}
+
+.sweet-muse-products
+  .products-grid
+  table.table
+  > thead
+  > tr
+  > th:last-child {
+  border-top-right-radius: 18px !important;
+}
+
+.sweet-muse-products
+  .products-grid
+  table.table
+  > tbody
+  > tr {
+  background: transparent !important;
+  transition: background-color 0.15s ease;
+}
+
+.sweet-muse-products
+  .products-grid
+  table.table
+  > tbody
+  > tr:hover {
+  background: $blush-petal-100 !important;
+}
+
+.sweet-muse-products
+  .products-grid
+  table.table
+  > tbody
+  > tr
+  > td {
+  padding: 14px 16px !important;
+  background: transparent !important;
+  border-bottom: 1px solid $rosewood-100 !important;
+  color: $rosewood-900;
+  vertical-align: middle;
+}
+
+.sweet-muse-products
+  .products-grid
+  table.table
+  > tbody
+  > tr:last-child
+  > td {
+  border-bottom: 0 !important;
+}
+
+.sweet-muse-products
+  .products-grid
+  table.table
+  > tbody
+  > tr:last-child
+  > td:first-child {
+  border-bottom-left-radius: 18px !important;
+}
+
+.sweet-muse-products
+  .products-grid
+  table.table
+  > tbody
+  > tr:last-child
+  > td:last-child {
+  border-bottom-right-radius: 18px !important;
+}
+
+.sweet-muse-products .product-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  padding: 6px;
+  overflow: hidden;
+  background: $coffee-brown-50;
+  border: 1px solid $rosewood-100;
+  border-radius: 14px;
+}
+
+.sweet-muse-products .product-list-image {
+  display: block !important;
+  width: 100px !important;
+  height: 100px !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain;
+  border: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.sweet-muse-products .product-name {
+  color: $rosewood-900 !important;
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  white-space: nowrap;
+}
+
+.sweet-muse-products .product-description {
+  max-width: 300px;
+  color: $rosewood-600 !important;
+  font-size: 13px !important;
+  line-height: 1.5;
+}
+
+.sweet-muse-products .numbers {
+  font-family: "DM Sans";
+  font-size: 13px !important;
+}
+
+.sweet-muse-products .product-price {
+  color: $coffee-brown-500 !important;
+  font-weight: 700 !important;
+  white-space: nowrap;
+}
+
+.sweet-muse-products .product-stock {
+  color: $sage-leaf-800 !important;
+  font-weight: 600 !important;
+}
+
+.sweet-muse-products .category-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sweet-muse-products .category-color-0 {
+  background: $midnight-lagoon-50;
+  color: $midnight-lagoon-500;
+}
+
+.sweet-muse-products .category-color-1 {
+  background: $sage-leaf-200;
+  color: $sage-leaf-800;
+}
+
+.sweet-muse-products .category-color-2 {
+  background: $rosewood-100;
+  color: $rosewood-600;
+}
+
+.sweet-muse-products .category-color-3 {
+  background: $blush-petal-200;
+  color: $blush-petal-800;
+}
+
+.sweet-muse-products .category-color-4 {
+  background: $misty-sky-100;
+  color: $misty-sky-700;
+}
+
+.sweet-muse-products .category-color-5 {
+  background: $coffee-brown-100;
+  color: $coffee-brown-500;
+}
+
+.sweet-muse-products .edit-icon,
+.sweet-muse-products .delete-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+}
+
+.sweet-muse-products .edit-icon {
+  background: $misty-sky-100 !important;
+  color: $midnight-lagoon-500 !important;
+}
+
+.sweet-muse-products .delete-icon {
+  background: $blush-petal-100 !important;
+  color: $blush-petal-800 !important;
+}
+
+.sweet-muse-products .edit-icon:hover {
+  background: $misty-sky-200 !important;
+}
+
+.sweet-muse-products .delete-icon:hover {
+  background: $blush-petal-200 !important;
+}
+
+.product-form {
+  width: 100%;
+  padding: 4px 2px 0;
+}
+
+.product-form-row {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+}
+
+.product-form-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-name-field {
+  flex: 1.8;
+}
+
+.product-price-field {
+  flex: 0.8;
+}
+
+.product-form .form-group {
+  margin-bottom: 18px;
+}
+
+.product-form label {
+  color: $rosewood-900;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.product-form input:not([type="file"]),
+.product-form textarea,
+.product-form select {
+  width: 100%;
+  border: 1px solid $rosewood-200 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  color: $rosewood-900 !important;
+  font-family: "DM Sans", "Inter", sans-serif;
+  font-size: 13px !important;
+  box-shadow: none !important;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.product-form input:not([type="file"]) {
+  min-height: 40px;
+  padding: 9px 12px !important;
+}
+
+.product-form textarea {
+  min-height: 90px;
+  padding: 10px 12px !important;
+  resize: vertical;
+}
+
+.product-form select {
+  min-height: 40px;
+  padding: 9px 12px !important;
+}
+
+.product-form input:not([type="file"]):focus,
+.product-form textarea:focus,
+.product-form select:focus {
+  border-color: $blush-petal-500 !important;
+  box-shadow: 0 0 0 3px $blush-petal-100 !important;
+  outline: none !important;
+}
+
+.product-image-field {
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 18px;
+}
+
+.product-form-label {
+  display: block;
+  margin-bottom: 9px;
+  color: $rosewood-900;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.image-upload-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 145px;
+  padding: 24px;
+  box-sizing: border-box;
+  border: 1.5px dashed $blush-petal-500;
+  border-radius: 12px;
+  background: $blush-petal-50;
+  color: $rosewood-700;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-upload-box:hover {
+  border-color: $blush-petal-600;
+  background: $blush-petal-100;
+}
+
+.image-upload-box input,
+.replace-image-box input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.image-upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: $blush-petal-200;
+  color: $blush-petal-700;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.image-upload-title {
+  display: block;
+  color: $rosewood-800;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.image-upload-text {
+  display: block;
+  margin-top: 5px;
+  color: $rosewood-400;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.product-image-edit {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  gap: 18px;
+}
+
+.modal-image-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 145px;
+  height: 125px;
+  min-width: 145px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid $rosewood-100;
+  border-radius: 12px;
+  background: $coffee-brown-50;
+}
+
+.modal-image-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  object-fit: contain;
+}
+
+.replace-image-box {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 125px;
+  padding: 18px;
+  box-sizing: border-box;
+  border: 1.5px dashed $blush-petal-500;
+  border-radius: 12px;
+  background: $blush-petal-50;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.replace-image-box:hover {
+  border-color: $blush-petal-600;
+  background: $blush-petal-100;
+}
+
+.replace-image-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  background: $blush-petal-200;
+  color: $blush-petal-700;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.replace-image-title {
+  display: block;
+  width: 100%;
+  color: $blush-petal-700;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.replace-image-text {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  color: $rosewood-400;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.product-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid $rosewood-100;
+}
+
+.modal-close-btn {
+  min-width: 90px !important;
+  padding: 10px 18px !important;
+  border: 1px solid $rosewood-200 !important;
+  border-radius: 9px !important;
+  background: #ffffff !important;
+  color: $rosewood-700 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.modal-close-btn:hover {
+  background: $rosewood-50 !important;
+  border-color: $rosewood-300 !important;
+  color: $rosewood-900 !important;
+}
+
+.save-btn {
+  min-width: 145px !important;
+  padding: 10px 20px !important;
+  border: 1px solid $blush-petal-700 !important;
+  border-radius: 9px !important;
+  background: $blush-petal-700 !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.save-btn:hover {
+  background: $blush-petal-800 !important;
+  border-color: $blush-petal-800 !important;
+}
+
+@media (max-width: 768px) {
+  .products-page-header {
+    padding-right: 8px;
+  }
+
+  .products-title {
+    font-size: 26px;
+  }
+
+  .sweet-muse-products .products-grid {
+    overflow-x: auto;
+  }
+
+  .product-form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .product-image-edit {
+    flex-direction: column;
+  }
+
+  .modal-image-preview {
+    width: 100%;
+    height: 150px;
+    min-width: 0;
+  }
+
+  .replace-image-box {
+    width: 100%;
+  }
+
+  .product-form-actions {
+    flex-wrap: wrap;
+  }
+}

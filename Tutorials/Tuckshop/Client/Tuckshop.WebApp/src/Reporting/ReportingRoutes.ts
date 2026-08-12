@@ -5,7 +5,7 @@ import * as Roles from './Models/Security/Roles';
 
 const MenuRoutes: IAppMenuItem[] = 
     [
-        { name: "Reporting", path: "/reporting", icon: "print", component: ReportingView, role: Roles.General.View }
+        { name: "Reporting", path: "/reporting", icon: "line_axis", component: ReportingView, role: Roles.General.View }
     ];
     
 const PureRoutes: IAppRoute[] = [];

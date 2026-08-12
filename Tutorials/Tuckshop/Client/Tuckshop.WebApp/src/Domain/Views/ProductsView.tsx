@@ -25,87 +25,88 @@ export default class ProductsView extends Views.ViewBase<
         const emptySlots = this.viewModel.pageSize - pagedProducts.length;
 
         return (
-            <div className="sweet-muse-products mt-3">
+            <div className="sweet-muse mt-3">
 
-                <div className="products-page-header">
+                <div className="page-header">
                     <div>
-                        <h1 className="products-title">
+                        <h1 className="title">
                             Products
                         </h1>
                     </div>
 
                     <Neo.Button
                         variant="primary"
-                        icon="plus"
-                        className="add-product-btn"
+                        className="add-btn"
                         onClick={() => this.viewModel.addProduct()}
                     >
+                        <Neo.Icon name="plus" />
+
                         Add Product
                     </Neo.Button>
                 </div>
 
-                 <div className="products-category-wrapper">
+                <div className="products-category-wrapper">
 
-                <div className="products-search-bar mb-2">
-                    <Neo.Icon name="search" className="products-search-icon" />
-                    <input
-                        type="text"
-                        className="products-search-input"
-                        placeholder="Search by product name..."
-                        value={this.viewModel.searchTerm}
-                        onChange={(e) => this.viewModel.setSearchTerm(e.target.value)}
-                    />
+                    <div className="search-bar mb-3">
+                        <Neo.Icon name="search" className="search-icon" />
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Search by product name..."
+                            value={this.viewModel.searchTerm}
+                            onChange={(e) => this.viewModel.setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="products-filter-wrapper">
+                        <button
+                            type="button"
+                            className="products-filter-btn"
+                            onClick={() => this.viewModel.toggleCategoryFilter()}
+                        >
+                            <Neo.Icon name="filter_list" />
+                            <span>Filter</span>
+                            {this.viewModel.selectedCategoryId !== null && (
+                                <span className="filter-active-dot" />
+                            )}
+                        </button>
+
+                        {this.viewModel.showCategoryFilter && (
+                            <div className="products-filter-dropdown">
+                                <button
+                                    type="button"
+                                    className={
+                                        "filter-option" +
+                                        (this.viewModel.selectedCategoryId === null ? " active" : "")
+                                    }
+                                    onClick={() => this.viewModel.setSelectedCategory(null)}
+                                >
+                                    All Categories
+                                </button>
+
+                                {this.viewModel.categories.map((category) => (
+                                    <button
+                                        key={category.categoryId}
+                                        type="button"
+                                        className={
+                                            "filter-option" +
+                                            (this.viewModel.selectedCategoryId === category.categoryId
+                                                ? " active"
+                                                : "")
+                                        }
+                                        onClick={() =>
+                                            this.viewModel.setSelectedCategory(category.categoryId)
+                                        }
+                                    >
+                                        {category.categoryName}
+                                    </button>
+                                ))}
+                            </div>
+
+                        )}
+                    </div>
                 </div>
-
-                <div className="products-filter-wrapper">
-    <button
-        type="button"
-        className="products-filter-btn"
-        onClick={() => this.viewModel.toggleCategoryFilter()}
-    >
-        <Neo.Icon name="filter_list" />
-        <span>Filter</span>
-        {this.viewModel.selectedCategoryId !== null && (
-            <span className="filter-active-dot" />
-        )}
-    </button>
-
-    {this.viewModel.showCategoryFilter && (
-        <div className="products-filter-dropdown">
-            <button
-                type="button"
-                className={
-                    "filter-option" +
-                    (this.viewModel.selectedCategoryId === null ? " active" : "")
-                }
-                onClick={() => this.viewModel.setSelectedCategory(null)}
-            >
-                All Categories
-            </button>
-
-            {this.viewModel.categories.map((category) => (
-                <button
-                    key={category.categoryId}
-                    type="button"
-                    className={
-                        "filter-option" +
-                        (this.viewModel.selectedCategoryId === category.categoryId
-                            ? " active"
-                            : "")
-                    }
-                    onClick={() =>
-                        this.viewModel.setSelectedCategory(category.categoryId)
-                    }
-                >
-                    {category.categoryName}
-                </button>
-            ))}
-        </div>
-        
-    )}
-</div>
-</div>
-                <div className="products-grid">
+                <div className="table-grid">
                     <table className="table">
                         <thead>
                             <tr>
@@ -190,7 +191,7 @@ export default class ProductsView extends Views.ViewBase<
 
                             {pagedProducts.length === 0 && (
                                 <tr className="filler-row">
-                                    <td colSpan={8} className="no-products-message">
+                                    <td colSpan={8} className="message">
                                         No products found
                                     </td>
                                 </tr>
@@ -210,7 +211,7 @@ export default class ProductsView extends Views.ViewBase<
                     </table>
                 </div>
 
-                <div className="products-pagination">
+                <div className="pagination">
                     <Neo.Button
                         className="pagination-btn"
                         icon="keyboard_double_arrow_left"
@@ -249,30 +250,30 @@ export default class ProductsView extends Views.ViewBase<
                             onSubmit={() => this.viewModel.saveProduct()}
                         >
                             {(product, productMeta) => (
-                                <div className="product-form">
+                                <div className="form">
 
                                     <div className="">
-                                        <div className="product-form-field product-name-field">
+                                        <div className="form-field product-name-field">
                                             <Neo.FormGroupInline
                                                 bind={productMeta.productName}
                                             />
                                         </div>
 
-                                        <div className="product-form-field product-price-field">
+                                        <div className="form-field price-field">
                                             <Neo.FormGroupInline
                                                 bind={productMeta.price}
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="product-form-field">
+                                    <div className="form-field">
                                         <Neo.FormGroupInline
                                             bind={productMeta.description}
                                         />
                                     </div>
 
                                     <div className="product-image-field">
-                                        <label className="product-form-label">
+                                        <label className="form-label">
                                             Product Image
                                         </label>
 
@@ -344,41 +345,36 @@ export default class ProductsView extends Views.ViewBase<
                                         )}
                                     </div>
 
-                                        <div className="product-form-field">
-                                            <Neo.FormGroupInline
-                                                bind={productMeta.stock}
-                                            />
-                                        </div>
-
-                                        <div className="product-form-field">
-                                            <Neo.FormGroupInline
-                                                bind={productMeta.categoryId}
-                                                select={{
-                                                    items: this.viewModel.categories,
-                                                    allowNulls: true,
-                                                    nullText: "Select a category",
-                                                }}
-                                            />
-                                        </div>
-                                   
-
-                                    <div className="product-form-actions">
-                                     
-                                     
-                                        <Neo.Button
-                                            isSubmit
-                                            variant="success"
-                                            icon="check"
-                                            className="save-btn"
-                                        >
-                                            {this.viewModel.editingProduct?.productId
-                                                ? "Update Product"
-                                                : "Save Product"}
-                                        </Neo.Button>
-
+                                    <div className="form-field">
+                                        <Neo.FormGroupInline
+                                            bind={productMeta.stock}
+                                        />
                                     </div>
 
+                                    <div className="form-field">
+                                        <Neo.FormGroupInline
+                                            bind={productMeta.categoryId}
+                                            select={{
+                                                items: this.viewModel.categories,
+                                                allowNulls: true,
+                                                nullText: "Select a category",
+                                            }}
+                                        />
+                                    </div>
+
+                                    <Neo.Button
+                                        isSubmit
+                                        variant="success"
+                                        icon="check"
+                                        className="save-btn"
+                                    >
+                                        {this.viewModel.editingProduct?.productId
+                                            ? "Update Product"
+                                            : "Save Product"}
+                                    </Neo.Button>
+
                                 </div>
+
                             )}
                         </Neo.Form>
                     </Neo.Modal>

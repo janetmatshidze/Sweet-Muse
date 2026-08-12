@@ -230,6 +230,7 @@
       services.AddAsyncInitializer<ModelDbAsyncInitializer>();
       services.AddSystemUser<ModelDbContext, User>();
       services.AddAsyncInitializer<SeedDataAsyncInitializer>();
+      services.AddAsyncInitializer<CustomerBackfillAsyncInitializer>(); // customer backfill
 
       return services;
     }
@@ -339,6 +340,7 @@
       var mvcBuilder = services.AddNeoControllers(environment, configuration, startupOptions);
       services.AddNeoUpdateableController<Product, ModelDbContext, int>(p => p.ProductId);
       services.AddNeoUpdateableController<Category, ModelDbContext, int>(c => c.CategoryId);
+      services.AddNeoUpdateableController<Customer, ModelDbContext, int>(c => c.CustomerId);
 
       // Add modules.
       mvcBuilder.AddTuckshopAuthorisationMvc(environment, configuration);

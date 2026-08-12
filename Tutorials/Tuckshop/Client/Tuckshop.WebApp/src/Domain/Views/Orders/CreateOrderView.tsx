@@ -53,8 +53,19 @@ export default class CreateOrderView extends Views.ViewBase<
                                         Customer Information
                                     </div>
 
+                                    {/* <Neo.Checkbox
+                                    bind={orderMeta.isCashSale}
+                                    label ="Cash Sale"/> */}
+
                                     <Neo.FormGroup
                                         bind={orderMeta.customerName}
+                                        select={{
+                                            items: this.viewModel.customers,
+                                            valueMember: "firstName", 
+                                            displayMember:"firstName",
+                                            allowNulls: true,
+                                            nullText: "Select a customer",
+                                        }}
                                     />
 
                                     <p className="customer-helper">

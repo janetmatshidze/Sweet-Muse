@@ -6,7 +6,7 @@ import Scrollbar from 'react-custom-scrollbars';
 import { AppService, Types } from '../Services/AppService';
 import { IAppLayout, ScreenSize } from '../Services/AppLayout';
 import { IAppMenuItem } from "../Services/RouteService";
-import sidebarBackground from '../assets/img/Logo.png';
+import Logo from '../assets/img/Sweet-Muse-1.png';
 import { Neo } from '@singularsystems/neo-react';
 
 interface ISidebarProps {
@@ -42,7 +42,7 @@ class Sidebar extends React.Component<ISidebarProps> {
                     <div className="sidebar">
                         <div className="sidebar-header">
                             {/* Logo */}
-                            <img src={sidebarBackground} alt="" />
+                            <img src={Logo} alt="" />
                             {/* Menu toggle button */}
                             {layout.currentScreenSize > ScreenSize.Small &&
                                 <span className={"menu-toggle-container"} onClick={layout.menuToggle}>

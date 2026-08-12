@@ -1,0 +1,18 @@
+.sweet-muse .table-grid table.table > tbody > tr.customer-filler-row {
+  background: transparent !important;
+}
+
+.sweet-muse .table-grid table.table > tbody > tr.customer-filler-row :hover {
+  background: transparent !important;
+}
+
+.sweet-muse .table-grid table.table > tbody > tr.customer-filler-row  > td {
+  height: 63px;
+  padding: 14px 16px !important;
+  background: transparent !important;
+  border-bottom: 1px solid $rosewood-100 !important;
+}
+
+.sweet-muse .table-grid table.table > tbody > tr.customer-filler-row :last-child > td {
+  border-bottom: 0 !important;
+}

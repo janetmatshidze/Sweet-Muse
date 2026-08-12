@@ -6,7 +6,7 @@
 }
 
 .sidebar {
-    background: $coffee-brown-50;
+    background: $misty-sky-50;
     height: 100%;
     display: flex;
     flex-flow: column nowrap;
@@ -16,10 +16,13 @@
     .sidebar-header {
         width: 100%;
         font-size: 0;
-        padding: 26px 15px 18px 15px;
+        padding: 26px 15px 18px 55px;
         position: relative;
+        align-items: center;
 
         img {
+            display: flex;
+            justify-items: center;
             width: 100%;
             max-width: 120px;
         }

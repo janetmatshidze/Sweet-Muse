@@ -1,6 +1,8 @@
 import { Views } from "@singularsystems/neo-react";
 import { AppService, Types } from "../../DomainTypes";
 import { CreateOrder } from "../../Models/Orders/Commands/CreateOrder";
+import { List } from "@singularsystems/neo-core";
+import Customer from "../../Models/Customer";
 
 export default class CreateOrderVM extends Views.ViewModelBase {
 
@@ -8,7 +10,9 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         taskRunner = AppService.get(Types.Neo.TaskRunner),
         private notifications = AppService.get(Types.Neo.UI.GlobalNotifications),
         private appDataCache = AppService.get(Types.Domain.Services.DataCache),
-        private ordersCommandApiClient = AppService.get(Types.Domain.ApiClients.OrdersCommandApiClient)
+        private ordersCommandApiClient = AppService.get(Types.Domain.ApiClients.OrdersCommandApiClient),
+        private customersApiClient = AppService.get(Types.Domain.ApiClients.CustomersApiClient)
+
     ) {
         super(taskRunner);
         this.makeObservable();
@@ -18,8 +22,16 @@ export default class CreateOrderVM extends Views.ViewModelBase {
     public products: any[] = [];
     public productQuantities: { [key: string]: number } = {};
 
+    public customers = new List(Customer);
+
     public async initialise() {
         await this.setupOrder();
+
+        const customersResponse = await this.taskRunner.waitFor(
+            this.customersApiClient.get()
+        );
+
+        this.customers.set(customersResponse.data);
     }
 
     public async setupOrder() {

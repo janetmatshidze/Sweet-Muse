@@ -75,13 +75,13 @@
 
 .product-cards {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
 }
 
 .product-card {
     overflow: hidden;
-    background: $blush-petal-50;
+    background: $sage-leaf-50;
     border: 1px solid #eadfd7;
     border-radius: 20px;
     box-shadow: 0 5px 18px rgba(67, 41, 31, 0.05);

@@ -26,6 +26,8 @@
     "bootstrap": "5.3.3",
     "core-js": "3.38.1",
     "decimal.js-light": "2.5.1",
+    "highcharts": "^13.0.0",
+    "highcharts-react-official": "^3.2.3",
     "inversify": "6.0.2",
     "mobx": "6.13.7",
     "mobx-react": "9.2.0",

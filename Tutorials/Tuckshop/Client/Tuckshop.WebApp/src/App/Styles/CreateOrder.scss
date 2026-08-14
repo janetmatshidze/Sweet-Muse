@@ -32,6 +32,16 @@
     box-shadow: 0 4px 18px rgba(67, 41, 31, 0.04);
 }
 
+.customer-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.customer-card-header .neo-checkbox {
+    margin: 0;
+}
 .customer-card-heading {
     margin-bottom: 16px;
     font-size: 18px;
@@ -75,8 +85,8 @@
 
 .product-cards {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(3, minmax(0, 2fr));
+    gap: 20px;
 }
 
 .product-card {
@@ -99,7 +109,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: $coffee-brown-50;
+    background: $rosewood-100;
 }
 
 .product-image {
@@ -128,6 +138,11 @@
     color: #806b61;
     font-size: 13px;
     line-height: 1.5;
+}
+
+.form-check-input:checked {
+  background-color: $blush-petal-500; 
+  border-color: $blush-petal-600;
 }
 
 .product-card-footer {
@@ -173,7 +188,9 @@
 }
 
 .quantity-button:hover {
-    background: #f7ebe5;
+    border-radius: $full-radius;
+    color: $blush-petal-600;
+    background: $blush-petal-400 !important;
 }
 
 .quantity-value {
@@ -189,8 +206,8 @@
     padding: 0 14px;
     border: 0;
     border-radius: 17px;
-    background: #b46a72;
-    color: #fff;
+    background: $coffee-brown-200;
+    color: $coffee-brown-500;
     font-size: 12px;
     font-weight: 600;
     white-space: nowrap;
@@ -198,12 +215,12 @@
 }
 
 .add-to-cart-button:hover {
-    background: #a75d66;
+    background: $coffee-brown-500 !important;
 }
 
 .shopping-cart {
     position: sticky;
-    bottom: 44px !important;
+    top: 10px !important;
     overflow: hidden;
     background: #fffaf7;
     border: 1px solid #eadfd7;
@@ -254,7 +271,7 @@
 
 .cart-item {
     display: flex;
-    gap: 13px;
+    gap: 50px;
     padding: 16px 0;
     border-bottom: 1px solid #eee2da;
 }
@@ -263,23 +280,19 @@
     border-bottom: 0;
 }
 
-.cart-item-image {
+.cart-item-image  img{
     flex: 0 0 62px;
-    width: 62px;
-    height: 62px;
+    width: 90px;
+    height: 88px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     border-radius: 12px;
     background: #f7eee7;
+    object-fit: contain;
 }
 
-.cart-item-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
 
 .cart-item-details {
     flex: 1;
@@ -424,6 +437,10 @@
 }
 
 .place-order-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
     width: calc(100% - 44px);
     height: 48px;
     margin: 10px 22px 22px;

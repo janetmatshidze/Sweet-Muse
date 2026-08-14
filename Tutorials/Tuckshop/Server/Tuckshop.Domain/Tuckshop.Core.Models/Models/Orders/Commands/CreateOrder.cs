@@ -10,6 +10,17 @@
   /// </summary>
   public class CreateOrder : ModelBase<CreateOrder>
   {
+
+    /// <summary>
+    /// Gets or sets the Customer Id. Null when IsCashSale is true.
+    /// </summary>
+    public int? CustomerId { get; set; }
+
+    /// <summary>
+    /// Gets and sets a value indicating whether this is a cash sale (one-ime / walk-in customer).
+    /// </summary>
+    public bool IsCashSale { get; set; }
+
     /// <summary>
     /// Gets and sets the Customer Name.
     /// </summary>
@@ -44,6 +55,10 @@
       rules.FailWhen(
       ord => ord.OrderDetails == null || ord.OrderDetails.Count == 0,
       "Order details are required");
+
+      rules.FailWhen(
+        ord => !ord.IsCashSale && ord.CustomerId == null,
+        "A customer must be selected unless this is a cash sale.");
     }
   }
 }

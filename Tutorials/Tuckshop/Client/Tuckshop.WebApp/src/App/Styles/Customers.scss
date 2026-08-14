@@ -16,3 +16,45 @@
 .sweet-muse .table-grid table.table > tbody > tr.customer-filler-row :last-child > td {
   border-bottom: 0 !important;
 }
+
+.wallet-balance-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    background-color: #F4F1EA;
+    border-radius: 8px;
+}
+
+.wallet-balance-display span {
+    font-size: 0.85rem;
+    color: #6b6b6b;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.wallet-balance-display strong {
+    font-size: 1.5rem;
+    color: #7a4a3a;
+}
+
+.wallet-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: $coffee-brown-100;
+  color: $coffee-brown-500;
+}
+
+.wallet-icon:hover {
+  background-color: $coffee-brown-200 !important;
+  color:$coffee-brown-50;
+}
+

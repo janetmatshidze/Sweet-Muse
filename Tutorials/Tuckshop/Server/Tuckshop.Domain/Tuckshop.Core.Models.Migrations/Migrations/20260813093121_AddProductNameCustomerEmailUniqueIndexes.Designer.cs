@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tuckshop.Core.Models;
 
@@ -11,9 +12,11 @@ using Tuckshop.Core.Models;
 namespace Tuckshop.Core.Models.Migrations.Migrations
 {
     [DbContext(typeof(ModelDbContext))]
-    partial class ModelDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260813093121_AddProductNameCustomerEmailUniqueIndexes")]
+    partial class AddProductNameCustomerEmailUniqueIndexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,9 +96,6 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<decimal>("WalletBalance")
-                        .HasColumnType("money");
 
                     b.HasKey("CustomerId");
 
@@ -282,39 +282,6 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Tuckshop.Core.Models.Wallets.WalletTransaction", b =>
-                {
-                    b.Property<int>("WalletTransactionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WalletTransactionId"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("money");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("OccurredOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProcessedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("WalletTransactionId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("WalletTransactions");
-                });
-
             modelBuilder.Entity("Tuckshop.Core.Models.Files.FileDescriptor", b =>
                 {
                     b.OwnsOne("Neo.Model.ValueObjects.AuditValues", "Audit", b1 =>
@@ -411,20 +378,6 @@ namespace Tuckshop.Core.Models.Migrations.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Tuckshop.Core.Models.Wallets.WalletTransaction", b =>
-                {
-                    b.HasOne("Tuckshop.Core.Models.Customer", null)
-                        .WithMany("WalletTransactions")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Tuckshop.Core.Models.Customer", b =>
-                {
-                    b.Navigation("WalletTransactions");
                 });
 
             modelBuilder.Entity("Tuckshop.Core.Models.Orders.Order", b =>

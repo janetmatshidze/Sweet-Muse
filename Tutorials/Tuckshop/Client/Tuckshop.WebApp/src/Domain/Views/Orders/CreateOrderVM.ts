@@ -21,7 +21,6 @@ export default class CreateOrderVM extends Views.ViewModelBase {
     public newOrder: CreateOrder | null = null;
     public products: any[] = [];
     public productQuantities: { [key: string]: number } = {};
-
     public customers = new List(Customer);
 
     public async initialise() {
@@ -32,6 +31,24 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         );
 
         this.customers.set(customersResponse.data);
+    }
+
+    public get selectedCustomer() {
+        if(!this.newOrder || this.newOrder.isCashSale || !this.newOrder.customerId) {
+            return null;
+        }
+
+        return this.customers.find(c => c.customerId === this.newOrder!.customerId) ?? null;
+    }
+
+    public get walletShortfall() {
+        if(!this.selectedCustomer) {
+            return 0;
+        }
+        
+        const shortfall = this.cartTotal - this.selectedCustomer.walletBalance;
+
+        return shortfall > 0 ? shortfall : 0;
     }
 
     public async setupOrder() {
@@ -51,8 +68,21 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         this.newOrder = newOrder;
     }
 
+     private getProduct(productId: number) {
+        return this.products.find(p => p.productId === productId);
+    }
+
+    private getCartQuantity(productId: number) {
+        const existing = this.newOrder?.orderDetails.find(
+            detail => detail.productId === productId
+        );
+        
+        return existing ? existing.quantity : 0;
+    }
+
     public increaseProductQuantity(productId: number) {
         const currentQuantity = this.productQuantities[productId] || 1;
+
 
         this.productQuantities = {
             ...this.productQuantities,
@@ -99,6 +129,7 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         };
     }
 
+
     public increaseCartQuantity(orderDetail: any) {
         orderDetail.quantity += 1;
     }
@@ -129,12 +160,27 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         ) || 0;
     }
 
-    public submitOrder() {
-        const orderData = this.newOrder!.toJSObject();
+    public showInsufficientFundsModal: boolean = false;
 
-        this.taskRunner.run(async () => {
-            await this.ordersCommandApiClient.createOrder(orderData);
-            this.newOrder = null;
-        });
+   public submitOrder() {
+    const isWalletOrder = this.newOrder && !this.newOrder.isCashSale;
+
+    if (isWalletOrder && this.walletShortfall > 0) {
+        this.showInsufficientFundsModal = true;
+        return;
     }
+
+    const orderData = this.newOrder!.toJSObject();
+
+    this.taskRunner.run(async () => {
+        await this.ordersCommandApiClient.createOrder(orderData);
+        this.newOrder = null;
+    }).catch(() => {
+        // taskRunner already showed its own toast for the error.
+    });
+}
+
+public closeInsufficientFundsModal() {
+    this.showInsufficientFundsModal = false;
+}
 }

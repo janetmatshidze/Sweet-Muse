@@ -9,6 +9,7 @@ import { IOrdersQueryApiClient } from './ApiClients/OrdersQueryApiClient';
 import { ICategoriesApiClient } from './ApiClients/CategoriesApiClient';
 import ImageKitApiClient from './ApiClients/ImageKitApiClient';
 import CustomersApiClient from './ApiClients/CustomersApiClient';
+import CustomersCommandApiClient from './ApiClients/CustomersCommandApiClient';
 
 // Symbols specific to this module.
 const DomainTypes = {
@@ -25,7 +26,9 @@ const DomainTypes = {
 
         ImageKitApiClient : new AppServices.ServiceIdentifier<ImageKitApiClient>("Domain.ApiClients.ImageKitApiClient"),
 
-        CustomersApiClient: new AppServices.ServiceIdentifier<CustomersApiClient>("Domain.ApiClients.CustomersApiClient")
+        CustomersApiClient: new AppServices.ServiceIdentifier<CustomersApiClient>("Domain.ApiClients.CustomersApiClient"),
+
+        CustomersCommandApiClient: new AppServices.ServiceIdentifier<CustomersCommandApiClient>("Domain.ApiClients.CustomersCommandApiClient")
     },
     Services: {
         ...DomainExportedTypes.Services,

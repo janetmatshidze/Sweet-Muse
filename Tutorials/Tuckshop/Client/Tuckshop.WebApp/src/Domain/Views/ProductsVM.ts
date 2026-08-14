@@ -247,6 +247,12 @@ export default class ProductsVM extends Views.ViewModelBase {
             this.dataCache.products.expire();
 
             this.editingProduct = null;
+
+        }).catch(() => {
+        
+        // taskRunner already showed its own toast for the error.
+        // Catching here just prevents React's dev overlay
+        // from also firing.
         });
     }
 

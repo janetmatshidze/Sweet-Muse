@@ -12,6 +12,11 @@ export class CreateOrder extends ModelBase {
     @Rules.Required()
     public customerName: string = "";
 
+    @Attributes.Nullable()
+    public customerId: number | null = null;
+
+    public isCashSale: boolean = false;
+
     public orderDetails = new List(NewOrderDetail);
 
     // Client only properties / methods
@@ -58,7 +63,7 @@ export class NewOrderDetail extends ModelBase {
     }
 
     protected canSerialise(shouldSerialise: boolean) {
-        return this.quantity > 0; // only serialise if quantity is greater than 0  
+        return this.quantity > 0; // only serialise if quantity is greater than 0
     }
 
     protected static addBusinessRules(rules: Validation.Rules<NewOrderDetail>) {

@@ -3,6 +3,8 @@ import { Neo, Views } from "@singularsystems/neo-react";
 import ProductsVM from "./ProductsVM";
 import { observer } from "mobx-react";
 import { getCategoryColorClass } from "../Utils/CategoryColors";
+import Product from "../Models/Product";
+import { ModalUtils } from "@singularsystems/neo-core";
 
 class ProductsParams { }
 
@@ -180,10 +182,13 @@ export default class ProductsView extends Views.ViewBase<
                                             <Neo.Button
                                                 icon="delete"
                                                 className="delete-icon"
+
                                                 onClick={() =>
-                                                    this.viewModel.deleteProduct(product)
+                                                    this.deleteProduct(product)
                                                 }
+
                                             />
+
                                         </td>
                                     </tr>
                                 );
@@ -289,6 +294,7 @@ export default class ProductsView extends Views.ViewBase<
 
                                                 <label className="replace-image-box">
                                                     <Neo.Icon
+                                                        className="replace-image-icon"
                                                         name="laps"
                                                     />
 
@@ -382,4 +388,12 @@ export default class ProductsView extends Views.ViewBase<
             </div>
         );
     }
+    public deleteProduct(product: Product) {
+        ModalUtils.showYesNo(
+            "Delete Product",
+            `Are you sure you want to delete ${product.productName}?`,
+            () => this.viewModel.deleteProduct(product)
+        );
+    }
+
 }

@@ -1,4 +1,5 @@
-import { ModelBase, Rules, Validation } from '@singularsystems/neo-core';
+import { Attributes, List, ModelBase, Rules, Validation } from '@singularsystems/neo-core';
+import WalletTransaction from './Wallets/WalletTransaction';
 
 export default class Customer extends ModelBase {
     static typeName = "Customer";
@@ -25,6 +26,11 @@ export default class Customer extends ModelBase {
     @Rules.Required()
     @Rules.StringLength(20)
     public phoneNumber: string = "";
+
+    @Attributes.Float()
+    public walletBalance: number = 0;
+
+    public walletTransactions = new List(WalletTransaction);
 
     // Client only properties / methods
 

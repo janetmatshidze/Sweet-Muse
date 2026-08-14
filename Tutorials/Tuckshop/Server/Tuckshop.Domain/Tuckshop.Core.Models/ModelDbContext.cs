@@ -10,6 +10,7 @@ namespace Tuckshop.Core.Models
   using Tuckshop.Core.Models.Files;
   using Tuckshop.Core.Models.Identity;
   using Tuckshop.Core.Models.Orders;
+  using Tuckshop.Core.Models.Wallets;
 
   /// <summary>
   /// Main Tuckshop DbContext.
@@ -45,6 +46,8 @@ namespace Tuckshop.Core.Models
 
     public DbSet<Category> Categories { get; set; }
 
+    public DbSet<WalletTransaction> WalletTransactions { get; set; }
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,6 +59,25 @@ namespace Tuckshop.Core.Models
       modelBuilder.Entity<User>(builder =>
       {
         builder.HasIndex(u => new { u.IdentityGuid, u.ClientId, }).IsUnique().HasFilter(null);
+      });
+
+      // makes the product name unique.
+      modelBuilder.Entity<Product>(builder =>
+      {
+        builder.HasIndex(p => p.ProductName).IsUnique();
+      });
+      // makes the customer name unique.
+      modelBuilder.Entity<Customer>(builder =>
+      {
+        builder.HasIndex(c => c.Email).IsUnique();
+      });
+
+      modelBuilder.Entity<Customer>(builder =>
+      {
+        builder.HasMany(c => c.WalletTransactions)
+        .WithOne()
+        .HasForeignKey(wt => wt.CustomerId)
+        .IsRequired();
       });
     }
   }

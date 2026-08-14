@@ -3,7 +3,7 @@ import { Neo, Views } from "@singularsystems/neo-react";
 import CreateOrderVM from "./CreateOrderVM";
 import { observer } from "mobx-react";
 import Link from "@singularsystems/neo-react/dist/ReactComponents/Link";
-import { viewOrdersRoute } from "../../DomainRoutes";
+import { customersRoute, viewOrdersRoute } from "../../DomainRoutes";
 
 class CreateOrderParams {
 }
@@ -49,28 +49,47 @@ export default class CreateOrderView extends Views.ViewBase<
 
                                 <div className="customer-card">
 
-                                    <div className="customer-card-heading">
-                                        Customer Information
+                                    <div className="customer-card-header">
+                                        <div className="customer-card-heading">
+                                            Customer Information
+                                        </div>
+
+                                        <Neo.Checkbox
+                                            bind={orderMeta.isCashSale}
+                                            label="Cash sale"
+                                            input={{ type: "switch" }}
+                                        />
                                     </div>
 
-                                    {/* <Neo.Checkbox
-                                    bind={orderMeta.isCashSale}
-                                    label ="Cash Sale"/> */}
+                                    {!order.isCashSale ? (
+                                        <Neo.FormGroup
+                                            bind={orderMeta.customerId}
+                                            label="Customer"
+                                            select={{
+                                                items: this.viewModel.customers,
+                                                valueMember: "customerId",
+                                                displayMember: "firstName",
+                                                allowNulls: true,
+                                                nullText: "Select a customer",
+                                                onItemSelected: (item) => {
+                                                    order.customerName = item ? item.firstName : "";
+                                                },
+                                            }}
+                                        />
+                                    ) : (
+                                        <Neo.FormGroup
+                                            bind={orderMeta.customerName}
+                                            label="Customer name"
+                                            placeholder="e.g. Walk-in customer"
+                                        />
+                                    )}
 
-                                    <Neo.FormGroup
-                                        bind={orderMeta.customerName}
-                                        select={{
-                                            items: this.viewModel.customers,
-                                            valueMember: "firstName", 
-                                            displayMember:"firstName",
-                                            allowNulls: true,
-                                            nullText: "Select a customer",
-                                        }}
-                                    />
-
-                                    <p className="customer-helper">
-                                        Enter the customer's name to create a new order.
-                                    </p>
+                                    {!order.isCashSale && this.viewModel.selectedCustomer && (
+                                        <div className="wallet-balance-display">
+                                            <span>Wallet balance</span>
+                                            <strong>R{Number(this.viewModel.selectedCustomer.walletBalance).toFixed(2)}</strong>
+                                        </div>
+                                    )}
 
                                 </div>
 
@@ -131,7 +150,7 @@ export default class CreateOrderView extends Views.ViewBase<
                                                                 <div className="product-quantity">
 
                                                                     <Neo.Button
-                                                                        type="button"
+                                                                        // type="button"
                                                                         className="quantity-button"
                                                                         onClick={() =>
                                                                             this.viewModel.decreaseProductQuantity(
@@ -139,7 +158,7 @@ export default class CreateOrderView extends Views.ViewBase<
                                                                             )
                                                                         }
                                                                     >
-                                                                        −
+                                                                        <Neo.Icon name="minus" />
                                                                     </Neo.Button>
 
                                                                     <span className="quantity-value">
@@ -149,7 +168,7 @@ export default class CreateOrderView extends Views.ViewBase<
                                                                     </span>
 
                                                                     <Neo.Button
-                                                                        type="button"
+                                                                        // type="button"
                                                                         className="quantity-button"
                                                                         onClick={() =>
                                                                             this.viewModel.increaseProductQuantity(
@@ -157,13 +176,14 @@ export default class CreateOrderView extends Views.ViewBase<
                                                                             )
                                                                         }
                                                                     >
-                                                                        +
+                                                                        <Neo.Icon name="plus" />
+
                                                                     </Neo.Button>
 
                                                                 </div>
 
                                                                 <Neo.Button
-                                                                    type="button"
+                                                                    // type="button"
                                                                     className="add-to-cart-button"
                                                                     onClick={() =>
                                                                         this.viewModel.addToCart(product)
@@ -281,7 +301,7 @@ export default class CreateOrderView extends Views.ViewBase<
                                                                         </div>
 
                                                                         <Neo.Button
-                                                                            type="button"
+                                                                            // type="button"
                                                                             className="remove-item-button"
                                                                             onClick={() =>
                                                                                 this.viewModel.removeFromCart(
@@ -301,7 +321,7 @@ export default class CreateOrderView extends Views.ViewBase<
                                                                         <div className="cart-quantity">
 
                                                                             <Neo.Button
-                                                                                type="button"
+                                                                                // type="button"
                                                                                 className="cart-quantity-button"
                                                                                 onClick={() =>
                                                                                     this.viewModel.decreaseCartQuantity(
@@ -309,7 +329,8 @@ export default class CreateOrderView extends Views.ViewBase<
                                                                                     )
                                                                                 }
                                                                             >
-                                                                                −
+                                                                                <Neo.Icon name="minus" />
+
                                                                             </Neo.Button>
 
                                                                             <span>
@@ -319,7 +340,7 @@ export default class CreateOrderView extends Views.ViewBase<
                                                                             </span>
 
                                                                             <Neo.Button
-                                                                                type="button"
+                                                                                // type="button"
                                                                                 className="cart-quantity-button"
                                                                                 onClick={() =>
                                                                                     this.viewModel.increaseCartQuantity(
@@ -327,7 +348,8 @@ export default class CreateOrderView extends Views.ViewBase<
                                                                                     )
                                                                                 }
                                                                             >
-                                                                                +
+                                                                                <Neo.Icon name="plus" />
+
                                                                             </Neo.Button>
 
                                                                         </div>
@@ -383,13 +405,17 @@ export default class CreateOrderView extends Views.ViewBase<
                                         <Neo.Button
                                             isSubmit
                                             size="lg"
-                                            icon="storefront"
                                             className="place-order-button"
                                             disabled={
                                                 order.orderDetails.length === 0
                                             }
+
                                         >
+                                            <Neo.Icon
+                                                name="storefront" />
+
                                             Place Order
+                                            
                                         </Neo.Button>
 
                                     </div>
@@ -424,6 +450,27 @@ export default class CreateOrderView extends Views.ViewBase<
                         </Neo.Button>
                         .
                     </Neo.Alert>
+                )}
+
+                {this.viewModel.showInsufficientFundsModal && (
+                    <Neo.Modal
+                        show={this.viewModel.showInsufficientFundsModal}
+                        title="Insufficient wallet balance"
+                        onClose={() => this.viewModel.closeInsufficientFundsModal()}
+                    >
+                        <p>
+                            {this.viewModel.selectedCustomer?.firstName} needs R
+                            {this.viewModel.walletShortfall.toFixed(2)} more to cover this order.
+                        </p>
+
+                        <div className="modal-actions">
+
+
+                            <Link to={customersRoute.path} className="btn btn-primary">
+                                Top up wallet
+                            </Link>
+                        </div>
+                    </Neo.Modal>
                 )}
 
             </div>

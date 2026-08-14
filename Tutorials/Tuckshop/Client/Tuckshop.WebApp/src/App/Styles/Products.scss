@@ -355,11 +355,11 @@
   border-radius: 9px !important;
 }
 
-.sweet-muse .edit-icon   { background: $misty-sky-100 !important;  color: $midnight-lagoon-500 !important; }
-.sweet-muse .delete-icon { background: $blush-petal-100 !important; color: $blush-petal-800 !important; }
+.sweet-muse .edit-icon   { background: $misty-sky-200 !important;  color: $midnight-lagoon-500 !important; }
+.sweet-muse .delete-icon { background: $blush-petal-200 !important; color: $blush-petal-800 !important; }
 
-.sweet-muse .edit-icon:hover   { background: $misty-sky-200 !important; }
-.sweet-muse .delete-icon:hover { background: $blush-petal-200 !important; }
+.sweet-muse .edit-icon:hover   { background: $misty-sky-400 !important; }
+.sweet-muse .delete-icon:hover { background: $blush-petal-400 !important; }
 
 /* ---------- Form (modal) ---------- */
 
@@ -492,8 +492,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 10px;
-  border-radius: 50%;
-  background: $misty-sky-200;
+  border-radius: 100%;
   color: $misty-sky-700;
   font-weight: 700;
   line-height: 1;
@@ -506,15 +505,15 @@
 }
 
 .replace-image-icon {
-  width: 42px;
-  height: 42px;
-  font-size: 25px;
+  font-size: 20px;
 }
 
 .image-upload-title {
+  position: relative;
   display: block;
-  color: $midnight-lagoon-500;
+  color: $blush-petal-800;
   font-size: 13px;
+  bottom:10px;
   font-weight: 600;
   line-height: 1.4;
   text-align: center;
@@ -530,7 +529,7 @@
 }
 
 .image-upload-text { font-size: 12px; }
-.replace-image-text { font-size: 11px; }
+.replace-image-text { font-size: 12px; }
 
 .product-image-edit {
   display: flex;
@@ -601,6 +600,24 @@
   box-shadow: none !important;
 }
 
+.sweet-muse .button {
+  position: relative;
+  min-width: 145px !important;
+  padding: 10px 20px !important;
+  background-color: $misty-sky-400;
+  color: $misty-sky-900;
+  border: 1px solid $misty-sky-700 !important;
+  border-radius: 9px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.sweet-muse .button:hover{
+  background-color: $midnight-lagoon-400 !important;
+  color: white;
+}
+
 .btn-close{
   color: $misty-sky-700;
 }
@@ -616,6 +633,7 @@
   background: $misty-sky-800 !important;
   border-color: $misty-sky-800 !important;
 }
+
 
 .btn-secondary {
   background-color: $blush-petal-100;

@@ -2,6 +2,8 @@ import React from 'react';
 import { Neo, Views } from '@singularsystems/neo-react';
 import CustomersVM from './CustomersVM';
 import { observer } from 'mobx-react';
+import { ModalUtils } from '@singularsystems/neo-core';
+import Customer from '../Models/Customer';
 
 class CustomersParams {
     // TODO: Add parameters here in the form: public paramName = { isQuery?: boolean, required?: boolean };
@@ -62,6 +64,8 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                                 <th>Last Name</th>
                                 <th>Email</th>
                                 <th>Phone Number</th>
+                                <th>Wallet Balance</th>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                             </tr>
@@ -86,6 +90,21 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                                         <td>
                                             {customer.phoneNumber}
                                         </td>
+
+                                        <td>
+                                            {customer.walletBalance}
+                                        </td>
+
+                                        <td>
+                                            <Neo.Button
+                                                icon="add_card"
+                                                className="wallet-icon"
+                                                onClick={() =>
+                                                    this.viewModel.openWallet(customer)
+                                                }
+                                            />
+                                        </td>
+
                                         <td>
                                             <Neo.Button
                                                 icon="edit"
@@ -101,7 +120,7 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                                                 icon="delete"
                                                 className="delete-icon"
                                                 onClick={() =>
-                                                    this.viewModel.deleteCustomer(customer)
+                                                    this.deleteCustomer(customer)
                                                 }
                                             />
                                         </td>
@@ -111,7 +130,7 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
 
                             {pagedCustomers.length === 0 && (
                                 <tr className="customer-customer-filler-row  ">
-                                 <td colSpan={6} className="message">
+                                    <td colSpan={8} className="message">
                                         No customers found
                                     </td>
                                 </tr>
@@ -119,12 +138,12 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
 
                             {Array.from({
                                 length:
-                                pagedCustomers.length === 0
-                                ? emptySlots - 1
-                                  : emptySlots,
+                                    pagedCustomers.length === 0
+                                        ? emptySlots - 1
+                                        : emptySlots,
                             }).map((_, index) => (
                                 <tr key={`filler-${index}`} className="customer-filler-row ">
-                                    <td colSpan={6}>&nbsp;</td>
+                                    <td colSpan={8}>&nbsp;</td>
                                 </tr>
                             ))}
 
@@ -155,7 +174,7 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                     >
                     </Neo.Button>
                 </div>
-                
+
                 {this.viewModel.editingCustomer && (
                     <Neo.Modal
                         show={!!this.viewModel.editingCustomer}
@@ -167,7 +186,7 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                         onClose={() => this.viewModel.cancelEdit()}
                     >
 
-                      <Neo.Form
+                        <Neo.Form
                             model={this.viewModel.editingCustomer}
                             onSubmit={() => this.viewModel.saveCustomer()}
                         >
@@ -216,8 +235,75 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                             )}
                         </Neo.Form>
                     </Neo.Modal>
-                )}   
+                )}
+
+                {this.viewModel.walletCustomer && this.viewModel.newDeposit && this.viewModel.newWithdrawal && (
+                    <Neo.Modal
+                        show={!!this.viewModel.walletCustomer}
+                        title={`Wallet - ${this.viewModel.walletCustomer.firstName} ${this.viewModel.walletCustomer.lastName}`}
+                        onClose={() => this.viewModel.closeWallet()}
+                    >
+                        <div className="wallet-balance-display">
+                            <span>Current balance</span>
+                            <strong>R{Number(this.viewModel.walletCustomer.walletBalance).toFixed(2)}</strong>
+                        </div>
+
+                        <Neo.Form
+                            model={this.viewModel.newDeposit}
+                            onSubmit={() => this.viewModel.depositToWallet()}
+                        >
+                            {(deposit, depositMeta) => (
+                                <div className="form">
+                                    <Neo.FormGroupInline
+                                        bind={depositMeta.amount}
+                                        label="Deposit amount"
+                                    />
+
+                                    <Neo.Button
+                                        isSubmit
+                                        variant="success"
+                                        icon="plus"
+                                        className="save-btn"
+                                    >
+                                        Deposit
+                                    </Neo.Button>
+                                </div>
+                            )}
+                        </Neo.Form>
+
+                        <Neo.Form
+                            model={this.viewModel.newWithdrawal}
+                            onSubmit={() => this.viewModel.withdrawFromWallet()}
+                        >
+                            {(withdrawal, withdrawalMeta) => (
+                                <div className="form">
+                                    <Neo.FormGroupInline
+                                        bind={withdrawalMeta.amount}
+                                        label="Withdrawal amount"
+                                    />
+
+                                    <Neo.Button
+                                        isSubmit
+                                        variant="danger"
+                                        icon="minus"
+                                        className="save-btn"
+                                    >
+                                        Withdraw
+                                    </Neo.Button>
+                                </div>
+                            )}
+                        </Neo.Form>
+                    </Neo.Modal>
+                )}
             </div>
+        );
+    }
+
+    public deleteCustomer(customer: Customer) {
+        ModalUtils.showYesNo(
+            "Delete Customer",
+            `Are you sure you want to delete ${customer.firstName}?`,
+            () => this.viewModel.deleteCustomer(customer)
         );
     }
 }

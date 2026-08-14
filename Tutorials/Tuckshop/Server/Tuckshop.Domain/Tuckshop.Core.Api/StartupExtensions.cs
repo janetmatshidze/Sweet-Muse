@@ -1,9 +1,5 @@
 ﻿namespace Tuckshop.Core.Api
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Reflection;
   using Microsoft.AspNetCore.Builder;
   using Microsoft.AspNetCore.Hosting;
   using Microsoft.AspNetCore.Http;
@@ -26,9 +22,16 @@
   using Neo.Model.Processing;
   using Neo.Model.Serilog.Enrichers;
   using Neo.Model.Swagger;
+  using Neo.Model.Validation;
   using Neo.Options;
   using Neo.SecretVault;
   using Neo.SignalR;
+  using Serilog;
+  using Serilog.Filters;
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Reflection;
   using Tuckshop.Core.App.Services;
   using Tuckshop.Core.Models;
   using Tuckshop.Core.Models.Files;
@@ -37,8 +40,6 @@
   using Tuckshop.Core.Models.Migrations.DesignTime;
   using Tuckshop.Core.Models.Migrations.Initializers;
   using Tuckshop.Extensions;
-  using Serilog;
-  using Serilog.Filters;
 
   /// <summary>
   /// Startup extensions.
@@ -70,6 +71,7 @@
       services.AddScoped<IProductPricesService, ProductPricesService>();
       services.AddScoped<OrdersQueryService>(); // Service is Scoped since it depends on the DbContext
       services.AddScoped<ImageKitService>();
+      services.AddScoped<CustomersCommandService>();
 
       return services;
     }
@@ -212,7 +214,15 @@
     /// <returns>The service collection.</returns>
     public static IServiceCollection AddTuckshopDataServices(this IServiceCollection services, IWebHostEnvironment environment, IConfiguration configuration)
     {
-      services.AddNeoModelSqlErrorPolicies();
+      //services.AddNeoModelSqlErrorPolicies();
+
+      services.AddNeoModelSqlErrorPolicies(new DbDuplicateErrorHandlingPolicyOptions(
+   new Dictionary<string, string>
+  {
+    { nameof(Product), "A product with this name already exists." },
+    { nameof(Customer), "A customer with this email already exists." },
+
+  }));
 
       services.AddNeoDbContext<ModelDbContext>(
         options => options.UseSqlServer(

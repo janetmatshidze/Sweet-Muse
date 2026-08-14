@@ -79,12 +79,16 @@
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Order"/> class.
+    ///  Initializes a new instance of the <see cref="Order"/> class.
     /// </summary>
-    /// <param name="customerName">The name of the customer.</param>
-    public Order(string customerName)
+    /// <param name="customerName">The customer name.</param>
+    /// <param name="customerId">The customer Id.</param>
+    /// <param name="isCashSale">The is cash sale.</param>
+    public Order(string customerName, int? customerId = null, bool isCashSale = false)
     {
       this.CustomerName = customerName;
+      this.CustomerId = customerId;
+      this.IsCashSale = isCashSale;
       this.OrderedOn = DateTime.UtcNow;
       this.TrackingState = TrackableEntities.Common.Core.TrackingState.Added; // Set the tracking state to Added for new entities
     }

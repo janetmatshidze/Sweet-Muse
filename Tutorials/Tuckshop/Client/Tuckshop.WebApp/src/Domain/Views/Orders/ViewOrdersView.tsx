@@ -31,7 +31,9 @@ export default class ViewOrdersView extends Views.ViewBase<
                 <Neo.Card className="orders-search-card">
                     <div className="orders-section-heading">
                         <div className="orders-heading-icon">
-                            <span className="orders-heading-symbol">⌕</span>
+                            <span className="orders-heading-symbol">
+                                <Neo.Icon name="search"/>
+                            </span>
                         </div>
 
                         <div>
@@ -82,7 +84,9 @@ export default class ViewOrdersView extends Views.ViewBase<
 
                     <div className="orders-section-heading">
                         <div className="orders-heading-icon">
-                            <span className="orders-heading-symbol">▣</span>
+                            <span className="orders-heading-symbol">
+                                <Neo.Icon name="orders"/>
+                            </span>
                         </div>
 
                         <div>

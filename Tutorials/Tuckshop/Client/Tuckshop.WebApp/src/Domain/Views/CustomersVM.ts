@@ -2,17 +2,26 @@ import { Views } from '@singularsystems/neo-react';
 import { AppService, Types } from '../DomainTypes';
 import Customer from '../Models/Customer';
 import { List } from '@singularsystems/neo-core';
+import DepositToWallet from '../Models/Wallets/Commands/DepositToWallet';
+import WithdrawFromWallet from '../Models/Wallets/Commands/WithdrawFromWallet';
 
 export default class CustomersVM extends Views.ViewModelBase {
 
     constructor(
         taskRunner = AppService.get(Types.Neo.TaskRunner),
         private customersApiClient = AppService.get(Types.Domain.ApiClients.CustomersApiClient),
+        private customersCommandApiClient = AppService.get(Types.Domain.ApiClients.CustomersCommandApiClient),
         private notifications = AppService.get(Types.Neo.UI.GlobalNotifications)) {
 
         super(taskRunner);
         this.makeObservable();
     }
+
+    public walletCustomer: Customer | null = null;
+
+    public newDeposit: DepositToWallet | null = null;
+
+    public newWithdrawal: WithdrawFromWallet | null = null;
 
     public customers = new List(Customer);
 
@@ -23,6 +32,73 @@ export default class CustomersVM extends Views.ViewModelBase {
     public setSearchTerm(value: string) {
         this.searchTerm = value;
         this.currentPage = 1;
+    }
+
+    public openWallet(customer: Customer) {
+        this.walletCustomer = customer;
+
+        const deposit = new DepositToWallet();
+        deposit.customerId = customer.customerId;
+        this.newDeposit = deposit;
+
+        const withdrawal = new WithdrawFromWallet();
+        withdrawal.customerId = customer.customerId;
+        this.newWithdrawal = withdrawal;
+    }
+
+    public closeWallet() {
+        this.walletCustomer = null;
+        this.newDeposit = null;
+        this.newWithdrawal = null;
+    }
+
+    public depositToWallet() {
+        if (!this.newDeposit || !this.walletCustomer) {
+            return;
+        }
+
+        this.taskRunner.run(async () => {
+            const response = await this.customersCommandApiClient.deposit(
+                this.newDeposit!.toJSObject()
+            );
+
+            this.walletCustomer!.walletBalance = response.data.walletBalance;
+
+            this.notifications.addSuccess(
+                "Deposit successful",
+                "Wallet topped up successfully",
+                4
+            );
+
+            this.closeWallet();
+        }).catch(() => {
+
+        });
+    }
+
+    public withdrawFromWallet() {
+        if (!this.newWithdrawal || !this.walletCustomer) {
+            return;
+        }
+
+        this.taskRunner.run(async () => {
+            const response = await this.customersCommandApiClient.withdraw(
+                this.newWithdrawal!.toJSObject()
+            );
+
+            this.walletCustomer!.walletBalance = response.data.walletBalance;
+
+            this.notifications.addSuccess(
+                "Withdrawal successful",
+                "Withdrawal processed successfully",
+                4
+            );
+
+            this.closeWallet();
+
+        }).catch(() => {
+
+        });
     }
 
     public get filteredCustomers() {
@@ -171,6 +247,8 @@ export default class CustomersVM extends Views.ViewModelBase {
             );
 
             this.editingCustomer = null;
+
+        }).catch(() => {
 
         });
     }

@@ -1,4 +1,4 @@
-const categoryColorCount = 8;
+const categoryColorCount = 6;
 
 export function getCategoryColorClass(categoryId: number): string {
     const index = categoryId % categoryColorCount;

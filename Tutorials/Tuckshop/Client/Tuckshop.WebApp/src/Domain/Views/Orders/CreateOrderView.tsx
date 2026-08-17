@@ -3,6 +3,7 @@ import { Neo, Views } from "@singularsystems/neo-react";
 import CreateOrderVM from "./CreateOrderVM";
 import { observer } from "mobx-react";
 import Link from "@singularsystems/neo-react/dist/ReactComponents/Link";
+import { getProductColorClass } from "../../Utils/ProductCardColors";
 import { customersRoute, viewOrdersRoute } from "../../DomainRoutes";
 
 class CreateOrderParams {
@@ -108,10 +109,10 @@ export default class CreateOrderView extends Views.ViewBase<
                                         </div>
 
                                         <div className="product-cards">
-
                                             {this.viewModel.products.map(product => (
+
                                                 <div
-                                                    className="product-card"
+                                                    className={`product-card ${getProductColorClass(product.categoryId)}`}
                                                     key={product.productId}
                                                 >
 
@@ -415,7 +416,7 @@ export default class CreateOrderView extends Views.ViewBase<
                                                 name="storefront" />
 
                                             Place Order
-                                            
+
                                         </Neo.Button>
 
                                     </div>

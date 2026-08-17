@@ -16,7 +16,7 @@
 .auth-page__visual {
   position: relative;
   background:
-    radial-gradient(130% 95% at 0% 0%, rgba(var(--bs-success-rgb), 0.08) 0%, rgba(var(--bs-success-rgb), 0) 44%),
+    radial-gradient(130% 95% at 0% 0%, rgba(var(--bs-primary), 0.08) 0%, rgba(var(--bs-primary), 0) 44%),
     linear-gradient(138deg, var(--auth-visual-bg-start) 0%, var(--auth-visual-bg-mid) 56%, var(--auth-visual-bg-end) 100%);
   color: #fff;
   padding: 3.25rem 2.6rem;

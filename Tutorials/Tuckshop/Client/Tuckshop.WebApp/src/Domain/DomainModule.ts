@@ -11,12 +11,14 @@ import CategoriesApiClient from './ApiClients/CategoriesApiClient';
 import ImageKitApiClient from './ApiClients/ImageKitApiClient';
 import CustomersApiClient from './ApiClients/CustomersApiClient';
 import CustomersCommandApiClient from './ApiClients/CustomersCommandApiClient';
+import OrdersApiClient from './ApiClients/OrdersApiClient';
 
 export const DomainAppModule = new AppServices.Module("Domain", container => {
 
     // Api Clients
     container.bind(DomainTypes.ApiClients.Catalogue).to(CatalogueApiClient).inSingletonScope();
     container.bind(DomainTypes.ApiClients.ProductsApiClient).to(ProductsApiClient).inSingletonScope();
+    container.bind(DomainTypes.ApiClients.OrdersApiClient).to(OrdersApiClient).inSingletonScope();
     container.bind(DomainTypes.ApiClients.OrdersCommandApiClient).to(OrdersCommandApiClient).inSingletonScope();
     container.bind(DomainTypes.ApiClients.OrdersQueryApiClient).to(OrdersQueryApiClient).inSingletonScope();
     container.bind(DomainTypes.ApiClients.CategoriesApiClient).to(CategoriesApiClient).inSingletonScope();

@@ -53,6 +53,46 @@
   .i-box {
     grid-template-columns: 1fr;
   }
+
+  .auth-page__visual {
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    background: #f7efe7;
+  }
+
+  .auth-page__hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .auth-page__hero-overlay {
+    position: absolute;
+    left: 48px;
+    bottom: 48px;
+    color: white;
+    text-shadow: 0 4px 20px rgba(0,0,0,.35);
+  }
+
+    .auth-page__hero-overlay h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: .25rem;
+    }
+
+    .auth-page__hero-overlay p {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+  .auth-page__logo {
+    max-width: 240px;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1.5rem;
+  }
   .auth-layout .auth-page__visual,
   .auth-page__shell > .auth-page__visual {
     display: none;
@@ -73,7 +113,7 @@
 .logo-image {
   background: var(--logo-image-light);
   margin-bottom: 0.625rem;
-  width: 15.625rem;
+  width: 18.625rem;
 }
 
 .logo-style,
@@ -575,10 +615,10 @@
   }
 }
 :root {
-  --bs-primary: #5a8a6b;
-  --bs-primary-rgb: 90, 138, 107;
-  --bs-secondary: #F9DC5C;
-  --bs-secondary-rgb: 123, 192, 67;
+  --bs-primary: #B46A71;
+  --bs-primary-rgb: 180, 106, 113;
+  --bs-secondary: #E65375;
+  --bs-secondary-rgb: 230, 83, 117;
   --bs-success: #109110;
   --bs-success-rgb: 16, 145, 16;
   --bs-danger: #eb4343;
@@ -587,11 +627,11 @@
   --bs-warning-rgb: 255, 193, 7;
   --bs-info: #00B0F0;
   --bs-info-rgb: 0, 176, 240;
-  --bs-dark: #1D563C;
-  --bs-dark-rgb: 26, 39, 56;
+  --bs-dark: #9C1736;
+  --bs-dark-rgb: 156, 23, 54;
   --bs-body-bg: #fff;
   --bs-body-color: #7a7a7a;
-  --bs-border-color: #d2dbe5;
+  --bs-border-color: #E9D2D5;
   --bs-link-color: var(--bs-primary);
   --bs-link-hover-color: var(--bs-dark);
   --bs-emphasis-color: var(--bs-dark);
@@ -620,8 +660,8 @@
   --auth-visual-accent: #F9DC5C;
   --auth-visual-accent-rgb: 249, 220, 92;
   --auth-brand-shadow-rgb: 17, 35, 24;
-  --logo-image-light: url("../../images/Nectar_Logo_Vertical.svg");
-  --logo-image-dark: url("../../images/Nectar_Logo_Vertical.svg");
+  --logo-image-light: url("../../images/sweet_muse.svg");
+  --logo-image-dark: url("../../images/sweet_muse.svg");
 }
 
 html, body {

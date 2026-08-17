@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\..\..\..\..\..\..\Users\JMatshidze.SINGULAR\Downloads\sweet_muse.png" Link="wwwroot\images\sweet_muse.png" />
     <Content Include="Certificates\neo-localhost.pfx" />
   </ItemGroup>
 

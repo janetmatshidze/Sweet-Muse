@@ -1,0 +1,218 @@
+.sweet-muse {
+
+    .sales-overview-card {
+        background: $coffee-brown-50;
+        border: 1px solid $coffee-brown-100;
+        width: 100%;
+        max-width: 900px;
+        border-radius: 16px;
+        padding: 1.5rem;
+    }
+
+    .payment-split-card {
+        border: 1px solid $coffee-brown-100;
+        border-radius: 16px;
+    }
+
+    .sales-overview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+
+        h2 {
+            
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+    }
+
+
+
+    .period-dropdown-wrapper {
+        position: relative;
+    }
+
+    .period-dropdown-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #fff;
+        border: 1px solid #e6e0d4;
+        border-radius: 8px;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+    }
+
+    .period-dropdown-menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 4px);
+        background: #fff;
+        border: 1px solid #e6e0d4;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        z-index: 10;
+        min-width: 130px;
+
+        button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+
+            &:hover {
+                background: #f5f1e9;
+            }
+        }
+    }
+
+    .sales-overview-legend {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 0.75rem;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .legend-swatch {
+        width: 20px;
+        height: 2px;
+        display: inline-block;
+
+        &.solid {
+            background: #c0564c;
+        }
+
+        &.dotted {
+            border-top: 2px dotted #c9c2b6;
+        }
+
+        // For the pie chart legend, dots read better than lines since there's no line series to represent.
+        &.cash,
+        &.wallet {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        &.cash {
+            background: #c0564c;
+        }
+
+        &.wallet {
+            background: #e0b8a8;
+        }
+    }
+}
+
+.payment-split-card .card-header-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    margin-top: 30px;
+    color: $blush-petal-800;
+}
+
+.payment-split-card .card-body {
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.payment-split-card {
+    .payment-split-chart-wrapper {
+        position: relative;
+    }
+
+    .payment-split-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .payment-split-total {
+        display: block;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $coffee-brown-500;
+    }
+
+    .payment-split-label {
+        display: block;
+        font-size: 0.75rem;
+        color: #999;
+    }
+}
+
+.payment-split-legend {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+
+.sweet-muse {
+
+    .dashboard-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr; // sales overview gets 2x the width of cash vs wallet
+        gap: 1.5rem;
+        align-items: stretch; // makes both cards match height automatically
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            max-height: 450px;
+            height: 100%;
+        }
+    }
+
+    .sales-overview-chart-wrapper {
+        flex: 1; // fills remaining vertical space so short/tall content still lines up
+    }
+
+    .payment-split-chart-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    @media (max-width: 900px) {
+        .dashboard-row {
+            grid-template-columns: 1fr; // stack on smaller screens
+        }
+    }
+
+    .top-customers-card {
+        border-radius: 16px;
+        margin-top: 0; // dashboard-row already carries mb-3 spacing above it
+    }
+
+    .dashboard-empty-state {
+        padding: 2rem 0;
+        text-align: center;
+        color: #999;
+        font-size: 0.9rem;
+    }
+}

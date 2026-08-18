@@ -74,8 +74,7 @@
     {
       base.AddBusinessRules(rules);
 
-      rules.FailWhen(c => c.Price <= 0, "Price must be greater than zero.");
-
+      rules.FailWhen(p => p.Price <= 0, "Price must be greater than zero.");
     }
   }
 }

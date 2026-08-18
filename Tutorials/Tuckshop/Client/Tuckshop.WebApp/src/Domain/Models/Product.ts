@@ -35,7 +35,10 @@ export default class Product extends ModelBase {
     addBusinessRules(rules: Validation.Rules<this>) {
         super.addBusinessRules(rules);
 
-        rules.failWhen(c => c.price <= 0 , "Price must be above zero.");
+        rules.failWhen(p => p.price <= 0 , "Price must be above zero.");
+
+    
+
     }
 
     public toString(): string {

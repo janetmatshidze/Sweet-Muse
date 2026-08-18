@@ -32,16 +32,22 @@ export default class ProductsVM extends Views.ViewModelBase {
 
     public showCategoryFilter: boolean = false;
 
+    public submitAttempted: boolean = false;
+
+    public markSubmitAttempted() {
+        this.submitAttempted = true;
+    }
+
     public toggleCategoryFilter() {
-    this.showCategoryFilter = !this.showCategoryFilter;
-}
+        this.showCategoryFilter = !this.showCategoryFilter;
+    }
 
     public setSearchTerm(value: string) {
         this.searchTerm = value;
         this.currentPage = 1;
     }
 
-    public setSelectedCategory(categoryId: number | null){
+    public setSelectedCategory(categoryId: number | null) {
         this.selectedCategoryId = categoryId;
         this.currentPage = 1;
         this.showCategoryFilter = false; // closes the dropdown after picking.
@@ -54,9 +60,9 @@ export default class ProductsVM extends Views.ViewModelBase {
 
         if (term) {
             result = result.filter(p => (p.productName ?? "").toLowerCase().includes(term)
-          );
-        } 
-        if(this.selectedCategoryId !==null){
+            );
+        }
+        if (this.selectedCategoryId !== null) {
             result = result.filter(p => p.categoryId === this.selectedCategoryId);
         }
 
@@ -111,7 +117,7 @@ export default class ProductsVM extends Views.ViewModelBase {
             this.currentPage = this.totalPages;
         }
     }
-    
+
 
     // ---------- Data / CRUD ----------
 
@@ -137,6 +143,7 @@ export default class ProductsVM extends Views.ViewModelBase {
     public addProduct() {
 
         this.editingProduct = new Product();
+        this.submitAttempted = false;
     }
 
 
@@ -147,6 +154,8 @@ export default class ProductsVM extends Views.ViewModelBase {
         edit.set(product.toJSObject());
 
         this.editingProduct = edit;
+
+        this.submitAttempted = false;
     }
 
 
@@ -249,10 +258,10 @@ export default class ProductsVM extends Views.ViewModelBase {
             this.editingProduct = null;
 
         }).catch(() => {
-        
-        // taskRunner already showed its own toast for the error.
-        // Catching here just prevents React's dev overlay
-        // from also firing.
+
+            // taskRunner already showed its own toast for the error.
+            // Catching here just prevents React's dev overlay
+            // from also firing.
         });
     }
 

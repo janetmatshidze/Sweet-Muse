@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\..\..\..\..\..\Users\JMatshidze.SINGULAR\Downloads\sweet_muse.png" Link="wwwroot\images\sweet_muse.png" />
     <Content Include="Certificates\neo-localhost.pfx" />
   </ItemGroup>
 
@@ -54,6 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\..\..\..\..\Users\JMatshidze.SINGULAR\Downloads\sweet_muse.svg" Link="wwwroot\images\sweet_muse.svg" />
     <None Include="compilerconfig.json" />
     <None Include="Views\Authorization\Authorize.cshtml" />
     <None Include="Views\Authorization\Logout.cshtml" />

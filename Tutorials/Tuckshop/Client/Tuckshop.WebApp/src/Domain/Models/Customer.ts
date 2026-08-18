@@ -24,7 +24,7 @@ export default class Customer extends ModelBase {
     public email: string = "";
 
     @Rules.Required()
-    @Rules.StringLength(20)
+    @Rules.StringLength(10)
     public phoneNumber: string = "";
 
     @Attributes.Float()

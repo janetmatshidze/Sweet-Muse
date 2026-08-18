@@ -44,7 +44,7 @@
     /// Gets or sets Phone Number.
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    [StringLength(20)]
+    [StringLength(10)]
     public string PhoneNumber { get; set; } = string.Empty;
 
     /// <summary>
@@ -66,7 +66,7 @@
     /// <returns>The created wallet transaction.</returns>
     public WalletTransaction Deposit(decimal amount, int processedByUserId)
     {
-      if (amount <=0)
+      if (amount <= 0)
       {
         throw new InvalidDomainOperationException("Deposit amount must be greater than zero.");
       }

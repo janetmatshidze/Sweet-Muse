@@ -6,7 +6,8 @@ import Scrollbar from 'react-custom-scrollbars';
 import { AppService, Types } from '../Services/AppService';
 import { IAppLayout, ScreenSize } from '../Services/AppLayout';
 import { IAppMenuItem } from "../Services/RouteService";
-import Logo from '../assets/img/Sweet-Muse-1.png';
+import Logo from "../assets/img/sweet-muse-logo.svg";
+import LogoIcon from "../assets/img/sweet-muse-icon.svg";
 import { Neo } from '@singularsystems/neo-react';
 
 interface ISidebarProps {
@@ -40,9 +41,13 @@ class Sidebar extends React.Component<ISidebarProps> {
                     className="app-left-panel">
 
                     <div className="sidebar">
-                        <div className="sidebar-header">
-                            {/* Logo */}
-                            <img src={Logo} alt="" />
+                       <div className={"sidebar-header" + (layout.thinSideBar && !layout.sideBarExpanded ? " is-collapsed" : "")}>
+                            {/* Logo: full wordmark when expanded, icon-only when collapsed */}
+                            <img
+                                src={layout.thinSideBar && !layout.sideBarExpanded ? LogoIcon : Logo}
+                                alt=""
+                                className={layout.thinSideBar && !layout.sideBarExpanded ? "sidebar-logo-icon" : "sidebar-logo-full"}
+                            />
                             {/* Menu toggle button */}
                             {layout.currentScreenSize > ScreenSize.Small &&
                                 <span className={"menu-toggle-container"} onClick={layout.menuToggle}>

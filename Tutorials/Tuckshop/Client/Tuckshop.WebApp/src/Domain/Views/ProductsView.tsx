@@ -4,7 +4,7 @@ import ProductsVM from "./ProductsVM";
 import { observer } from "mobx-react";
 import { getCategoryColorClass } from "../Utils/CategoryColors";
 import Product from "../Models/Product";
-import { ModalUtils } from "@singularsystems/neo-core";
+import { ModalUtils, Validation } from "@singularsystems/neo-core";
 
 class ProductsParams { }
 
@@ -319,6 +319,8 @@ export default class ProductsView extends Views.ViewBase<
                                                     />
                                                 </label>
 
+
+
                                             </div>
                                         ) : (
                                             <label className="image-upload-box">
@@ -348,6 +350,15 @@ export default class ProductsView extends Views.ViewBase<
                                                 />
 
                                             </label>
+
+                                        )}
+
+                                        {!productMeta.imageUrl.validator.isValid && (
+                                            <div className="field-error">
+                                                {productMeta.imageUrl.validator
+                                                    .getDisplayState(Validation.DisplayMode.AfterSubmit)
+                                                    .displayText}
+                                            </div>
                                         )}
                                     </div>
 

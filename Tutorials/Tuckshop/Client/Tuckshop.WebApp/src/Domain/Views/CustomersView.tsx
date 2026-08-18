@@ -183,7 +183,10 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                                 ? "Edit Customer"
                                 : "Add Customer"
                         }
-                        onClose={() => this.viewModel.cancelEdit()}
+                       
+                        onClose={() => this.viewModel.cancelEdit()
+                            
+                        }
                     >
 
                         <Neo.Form
@@ -236,66 +239,65 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                         </Neo.Form>
                     </Neo.Modal>
                 )}
+{this.viewModel.walletCustomer && this.viewModel.newDeposit && this.viewModel.newWithdrawal && (
+    <Neo.Modal
+        show={!!this.viewModel.walletCustomer}
+        title={`Wallet - ${this.viewModel.walletCustomer.firstName} ${this.viewModel.walletCustomer.lastName}`}
+        onClose={() => this.viewModel.closeWallet()}
+        closeButton={{ className: "wallet-modal-close" }}
+    >
+        <div className="wallet-modal-body">
 
-                {this.viewModel.walletCustomer && this.viewModel.newDeposit && this.viewModel.newWithdrawal && (
-                    <Neo.Modal
-                        show={!!this.viewModel.walletCustomer}
-                        title={`Wallet - ${this.viewModel.walletCustomer.firstName} ${this.viewModel.walletCustomer.lastName}`}
-                        onClose={() => this.viewModel.closeWallet()}
-                    >
-                        <div className="wallet-balance-display">
-                            <span>Current balance</span>
-                            <strong>R{Number(this.viewModel.walletCustomer.walletBalance).toFixed(2)}</strong>
-                        </div>
-
-                        <Neo.Form
-                            model={this.viewModel.newDeposit}
-                            onSubmit={() => this.viewModel.depositToWallet()}
-                        >
-                            {(deposit, depositMeta) => (
-                                <div className="form">
-                                    <Neo.FormGroupInline
-                                        bind={depositMeta.amount}
-                                        label="Deposit amount"
-                                    />
-
-                                    <Neo.Button
-                                        isSubmit
-                                        variant="success"
-                                        icon="plus"
-                                        className="save-btn"
-                                    >
-                                        Deposit
-                                    </Neo.Button>
-                                </div>
-                            )}
-                        </Neo.Form>
-
-                        <Neo.Form
-                            model={this.viewModel.newWithdrawal}
-                            onSubmit={() => this.viewModel.withdrawFromWallet()}
-                        >
-                            {(withdrawal, withdrawalMeta) => (
-                                <div className="form">
-                                    <Neo.FormGroupInline
-                                        bind={withdrawalMeta.amount}
-                                        label="Withdrawal amount"
-                                    />
-
-                                    <Neo.Button
-                                        isSubmit
-                                        variant="danger"
-                                        icon="minus"
-                                        className="save-btn"
-                                    >
-                                        Withdraw
-                                    </Neo.Button>
-                                </div>
-                            )}
-                        </Neo.Form>
-                    </Neo.Modal>
-                )}
+            <div className="wallet-balance-display">
+                <span>Current balance</span>
+                <strong>R{Number(this.viewModel.walletCustomer.walletBalance).toFixed(2)}</strong>
             </div>
+
+            <Neo.Form model={this.viewModel.newDeposit}>
+                {(deposit, depositMeta) => (
+                    <div className="form wallet-modal-row">
+                        <Neo.FormGroupInline
+                            bind={depositMeta.amount}
+                            label="Deposit amount"
+                        />
+                    </div>
+                )}
+            </Neo.Form>
+
+            <Neo.Form model={this.viewModel.newWithdrawal}>
+                {(withdrawal, withdrawalMeta) => (
+                    <div className="form wallet-modal-row">
+                        <Neo.FormGroupInline
+                            bind={withdrawalMeta.amount}
+                            label="Withdrawal amount"
+                        />
+                    </div>
+                )}
+            </Neo.Form>
+
+            <div className="wallet-modal-actions">
+                <Neo.Button
+                    icon="plus"
+                    className="withdraw-btn"
+                    onClick={() => this.viewModel.depositToWallet()}
+                >
+                    Deposit
+                </Neo.Button>
+
+                <Neo.Button
+                    icon="minus"
+                    className="withdraw-btn"
+                    onClick={() => this.viewModel.withdrawFromWallet()}
+                >
+                    Withdraw
+                </Neo.Button>
+            </div>
+
+        </div>
+    </Neo.Modal>
+)}
+            </div>
+            
         );
     }
 

@@ -236,7 +236,7 @@
 
 /* ---------- Pagination ---------- */
 
-.sweet-muse .pagination {
+.pagination {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -245,7 +245,7 @@
   margin-top: 20px;
 }
 
-.sweet-muse .pagination-btn {
+.pagination-btn {
   min-width: 100px !important;
   padding: 9px 16px !important;
   border: 1px solid $rosewood-200 !important;
@@ -258,18 +258,18 @@
   transition: all 0.15s ease;
 }
 
-.sweet-muse .pagination-btn:hover:not(:disabled) {
+.pagination-btn:hover:not(:disabled) {
   background: $rosewood-50 !important;
   border-color: $rosewood-300 !important;
   color: $rosewood-900 !important;
 }
 
-.sweet-muse .pagination-btn:disabled {
+.pagination-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.sweet-muse .pagination-info {
+.pagination-info {
   color: $rosewood-700;
   font-size: 13px;
   font-weight: 600;

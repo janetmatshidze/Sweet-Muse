@@ -25,6 +25,10 @@ export default class ViewOrdersView extends Views.ViewBase<
     }
 
     public render() {
+
+        const pagedOrders = this.viewModel.pagedOrders;
+        const emptySlots = this.viewModel.pageSize - pagedOrders.length;
+
         return (
             <div className="sweet-muse-orders">
 
@@ -98,7 +102,7 @@ export default class ViewOrdersView extends Views.ViewBase<
                     <div className="orders-table-wrapper">
 
                         <NeoGrid.Grid
-                            items={this.viewModel.foundOrders}
+                            items={pagedOrders}
                         >
                             {(order, orderMeta) => (
                                 <NeoGrid.RowGroup
@@ -213,9 +217,45 @@ export default class ViewOrdersView extends Views.ViewBase<
                             )}
                         </NeoGrid.Grid>
 
+                        {emptySlots > 0 && (
+                            <div className="orders-empty-slots">
+                                {Array.from({ length: emptySlots }).map((_, i) => (
+                                    <div key={i} className="order-row-placeholder" />
+                                ))}
+                            </div>
+                        )}
+
                     </div>
 
+                   
+
                 </Neo.Card>
+
+                 <div className="sweet-muse pagination">
+
+                       <Neo.Button
+                        className=" pagination-btn"
+                        icon="keyboard_double_arrow_left"
+                        disabled={this.viewModel.currentPage === 1}
+                        onClick={() => this.viewModel.previousPage()}
+                    >
+                    </Neo.Button>
+
+                        <span className="pagination-info">
+                        Page {this.viewModel.currentPage} of {this.viewModel.totalPages}
+                    </span>
+
+                       <Neo.Button
+                        className="pagination-btn"
+                        icon="keyboard_double_arrow_right"
+                        disabled={
+                            this.viewModel.currentPage === this.viewModel.totalPages
+                        }
+                        onClick={() => this.viewModel.nextPage()}
+                    >
+                    </Neo.Button>
+
+                    </div>
 
             </div>
         );

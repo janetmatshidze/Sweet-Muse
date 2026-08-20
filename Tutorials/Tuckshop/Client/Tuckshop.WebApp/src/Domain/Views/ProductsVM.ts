@@ -69,7 +69,7 @@ export default class ProductsVM extends Views.ViewModelBase {
         return result;
     }
 
-    // ---------- Pagination ----------
+    // Pagination
 
     public readonly pageSize = 5;
 
@@ -119,7 +119,7 @@ export default class ProductsVM extends Views.ViewModelBase {
     }
 
 
-    // ---------- Data / CRUD ----------
+    // Data / CRUD 
 
     public async initialise() {
 

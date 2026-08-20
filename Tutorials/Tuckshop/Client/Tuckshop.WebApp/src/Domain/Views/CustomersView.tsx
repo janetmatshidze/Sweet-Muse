@@ -253,7 +253,7 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                 <strong>R{Number(this.viewModel.walletCustomer.walletBalance).toFixed(2)}</strong>
             </div>
 
-            <Neo.Form model={this.viewModel.newDeposit}>
+            {/* <Neo.Form model={this.viewModel.newDeposit}>
                 {(deposit, depositMeta) => (
                     <div className="form wallet-modal-row">
                         <Neo.FormGroupInline
@@ -272,23 +272,54 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                             label="Withdrawal amount"
                         />
                     </div>
+
+
+                )}
+            </Neo.Form> */}
+
+            <Neo.Form model={
+                this.viewModel.walletAction === "deposit"
+                ? this.viewModel.newDeposit
+                : this.viewModel.newWithdrawal
+            
+            }
+        >
+                {(model, meta ) => (
+                    <div className="form wallet-modal-row">
+                         <Neo.FormGroupInline
+                            bind={meta.amount}
+                            label="Amount"
+                        />
+                    </div>
                 )}
             </Neo.Form>
 
             <div className="wallet-modal-actions">
                 <Neo.Button
-                    icon="plus"
+                  
                     className="withdraw-btn"
-                    onClick={() => this.viewModel.depositToWallet()}
+                    onClick={() => {
+                        this.viewModel.setWalletAction("deposit");
+                        this.viewModel.depositToWallet();
+                    }}
                 >
+                      <Neo.Icon
+                    name="plus"/>
+
                     Deposit
                 </Neo.Button>
 
                 <Neo.Button
                     icon="minus"
                     className="withdraw-btn"
-                    onClick={() => this.viewModel.withdrawFromWallet()}
+                    onClick={() => {
+                        this.viewModel.setWalletAction("withdraw");
+                        this.viewModel.withdrawFromWallet();
+                        
+                    }}
                 >
+                      <Neo.Icon
+                    name="minus"/>
                     Withdraw
                 </Neo.Button>
             </div>

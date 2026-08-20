@@ -34,6 +34,12 @@ export default class CustomersVM extends Views.ViewModelBase {
         this.currentPage = 1;
     }
 
+    public walletAction: "deposit" | "withdraw" = "deposit";
+
+    public setWalletAction(action: "deposit" | "withdraw") {
+        this.walletAction = action;
+    }
+
     public openWallet(customer: Customer) {
         this.walletCustomer = customer;
 

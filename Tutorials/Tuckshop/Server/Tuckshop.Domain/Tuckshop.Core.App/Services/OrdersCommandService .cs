@@ -1,9 +1,10 @@
 ﻿namespace Tuckshop.Core.App.Services
 {
+  using Microsoft.SqlServer.Management.Sdk.Sfc;
+  using Neo.Identity;
   using System;
   using System.Linq;
   using System.Threading.Tasks;
-  using Neo.Identity;
   using Tuckshop.Core.Models;
   using Tuckshop.Core.Models.Identity;
   using Tuckshop.Core.Models.Orders;
@@ -104,10 +105,32 @@
     /// <returns>A task awaiting the order cancellation.</returns>
     public async Task CancelOrderAsync(CancelOrder command)
     {
-      await this.ProcessUserEvent(
-        command.OrderId,
-        (order, user) => order.Cancel(user.UserId, command.Reason))
-        .ConfigureAwait(false);
+      var user = await this.userResolver.GetUserAsync().ConfigureAwait(false);
+
+      await using var transaction = await this.dbContext.Database.BeginTransactionAsync().ConfigureAwait(false);
+
+      var order = await this.modelService.GetByIdAsync(command.OrderId).ConfigureAwait(false);
+
+      order.Cancel(user.UserId, command.Reason);
+
+      foreach (var detail in order.OrderDetails)
+      {
+        var product = await this.dbContext.Products.FindAsync(detail.ProductId).ConfigureAwait(false);
+        product.RestoreStock(detail.Quantity);
+      }
+
+      await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+      if (!order.IsCashSale)
+      {
+        var customer = await this.dbContext.Customers.FindAsync(order.CustomerId).ConfigureAwait(false);
+        var orderTotal = order.OrderDetails.Sum(od => od.Value);
+        customer.Deposit(orderTotal, user.UserId);
+      }
+
+      await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+      await transaction.CommitAsync().ConfigureAwait(false);
     }
 
     private async Task ProcessUserEvent(int orderId, Action<Order, User> handler)

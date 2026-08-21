@@ -2,7 +2,7 @@
 {
   using Neo.Model;
   using Neo.Model.Exceptions;
-  using System;
+  using Neo.Model.Validation;
   using System.Collections.Generic;
   using System.ComponentModel.DataAnnotations;
   using System.ComponentModel.DataAnnotations.Schema;
@@ -123,6 +123,38 @@
       this.WalletTransactions.Add(transaction);
       this.WalletBalance -= amount;
       return transaction;
+    }
+
+    /// <summary>
+    /// Updates the instance's contact details.
+    /// </summary>
+    /// <param name="firstName">New first name.</param>
+    /// <param name="lastName">New last name.</param>
+    /// <param name="email">New email address.</param>
+    /// <param name="phoneNumber">New phone number.</param>
+    public void UpdateDetails(string firstName, string lastName, string email, string phoneNumber)
+    {
+      this.FirstName = firstName;
+      this.LastName = lastName;
+      this.Email = email;
+      this.PhoneNumber = phoneNumber;
+    }
+
+    /// <inheritdoc />
+    protected override void AddBusinessRules(ValidationRules<Customer> rules)
+    {
+      rules.FailWhen(
+        c => !System.Text.RegularExpressions.Regex.IsMatch(c.PhoneNumber ?? "", @"^\d{10}$"),
+        "Phone number must be exactly 10 digits.");
+
+      rules.FailWhen(
+    c => System.Text.RegularExpressions.Regex.IsMatch(c.PhoneNumber ?? "", @"^\d{10}$")
+         && System.Text.RegularExpressions.Regex.IsMatch(c.PhoneNumber ?? "", @"^(\d)\1{9}$"),
+    "Please enter a valid phone number.");
+
+      rules.FailWhen(
+        c => !System.Text.RegularExpressions.Regex.IsMatch(c.Email ?? "", @"^[^\s@]+@[^\s@]+\.[^\s@]+$"),
+        "Please enter a valid email address");
     }
   }
 }

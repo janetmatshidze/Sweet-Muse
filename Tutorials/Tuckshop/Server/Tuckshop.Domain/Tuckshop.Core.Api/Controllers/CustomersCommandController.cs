@@ -4,6 +4,7 @@
   using System.Threading.Tasks;
   using Tuckshop.Core.App.Services;
   using Tuckshop.Core.Models;
+  using Tuckshop.Core.Models.Customers.Commands;
   using Tuckshop.Core.Models.Wallets.Commands;
 
   /// <summary>
@@ -44,6 +45,40 @@
     public async Task<Customer> Withdraw([FromBody] WithdrawFromWallet command)
     {
       return await this.customersCommandService.WithdrawAsync(command);
+    }
+
+    /// <summary>
+    /// Creates a new customer.
+    /// </summary>
+    /// <param name="command">The create customer command.</param>
+    /// <returns>The created customer.</returns>
+    [HttpPost("create")]
+    public async Task<Customer> Create([FromBody] CreateCustomer command)
+    {
+      return await this.customersCommandService.CreateCustomerAsync(command);
+    }
+
+    /// <summary>
+    /// Updates a customer's profile details (name, email, phone number).
+    /// Does not affect wallet balance.
+    /// </summary>
+    /// <param name="command">The update details command.</param>
+    /// <returns>The updated customer.</returns>
+    [HttpPut("update-details")]
+    public async Task<Customer> UpdateDetails([FromBody] UpdateCustomerDetails command)
+    {
+      return await this.customersCommandService.UpdateDetailsAsync(command);
+    }
+
+    /// <summary>
+    /// Deletes a customer however if customers has existing orders it refuses.
+    /// </summary>
+    /// <param name="command">Delete command</param>
+    /// <returns>The deleted customer.</returns>
+    [HttpPost("delete")]
+    public async Task Delete([FromBody] DeleteCustomer command)
+    {
+      await this.customersCommandService.DeleteCustomerAsync(command);
     }
   }
 }

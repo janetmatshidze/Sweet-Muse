@@ -25,6 +25,12 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
 
         const pagedCustomers = this.viewModel.pagedCustomers;
         const emptySlots = this.viewModel.pageSize - pagedCustomers.length;
+
+        // Only one of these is ever set at a time (addCustomer sets newCustomer,
+        // editCustomer sets editingCustomer, cancelEdit/save clear both).
+        const activeCustomer = this.viewModel.newCustomer ?? this.viewModel.editingCustomer;
+        const isEditing = !!this.viewModel.editingCustomer;
+
         return (
             <div className="sweet-muse mt-3">
                 <div className="page-header">
@@ -92,7 +98,7 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                                         </td>
 
                                         <td>
-                                            {customer.walletBalance}
+                                            {customer.walletBalance.toFixed(2)}
                                         </td>
 
                                         <td>
@@ -175,22 +181,15 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                     </Neo.Button>
                 </div>
 
-                {this.viewModel.editingCustomer && (
+                {activeCustomer && (
                     <Neo.Modal
-                        show={!!this.viewModel.editingCustomer}
-                        title={
-                            this.viewModel.editingCustomer.customerId
-                                ? "Edit Customer"
-                                : "Add Customer"
-                        }
-                       
-                        onClose={() => this.viewModel.cancelEdit()
-                            
-                        }
+                        show={!!activeCustomer}
+                        title={isEditing ? "Edit Customer" : "Add Customer"}
+                        onClose={() => this.viewModel.cancelEdit()}
                     >
 
                         <Neo.Form
-                            model={this.viewModel.editingCustomer}
+                            model={activeCustomer}
                             onSubmit={() => this.viewModel.saveCustomer()}
                         >
                             {(customer, customerMeta) => (
@@ -228,9 +227,7 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                                         icon="check"
                                         className="save-btn"
                                     >
-                                        {this.viewModel.editingCustomer?.customerId
-                                            ? "Update Customer"
-                                            : "Save Customer"}
+                                        {isEditing ? "Update Customer" : "Save Customer"}
                                     </Neo.Button>
 
                                 </div>
@@ -239,96 +236,56 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                         </Neo.Form>
                     </Neo.Modal>
                 )}
-{this.viewModel.walletCustomer && this.viewModel.newDeposit && this.viewModel.newWithdrawal && (
-    <Neo.Modal
-        show={!!this.viewModel.walletCustomer}
-        title={`Wallet - ${this.viewModel.walletCustomer.firstName} ${this.viewModel.walletCustomer.lastName}`}
-        onClose={() => this.viewModel.closeWallet()}
-        closeButton={{ className: "wallet-modal-close" }}
-    >
-        <div className="wallet-modal-body">
 
-            <div className="wallet-balance-display">
-                <span>Current balance</span>
-                <strong>R{Number(this.viewModel.walletCustomer.walletBalance).toFixed(2)}</strong>
+                {/* Wallet modal — single shared amount input, no mode-toggle race condition */}
+                {this.viewModel.walletCustomer && (
+                    <Neo.Modal
+                        show={!!this.viewModel.walletCustomer}
+                        title={`Wallet - ${this.viewModel.walletCustomer.firstName} ${this.viewModel.walletCustomer.lastName}`}
+                        onClose={() => this.viewModel.closeWallet()}
+                        closeButton={{ className: "wallet-modal-close" }}
+                    >
+                        <div className="wallet-modal-body">
+
+                            <div className="wallet-balance-display">
+                                <span>Current balance</span>
+                                <strong>R{Number(this.viewModel.walletCustomer.walletBalance).toFixed(2)}</strong>
+                            </div>
+
+                            <Neo.Form model={this.viewModel.walletInput}>
+                                {(model, meta) => (
+                                    <div className="form wallet-modal-row">
+                                        <Neo.FormGroupInline
+                                            bind={meta.amount}
+                                            label="Amount"
+                                        />
+                                    </div>
+                                )}
+                            </Neo.Form>
+
+                            <div className="wallet-modal-actions">
+                                <Neo.Button
+                                    className="withdraw-btn"
+                                    onClick={() => this.viewModel.depositToWallet()}
+                                >
+                                    <Neo.Icon name="plus" />
+                                    Deposit
+                                </Neo.Button>
+
+                                <Neo.Button
+                                    className="withdraw-btn"
+                                    onClick={() => this.viewModel.withdrawFromWallet()}
+                                >
+                                    <Neo.Icon name="minus" />
+                                    Withdraw
+                                </Neo.Button>
+                            </div>
+
+                        </div>
+                    </Neo.Modal>
+                )}
             </div>
 
-            {/* <Neo.Form model={this.viewModel.newDeposit}>
-                {(deposit, depositMeta) => (
-                    <div className="form wallet-modal-row">
-                        <Neo.FormGroupInline
-                            bind={depositMeta.amount}
-                            label="Deposit amount"
-                        />
-                    </div>
-                )}
-            </Neo.Form>
-
-            <Neo.Form model={this.viewModel.newWithdrawal}>
-                {(withdrawal, withdrawalMeta) => (
-                    <div className="form wallet-modal-row">
-                        <Neo.FormGroupInline
-                            bind={withdrawalMeta.amount}
-                            label="Withdrawal amount"
-                        />
-                    </div>
-
-
-                )}
-            </Neo.Form> */}
-
-            <Neo.Form model={
-                this.viewModel.walletAction === "deposit"
-                ? this.viewModel.newDeposit
-                : this.viewModel.newWithdrawal
-            
-            }
-        >
-                {(model, meta ) => (
-                    <div className="form wallet-modal-row">
-                         <Neo.FormGroupInline
-                            bind={meta.amount}
-                            label="Amount"
-                        />
-                    </div>
-                )}
-            </Neo.Form>
-
-            <div className="wallet-modal-actions">
-                <Neo.Button
-                  
-                    className="withdraw-btn"
-                    onClick={() => {
-                        this.viewModel.setWalletAction("deposit");
-                        this.viewModel.depositToWallet();
-                    }}
-                >
-                      <Neo.Icon
-                    name="plus"/>
-
-                    Deposit
-                </Neo.Button>
-
-                <Neo.Button
-                    icon="minus"
-                    className="withdraw-btn"
-                    onClick={() => {
-                        this.viewModel.setWalletAction("withdraw");
-                        this.viewModel.withdrawFromWallet();
-                        
-                    }}
-                >
-                      <Neo.Icon
-                    name="minus"/>
-                    Withdraw
-                </Neo.Button>
-            </div>
-
-        </div>
-    </Neo.Modal>
-)}
-            </div>
-            
         );
     }
 

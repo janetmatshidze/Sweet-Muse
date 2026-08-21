@@ -57,7 +57,7 @@
     /// <exception cref="InvalidDomainOperationException">Thrown when the quantity is invalid or there is insufficient stock.</exception>
     public void ReduceStock(int quantity)
     {
-      if(quantity <= 0)
+      if (quantity <= 0)
       {
         throw new InvalidDomainOperationException("Quantity must be greater than zero.");
       }
@@ -67,6 +67,20 @@
         throw new InvalidDomainOperationException($"Insufficient stock for product {this.ProductName}. Available stock: {this.Stock}.");
       }
       this.Stock -= quantity;
+    }
+
+    /// <summary>
+    /// Restores stock byt the given quantity , when an order is cancelled.
+    /// </summary>
+    /// <param name="quantity"> The quanitty to restore.</param>
+    /// <exception cref="InvalidDomainOperationException">Thrown when the quanitty is invalid.</exception>
+    public void RestoreStock(int quantity)
+    {
+      if (quantity <= 0)
+      {
+        throw new InvalidDomainOperationException("Quantity must be greater than zero.");
+      }
+      this.Stock += quantity;
     }
 
     /// <inheritdoc/>

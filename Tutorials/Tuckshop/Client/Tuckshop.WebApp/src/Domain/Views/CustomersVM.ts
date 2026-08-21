@@ -4,6 +4,10 @@ import Customer from '../Models/Customer';
 import { List } from '@singularsystems/neo-core';
 import DepositToWallet from '../Models/Wallets/Commands/DepositToWallet';
 import WithdrawFromWallet from '../Models/Wallets/Commands/WithdrawFromWallet';
+import UpdateCustomerDetails from '../Models/Customers/Commands/UpdateCustomerDetails';
+import WalletAmountInput from '../Models/WalletAmountInput';
+import DeleteCustomer from '../Models/Customers/Commands/DeleteCustomer';
+import CreateCustomer from '../Models/Customers/Commands/CreateCustomer';
 
 export default class CustomersVM extends Views.ViewModelBase {
 
@@ -19,13 +23,21 @@ export default class CustomersVM extends Views.ViewModelBase {
 
     public walletCustomer: Customer | null = null;
 
+    // Plain UI input — "what the user typed". Not a domain command itself.
+    // Both deposit and withdraw build their own command object fresh at
+    // submit time, reading .amount from here.
+
+    public walletInput = new WalletAmountInput();
+
     public newDeposit: DepositToWallet | null = null;
 
     public newWithdrawal: WithdrawFromWallet | null = null;
 
     public customers = new List(Customer);
 
-    public editingCustomer: Customer | null = null;
+    public editingCustomer: UpdateCustomerDetails | null = null;
+
+    public newCustomer: CreateCustomer | null = null;
 
     public searchTerm: string = "";
 
@@ -34,38 +46,28 @@ export default class CustomersVM extends Views.ViewModelBase {
         this.currentPage = 1;
     }
 
-    public walletAction: "deposit" | "withdraw" = "deposit";
-
-    public setWalletAction(action: "deposit" | "withdraw") {
-        this.walletAction = action;
-    }
-
     public openWallet(customer: Customer) {
         this.walletCustomer = customer;
+        this.walletInput = new WalletAmountInput();
 
-        const deposit = new DepositToWallet();
-        deposit.customerId = customer.customerId;
-        this.newDeposit = deposit;
-
-        const withdrawal = new WithdrawFromWallet();
-        withdrawal.customerId = customer.customerId;
-        this.newWithdrawal = withdrawal;
     }
 
     public closeWallet() {
         this.walletCustomer = null;
-        this.newDeposit = null;
-        this.newWithdrawal = null;
     }
 
     public depositToWallet() {
-        if (!this.newDeposit || !this.walletCustomer) {
+        if (!this.walletCustomer) {
             return;
         }
 
+        const deposit = new DepositToWallet();
+        deposit.customerId = this.walletCustomer.customerId;
+        deposit.amount = this.walletInput.amount;
+
         this.taskRunner.run(async () => {
             const response = await this.customersCommandApiClient.deposit(
-                this.newDeposit!.toJSObject()
+                deposit.toJSObject()
             );
 
             this.walletCustomer!.walletBalance = response.data.walletBalance;
@@ -83,13 +85,17 @@ export default class CustomersVM extends Views.ViewModelBase {
     }
 
     public withdrawFromWallet() {
-        if (!this.newWithdrawal || !this.walletCustomer) {
+        if (!this.walletCustomer) {
             return;
         }
 
+        const withdrawal = new WithdrawFromWallet();
+        withdrawal.customerId = this.walletCustomer.customerId;
+        withdrawal.amount = this.walletInput.amount;
+
         this.taskRunner.run(async () => {
             const response = await this.customersCommandApiClient.withdraw(
-                this.newWithdrawal!.toJSObject()
+                withdrawal.toJSObject()
             );
 
             this.walletCustomer!.walletBalance = response.data.walletBalance;
@@ -174,11 +180,11 @@ export default class CustomersVM extends Views.ViewModelBase {
     }
 
     public addCustomer() {
-        this.editingCustomer = new Customer();
+        this.newCustomer = new CreateCustomer();
     }
 
     public editCustomer(customer: Customer) {
-        const edit = new Customer();
+        const edit = new UpdateCustomerDetails();
 
         edit.set(customer.toJSObject());
 
@@ -187,12 +193,15 @@ export default class CustomersVM extends Views.ViewModelBase {
 
     public deleteCustomer(customer: Customer) {
 
+        const command = new DeleteCustomer();
+        command.customerId = customer.customerId;
+
         this.taskRunner.run(async () => {
 
             if (customer.customerId) {
 
-                await this.customersApiClient.delete(
-                    customer.customerId
+                await this.customersCommandApiClient.delete(
+                    command.toJSObject()
                 );
             }
 
@@ -220,15 +229,55 @@ export default class CustomersVM extends Views.ViewModelBase {
 
     public cancelEdit() {
         this.editingCustomer = null;
+        this.newCustomer = null;
     }
 
     public saveCustomer() {
+        if (this.newCustomer) {
+            this.saveNewCustomer();
+        } else if (this.editingCustomer) {
+            this.saveEditedCustomer();
+        }
+    }
+
+    private saveNewCustomer() {
+        if (!this.newCustomer) {
+            return;
+        }
+
+        this.taskRunner.run(async () => {
+            const response = await this.customersCommandApiClient.create(
+                this.newCustomer!.toJSObject()
+            );
+
+            const newCustomer = new Customer();
+
+            newCustomer.set(response.data);
+
+            this.customers.push(newCustomer);
+
+            this.notifications.addSuccess(
+                "Customer created",
+                "Customer created successfully",
+                4
+            );
+
+            this.newCustomer = null;
+
+        }).catch((err) => {
+            console.error("Create customer failed:", err);
+            this.notifications.addDanger("Create failed", err?.message ?? "Unknown error", 6);
+        });
+    }
+
+    private saveEditedCustomer() {
         if (!this.editingCustomer) {
             return;
         }
+
         this.taskRunner.run(async () => {
             const response =
-                await this.customersApiClient.save(
+                await this.customersCommandApiClient.updateDetails(
                     this.editingCustomer!.toJSObject()
                 );
 
@@ -238,12 +287,6 @@ export default class CustomersVM extends Views.ViewModelBase {
 
             if (existing) {
                 existing.set(response.data);
-            } else {
-                const newCustomer = new Customer();
-
-                newCustomer.set(response.data);
-
-                this.customers.push(newCustomer);
             }
 
             this.notifications.addSuccess(
@@ -254,7 +297,9 @@ export default class CustomersVM extends Views.ViewModelBase {
 
             this.editingCustomer = null;
 
-        }).catch(() => {
+        }).catch((err) => {
+            console.error("Save customer failed:", err);
+            this.notifications.addDanger("Save failed", err?.message ?? "Unknown error", 6);
 
         });
     }

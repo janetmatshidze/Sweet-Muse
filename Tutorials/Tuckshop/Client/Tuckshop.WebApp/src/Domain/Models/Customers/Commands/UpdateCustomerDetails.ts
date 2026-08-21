@@ -1,14 +1,13 @@
-import { Attributes, List, ModelBase, Rules, Validation } from '@singularsystems/neo-core';
-import WalletTransaction from './Wallets/WalletTransaction';
-
-export default class Customer extends ModelBase {
-    static typeName = "Customer";
+import { ModelBase, Rules, Validation } from '@singularsystems/neo-core';
+export default class UpdateCustomerDetails extends ModelBase {
+    static typeName = "UpdateCustomerDetails";
 
     constructor() {
         super();
         this.makeObservable();
     }
 
+    @Rules.Required()
     public customerId: number = 0;
 
     @Rules.Required()
@@ -23,18 +22,12 @@ export default class Customer extends ModelBase {
     @Rules.StringLength(100)
     public email: string = "";
 
-    @Rules.Required()
-    @Rules.StringLength(10)
+    @Rules.StringLength(100)
     public phoneNumber: string = "";
-
-    @Attributes.Float()
-    public walletBalance: number = 0;
-
-    public walletTransactions = new List(WalletTransaction);
 
     // Client only properties / methods
 
-    addBusinessRules(rules: Validation.Rules<Customer>) {
+   addBusinessRules(rules: Validation.Rules<UpdateCustomerDetails>) {
         super.addBusinessRules(rules);
 
         rules.failWhen(c => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email),
@@ -54,7 +47,7 @@ export default class Customer extends ModelBase {
 
     public toString(): string {
         if (this.isNew || !this.firstName) {
-            return "New customer";
+            return "New update customer details";
         } else {
             return this.firstName;
         }

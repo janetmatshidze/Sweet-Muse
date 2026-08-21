@@ -444,13 +444,14 @@
   font-weight: 600;
 }
 
+
 .form input:not([type="file"]),
 .form textarea,
 .form select {
   width: 100%;
   border: 1px solid $misty-sky-400 !important;
   border-radius: 8px !important;
-  background: #ffffff !important;
+  background: white !important;
   color: $misty-sky-900 !important;
   font-family: "DM Sans", "Inter", sans-serif;
   font-size: 13px !important;
@@ -657,6 +658,7 @@
   font-weight: 600 !important;
   box-shadow: none !important;
 }
+
 
 .sweet-muse .button {
   position: relative;

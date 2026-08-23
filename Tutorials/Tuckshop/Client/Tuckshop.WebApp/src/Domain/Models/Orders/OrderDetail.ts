@@ -28,8 +28,13 @@ export default class OrderDetail extends ModelBase {
 
     // Client only properties / methods
 
-    protected static addBusinessRules(rules: Validation.Rules<OrderDetail>) {
+    addBusinessRules(rules: Validation.Rules<this>) {
         super.addBusinessRules(rules);
+
+        rules.failWhen(
+          od => od.quantity > 0 && od.product != null && od.quantity > od.product.stock,
+          od => `Insufficient stock for ${od.product?.productName}. Available stock: ${od.product?.stock}.`
+        );
     }
 
     public toString(): string {

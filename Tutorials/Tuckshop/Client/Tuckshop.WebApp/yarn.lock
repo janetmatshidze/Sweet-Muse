@@ -8104,9 +8104,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"highcharts@npm:^13.0.0":
-  version: 13.0.0
-  resolution: "highcharts@npm:13.0.0"
+"highcharts@npm:^13.0.1":
+  version: 13.0.1
+  resolution: "highcharts@npm:13.0.1"
   peerDependencies:
     jspdf: ^4.1.0
     svg2pdf.js: ^2.7.0
@@ -8115,7 +8115,7 @@ __metadata:
       optional: true
     svg2pdf.js:
       optional: true
-  checksum: 10c0/1c41fbf98bed1cbaab9abf5a5332d492f0eae9b2edd80ba0297ee248f1ca7b74864fe88237bb936050850bdbb82aa33336dd408dcbd6a7222109d8b0a81f97ac
+  checksum: 10c0/ffafa7d0ef60cb8f907889dca549aa1b66100e2d48ec87c0e05ff65d210862e00e8ec1bdf60b1cc6dca9686592bec80c065bbd30776b18aa79008c2ee744ae7e
   languageName: node
   linkType: hard
 
@@ -14665,7 +14665,7 @@ __metadata:
     bootstrap: "npm:5.3.3"
     core-js: "npm:3.38.1"
     decimal.js-light: "npm:2.5.1"
-    highcharts: "npm:^13.0.0"
+    highcharts: "npm:^13.0.1"
     highcharts-react-official: "npm:^3.2.3"
     inversify: "npm:6.0.2"
     mobx: "npm:6.13.7"

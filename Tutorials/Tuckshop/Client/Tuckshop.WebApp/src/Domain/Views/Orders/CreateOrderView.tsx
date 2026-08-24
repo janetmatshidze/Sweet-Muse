@@ -25,6 +25,12 @@ export default class CreateOrderView extends Views.ViewBase<
     protected viewParamsUpdated() {
     }
 
+    componentDidUpdate() {
+        if (!this.viewModel.newOrder) {
+            this.navigation.navigateInternal(viewOrdersRoute.path, true);
+        }
+    }
+
     public render() {
         const pagedProducts = this.viewModel.pagination.pagedItems;
         const emptySlots = this.viewModel.pagination.pageSize - pagedProducts.length;
@@ -219,13 +225,12 @@ export default class CreateOrderView extends Views.ViewBase<
                                     </div>
 
 
-
                                     <div className="shopping-cart">
 
                                         <div className="shopping-cart-header">
 
                                             <div>
-                                                <h2>Your Order</h2>
+                                                <h2>Shopping Cart</h2>
 
                                                 <p>
                                                     {this.viewModel.cartItemCount} items
@@ -442,30 +447,11 @@ export default class CreateOrderView extends Views.ViewBase<
                     </Neo.Form>
                 )}
 
-                {!this.viewModel.newOrder && (
-                    <Neo.Alert
-                        variant="success"
-                        heading="Order submitted"
-                        animateInitial
-                        className="mt-4"
-                    >
-                        Your order has been submitted,{" "}
-                        <Link to={viewOrdersRoute.path}>
-                            view your orders here
-                        </Link>
-                        , or{" "}
-                        <Neo.Button
-                            variant="link"
-                            className="btn-link-inline"
-                            onClick={() =>
-                                this.viewModel.setupOrder()
-                            }
-                        >
-                            create another order
-                        </Neo.Button>
-                        .
-                    </Neo.Alert>
-                )}
+                {/* {!this.viewModel.newOrder && (
+                    <Link to={viewOrdersRoute.path}>
+                        view your orders here
+                    </Link>
+                )} */}
 
                 {this.viewModel.showInsufficientFundsModal && (
                     <Neo.Modal

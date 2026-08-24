@@ -71,17 +71,17 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         this.newOrder = newOrder;
     }
 
-     private getProduct(productId: number) {
-        return this.products.find(p => p.productId === productId);
-    }
+    //  private getProduct(productId: number) {
+    //     return this.products.find(p => p.productId === productId);
+    // }
 
-    private getCartQuantity(productId: number) {
-        const existing = this.newOrder?.orderDetails.find(
-            detail => detail.productId === productId
-        );
+    // private getCartQuantity(productId: number) {
+    //     const existing = this.newOrder?.orderDetails.find(
+    //         detail => detail.productId === productId
+    //     );
         
-        return existing ? existing.quantity : 0;
-    }
+    //     return existing ? existing.quantity : 0;
+    // }
 
     public increaseProductQuantity(productId: number) {
         const currentQuantity = this.productQuantities[productId] || 1;
@@ -177,7 +177,8 @@ export default class CreateOrderVM extends Views.ViewModelBase {
 
     this.taskRunner.run(async () => {
         await this.ordersCommandApiClient.createOrder(orderData);
-        this.newOrder = null;
+    this.notifications.addSuccess("Order created", "The order was placed successfully.", 5);
+    this.newOrder = null;
     }).catch(() => {
         // taskRunner already showed its own toast for the error.
     });

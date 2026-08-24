@@ -47,6 +47,11 @@
     width: 100%;
 }
 
+.searchable-select:hover {
+  background-color: transparent;
+
+}
+
 .searchable-select-toggle {
     width: 100%;
     text-align: left;
@@ -62,12 +67,14 @@
     justify-content: space-between;
 
     &:hover {
-        border-color: #9ca3af;
+        border-color: $rosewood-200 !important;
+        background: transparent !important;
+        color: $rosewood-500 !important;
     }
 
     &:focus {
         outline: none;
-        border-color: #6366f1;
+        border-color: $rosewood-500 !important;
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
     }
 }
@@ -83,6 +90,10 @@
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+}
+
+.searchable-select-dropdown:hover {
+    border: 0;
 }
 
 .searchable-select-input {

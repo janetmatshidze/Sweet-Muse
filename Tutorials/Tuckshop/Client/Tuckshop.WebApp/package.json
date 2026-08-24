@@ -36,6 +36,7 @@
     "react-colorful": "5.6.1",
     "react-custom-scrollbars": "4.2.1",
     "react-dom": "19.1.0",
+    "react-router-dom": "^7.18.2",
     "react-select": "5.10.1",
     "reflect-metadata": "0.2.2",
     "tslib": "2.8.1"

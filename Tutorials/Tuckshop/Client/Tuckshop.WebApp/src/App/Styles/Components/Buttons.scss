@@ -147,3 +147,19 @@
     border-width: 1px;
   }
 }
+
+.btn-primary{
+  min-width: 145px;
+  padding: 10px 20px;
+  background-color: $misty-sky-300;
+  color: $misty-sky-800;
+  border: 1px solid $misty-sky-700;
+  border-radius: 9px;
+}
+
+.btn-primary:hover{
+  color: $misty-sky-50 !important;
+  background-color: $misty-sky-800 !important;
+  border: 1px solid $misty-sky-700 !important;
+}
+

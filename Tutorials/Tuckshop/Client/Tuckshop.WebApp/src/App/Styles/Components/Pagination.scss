@@ -1,0 +1,119 @@
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.pagination-btn {
+  min-width: 100px !important;
+  padding: 9px 16px !important;
+  border: 1px solid $rosewood-200 !important;
+  border-radius: 9px !important;
+  background: #ffffff !important;
+  color: $rosewood-700 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  transition: all 0.15s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: $rosewood-50 !important;
+  border-color: $rosewood-300 !important;
+  color: $rosewood-900 !important;
+}
+
+.pagination-btn:disabled {
+  background: $rosewood-50 !important;
+  border-color: $rosewood-300 !important;
+  color: $rosewood-900 !important;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: $rosewood-700;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+.searchable-select {
+    position: relative;
+    width: 100%;
+}
+
+.searchable-select-toggle {
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 0.9rem;
+    color: #111827;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:hover {
+        border-color: #9ca3af;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+}
+
+.searchable-select-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.searchable-select-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.searchable-select-list {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.searchable-select-option {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    &:hover {
+        background: #f3f4f6;
+    }
+}
+
+.searchable-select-empty {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    color: #9ca3af;
+}

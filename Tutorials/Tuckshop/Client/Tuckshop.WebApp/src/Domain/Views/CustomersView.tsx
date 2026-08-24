@@ -4,6 +4,7 @@ import CustomersVM from './CustomersVM';
 import { observer } from 'mobx-react';
 import { ModalUtils } from '@singularsystems/neo-core';
 import Customer from '../Models/Customer';
+import Pagination from '../../App/Components/Pagination';
 
 class CustomersParams {
     // TODO: Add parameters here in the form: public paramName = { isQuery?: boolean, required?: boolean };
@@ -23,8 +24,8 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
 
     public render() {
 
-        const pagedCustomers = this.viewModel.pagedCustomers;
-        const emptySlots = this.viewModel.pageSize - pagedCustomers.length;
+        const pagedCustomers = this.viewModel.pagination.pagedItems;
+        const emptySlots = this.viewModel.pagination.pageSize - pagedCustomers.length;
 
         // Only one of these is ever set at a time (addCustomer sets newCustomer,
         // editCustomer sets editingCustomer, cancelEdit/save clear both).
@@ -157,29 +158,12 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                     </table>
                 </div>
 
-                <div className="pagination">
-                    <Neo.Button
-                        className="pagination-btn"
-                        icon="keyboard_double_arrow_left"
-                        disabled={this.viewModel.currentPage === 1}
-                        onClick={() => this.viewModel.previousPage()}
-                    >
-                    </Neo.Button>
-
-                    <span className="pagination-info">
-                        Page {this.viewModel.currentPage} of {this.viewModel.totalPages}
-                    </span>
-
-                    <Neo.Button
-                        className="pagination-btn"
-                        icon="keyboard_double_arrow_right"
-                        disabled={
-                            this.viewModel.currentPage === this.viewModel.totalPages
-                        }
-                        onClick={() => this.viewModel.nextPage()}
-                    >
-                    </Neo.Button>
-                </div>
+                <Pagination
+                 currentPage={this.viewModel.pagination.currentPage}
+                 totalPages={this.viewModel.pagination.totalPages}
+                 onNext={() => this.viewModel.pagination.nextPage()}
+                 onPrevious={() => this.viewModel.pagination.previousPage()}
+                 />
 
                 {activeCustomer && (
                     <Neo.Modal

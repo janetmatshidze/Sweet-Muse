@@ -5,6 +5,9 @@ import { observer } from "mobx-react";
 import { getCategoryColorClass } from "../Utils/CategoryColors";
 import Product from "../Models/Product";
 import { ModalUtils, Validation } from "@singularsystems/neo-core";
+import Pagination from "../../App/Components/Pagination";
+import { isLowStock } from "../../App/Constants/StockThresholds";
+import FilterOptionGroup from "../../App/Components/FilterOptionGroup";
 
 class ProductsParams { }
 
@@ -23,8 +26,8 @@ export default class ProductsView extends Views.ViewBase<
 
     public render() {
 
-        const pagedProducts = this.viewModel.pagedProducts;
-        const emptySlots = this.viewModel.pageSize - pagedProducts.length;
+        const pagedProducts = this.viewModel.pagination.pagedItems;
+        const emptySlots = this.viewModel.pagination.pageSize - pagedProducts.length;
 
         return (
             <div className="sweet-muse mt-3">
@@ -75,36 +78,27 @@ export default class ProductsView extends Views.ViewBase<
 
                         {this.viewModel.showCategoryFilter && (
                             <div className="products-filter-dropdown">
-                                <button
-                                    type="button"
-                                    className={
-                                        "filter-option" +
-                                        (this.viewModel.selectedCategoryId === null ? " active" : "")
-                                    }
-                                    onClick={() => this.viewModel.setSelectedCategory(null)}
-                                >
-                                    All Categories
-                                </button>
+                                <FilterOptionGroup
+                                    options={[
+                                        { label: "All Categories", value: null },
+                                        ...this.viewModel.categories.map(c => ({ label: c.categoryName, value: c.categoryId })),
+                                    ]}
+                                    selectedValue={this.viewModel.selectedCategoryId}
+                                    onSelect={(value) => this.viewModel.setSelectedCategory(value)}
+                                />
 
-                                {this.viewModel.categories.map((category) => (
-                                    <button
-                                        key={category.categoryId}
-                                        type="button"
-                                        className={
-                                            "filter-option" +
-                                            (this.viewModel.selectedCategoryId === category.categoryId
-                                                ? " active"
-                                                : "")
-                                        }
-                                        onClick={() =>
-                                            this.viewModel.setSelectedCategory(category.categoryId)
-                                        }
-                                    >
-                                        {category.categoryName}
-                                    </button>
-                                ))}
+                                <div className="filter-divider" />
+
+                                <FilterOptionGroup
+                                    options={[
+                                        { label: "All Stock Levels", value: "all" },
+                                        { label: "Low Stock", value: "low" },
+                                        { label: "In Stock", value: "high" },
+                                    ]}
+                                    selectedValue={this.viewModel.stockFilter}
+                                    onSelect={(value) => this.viewModel.setStockFilter(value)}
+                                />
                             </div>
-
                         )}
                     </div>
                 </div>
@@ -160,7 +154,7 @@ export default class ProductsView extends Views.ViewBase<
                                             )}
                                         </td>
 
-                                        <td className="numbers product-stock">
+                                        <td className={`numbers product-stock ${isLowStock(product.stock) ? 'stock-low' : 'stock-high'}`}>
                                             {product.stock}
                                         </td>
 
@@ -216,29 +210,12 @@ export default class ProductsView extends Views.ViewBase<
                     </table>
                 </div>
 
-                <div className="pagination">
-                    <Neo.Button
-                        className="pagination-btn"
-                        icon="keyboard_double_arrow_left"
-                        disabled={this.viewModel.currentPage === 1}
-                        onClick={() => this.viewModel.previousPage()}
-                    >
-                    </Neo.Button>
-
-                    <span className="pagination-info">
-                        Page {this.viewModel.currentPage} of {this.viewModel.totalPages}
-                    </span>
-
-                    <Neo.Button
-                        className="pagination-btn"
-                        icon="keyboard_double_arrow_right"
-                        disabled={
-                            this.viewModel.currentPage === this.viewModel.totalPages
-                        }
-                        onClick={() => this.viewModel.nextPage()}
-                    >
-                    </Neo.Button>
-                </div>
+                <Pagination
+                    currentPage={this.viewModel.pagination.currentPage}
+                    totalPages={this.viewModel.pagination.totalPages}
+                    onNext={() => this.viewModel.pagination.nextPage()}
+                    onPrevious={() => this.viewModel.pagination.previousPage()}
+                />
 
                 {this.viewModel.editingProduct && (
                     <Neo.Modal

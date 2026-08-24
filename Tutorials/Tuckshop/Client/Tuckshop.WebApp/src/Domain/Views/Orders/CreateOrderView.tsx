@@ -5,6 +5,8 @@ import { observer } from "mobx-react";
 import Link from "@singularsystems/neo-react/dist/ReactComponents/Link";
 import { getProductColorClass } from "../../Utils/ProductCardColors";
 import { customersRoute, viewOrdersRoute } from "../../DomainRoutes";
+import Pagination from "../../../App/Components/Pagination";
+import SearchableSelect from "../../../App/Components/SearchableSelect";
 
 class CreateOrderParams {
 }
@@ -24,6 +26,9 @@ export default class CreateOrderView extends Views.ViewBase<
     }
 
     public render() {
+        const pagedProducts = this.viewModel.pagination.pagedItems;
+        const emptySlots = this.viewModel.pagination.pageSize - pagedProducts.length;
+
         return (
             <div className="sweet-muse-create-order">
 
@@ -63,33 +68,32 @@ export default class CreateOrderView extends Views.ViewBase<
                                     </div>
 
                                     {!order.isCashSale ? (
-                                        <Neo.FormGroup
-                                            bind={orderMeta.customerId}
-                                            label="Customer"
-                                            select={{
-                                                items: this.viewModel.customers,
-                                                valueMember: "customerId",
-                                                displayMember: "firstName",
-                                                allowNulls: true,
-                                                nullText: "Select a customer",
-                                                onItemSelected: (item) => {
+                                        <>
+                                            <SearchableSelect
+                                                items={this.viewModel.customers}
+                                                valueMember="customerId"
+                                                displayMember="firstName"
+                                                value={order.customerId}
+                                                nullText="Select a customer"
+                                                onSelect={(item) => {
+                                                    order.customerId = item ? item.customerId : null;
                                                     order.customerName = item ? item.firstName : "";
-                                                },
-                                            }}
-                                        />
+                                                }}
+                                            />
+
+                                            {this.viewModel.selectedCustomer && (
+                                                <div className="wallet-balance-display mt-3">
+                                                    <span>Wallet balance</span>
+                                                    <strong>R{Number(this.viewModel.selectedCustomer.walletBalance).toFixed(2)}</strong>
+                                                </div>
+                                            )}
+                                        </>
                                     ) : (
                                         <Neo.FormGroup
                                             bind={orderMeta.customerName}
                                             label="Customer name"
                                             placeholder="e.g. Walk-in customer"
                                         />
-                                    )}
-
-                                    {!order.isCashSale && this.viewModel.selectedCustomer && (
-                                        <div className="wallet-balance-display">
-                                            <span>Wallet balance</span>
-                                            <strong>R{Number(this.viewModel.selectedCustomer.walletBalance).toFixed(2)}</strong>
-                                        </div>
                                     )}
 
                                 </div>
@@ -109,7 +113,7 @@ export default class CreateOrderView extends Views.ViewBase<
                                         </div>
 
                                         <div className="product-cards">
-                                            {this.viewModel.products.map(product => (
+                                            {pagedProducts.map(product => (
 
                                                 <div
                                                     className={`product-card ${getProductColorClass(product.categoryId)}`}
@@ -195,7 +199,10 @@ export default class CreateOrderView extends Views.ViewBase<
 
                                                             </div>
 
+
+
                                                         </div>
+
 
                                                     </div>
 
@@ -203,8 +210,15 @@ export default class CreateOrderView extends Views.ViewBase<
                                             ))}
 
                                         </div>
-
+                                        <Pagination
+                                            currentPage={this.viewModel.pagination.currentPage}
+                                            totalPages={this.viewModel.pagination.totalPages}
+                                            onNext={() => this.viewModel.pagination.nextPage()}
+                                            onPrevious={() => this.viewModel.pagination.previousPage()}
+                                        />
                                     </div>
+
+
 
                                     <div className="shopping-cart">
 
@@ -459,7 +473,7 @@ export default class CreateOrderView extends Views.ViewBase<
                         title="Insufficient wallet balance"
                         onClose={() => this.viewModel.closeInsufficientFundsModal()}
                     >
-                        <p>
+                        <p className="customer">
                             {this.viewModel.selectedCustomer?.firstName} needs R
                             {this.viewModel.walletShortfall.toFixed(2)} more to cover this order.
                         </p>
@@ -467,7 +481,7 @@ export default class CreateOrderView extends Views.ViewBase<
                         <div className="modal-actions">
 
 
-                            <Link to={customersRoute.path} className="btn btn-primary">
+                            <Link to={customersRoute.path} className="btn top-up-btn">
                                 Top up wallet
                             </Link>
                         </div>

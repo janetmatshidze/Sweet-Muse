@@ -99,12 +99,12 @@
 }
 
 
- .product-card.product-color-0 .product-image-wrapper { background: $midnight-lagoon-50;}
- .product-card.product-color-1 .product-image-wrapper  { background: $sage-leaf-200; }
- .product-card.product-color-2 .product-image-wrapper { background: $rosewood-100;}
- .product-card.product-color-3 .product-image-wrapper { background: $blush-petal-200;}
- .product-card.product-color-4 .product-image-wrapper { background: $misty-sky-100; }
- .product-card.product-color-5 .product-image-wrapper { background: $coffee-brown-100;}
+//  .product-card.product-color-0 .product-image-wrapper { background: $midnight-lagoon-50;}
+//  .product-card.product-color-1 .product-image-wrapper  { background: $sage-leaf-200; }
+//  .product-card.product-color-2 .product-image-wrapper { background: $rosewood-100;}
+//  .product-card.product-color-3 .product-image-wrapper { background: $blush-petal-200;}
+//  .product-card.product-color-4 .product-image-wrapper { background: $misty-sky-100; }
+//  .product-card.product-color-5 .product-image-wrapper { background: $coffee-brown-100;}
 
 
 .product-card:hover {
@@ -118,7 +118,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    // background: $rosewood-100;
+    background: $coffee-brown-50;
 }
 
 .product-image {
@@ -217,7 +217,7 @@
 .add-to-cart-button {
     height: 34px;
     padding: 0 14px;
-    border: 0;
+    border: none;
     border-radius: 17px;
     background: $sage-leaf-300;
     color: $sage-leaf-800;
@@ -228,7 +228,8 @@
 }
 
 .add-to-cart-button:hover {
-    background: $sage-leaf-500 !important;
+    background: $sage-leaf-400 !important;
+    border: $sage-leaf-900 !important;
 }
 
 .shopping-cart {
@@ -462,16 +463,17 @@
     width: calc(100% - 44px);
     height: 48px;
     margin: 10px 22px 22px;
-    border: 0;
     border-radius: 24px;
     background: $rosewood-500;
     color: $rosewood-50;
+    border: none !important;
     font-size: 14px;
     font-weight: 600;
     box-shadow: none;
 }
 
 .place-order-button:hover {
+    border: none !important;
     color:$rosewood-500;
     background: $rosewood-300 !important;
 }
@@ -483,6 +485,27 @@
 
 .btn-link-inline {
     padding: 0;
+}
+
+.top-up-btn {
+  top: 60px;
+  position: relative;
+  min-width: 145px;
+  padding: 10px 20px;
+  background-color: $misty-sky-300;
+  color: $misty-sky-800;
+  border: 1px solid $misty-sky-700;
+  border-radius: 9px;
+}
+
+.top-up-btn:hover {
+  background-color: $misty-sky-800;
+  color: $misty-sky-300;
+}
+
+.customer {
+    position: relative;
+    top: 30px;
 }
 
 @media (max-width: 1200px) {

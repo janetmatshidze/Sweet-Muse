@@ -4,6 +4,8 @@ import { List } from '@singularsystems/neo-core';
 import Product from '../Models/Product';
 import Category from '../Models/Category';
 import { upload } from '@imagekit/react';
+import PaginationHelper from '../../App/Models/Helpers/PaginationHelper';
+import { isLowStock } from '../../App/Constants/StockThresholds';
 
 export default class ProductsVM extends Views.ViewModelBase {
 
@@ -34,6 +36,11 @@ export default class ProductsVM extends Views.ViewModelBase {
 
     public submitAttempted: boolean = false;
 
+    public stockFilter: 'all' | 'low' | 'high' = 'all';
+
+    public pagination = new PaginationHelper(() => this.filteredProducts, 5);
+
+
     public markSubmitAttempted() {
         this.submitAttempted = true;
     }
@@ -44,13 +51,18 @@ export default class ProductsVM extends Views.ViewModelBase {
 
     public setSearchTerm(value: string) {
         this.searchTerm = value;
-        this.currentPage = 1;
+        this.pagination.currentPage = 1;
     }
 
     public setSelectedCategory(categoryId: number | null) {
         this.selectedCategoryId = categoryId;
-        this.currentPage = 1;
+        this.pagination.currentPage = 1;
         this.showCategoryFilter = false; // closes the dropdown after picking.
+    }
+
+    public setStockFilter(filter: 'all' | 'low' | 'high') {
+        this.stockFilter = filter;
+        this.pagination.reset();
     }
 
     public get filteredProducts() {
@@ -66,56 +78,13 @@ export default class ProductsVM extends Views.ViewModelBase {
             result = result.filter(p => p.categoryId === this.selectedCategoryId);
         }
 
+        if (this.stockFilter === 'low') {
+            result = result.filter(p => isLowStock (p.stock));
+        } else if (this.stockFilter === 'high') {
+            result = result.filter(p  => !isLowStock (p.stock));
+        }
+
         return result;
-    }
-
-    // Pagination
-
-    public readonly pageSize = 5;
-
-    public currentPage: number = 1;
-
-    public get totalPages() {
-
-        return Math.max(
-            1,
-            Math.ceil(this.filteredProducts.length / this.pageSize)
-        );
-    }
-
-    public get pagedProducts() {
-
-        const start = (this.currentPage - 1) * this.pageSize;
-
-        return this.filteredProducts.slice(start, start + this.pageSize);
-    }
-
-    public goToPage(page: number) {
-
-        if (page < 1 || page > this.totalPages) {
-
-            return;
-        }
-
-        this.currentPage = page;
-    }
-
-    public nextPage() {
-
-        this.goToPage(this.currentPage + 1);
-    }
-
-    public previousPage() {
-
-        this.goToPage(this.currentPage - 1);
-    }
-
-    private clampCurrentPage() {
-
-        if (this.currentPage > this.totalPages) {
-
-            this.currentPage = this.totalPages;
-        }
     }
 
 
@@ -138,7 +107,6 @@ export default class ProductsVM extends Views.ViewModelBase {
 
         this.categories.set(categoriesResponse.data);
     }
-
 
     public addProduct() {
 
@@ -183,7 +151,7 @@ export default class ProductsVM extends Views.ViewModelBase {
                 this.products.remove(existing);
             }
 
-            this.clampCurrentPage();
+            this.pagination.clamp();
 
             this.notifications.addSuccess(
                 "Product deleted",

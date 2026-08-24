@@ -3,6 +3,7 @@ import { AppService, Types } from "../../DomainTypes";
 import { CreateOrder } from "../../Models/Orders/Commands/CreateOrder";
 import { List } from "@singularsystems/neo-core";
 import Customer from "../../Models/Customer";
+import PaginationHelper from "../../../App/Models/Helpers/PaginationHelper";
 
 export default class CreateOrderVM extends Views.ViewModelBase {
 
@@ -22,6 +23,8 @@ export default class CreateOrderVM extends Views.ViewModelBase {
     public products: any[] = [];
     public productQuantities: { [key: string]: number } = {};
     public customers = new List(Customer);
+    public pagination = new PaginationHelper(() => this.products, 6);
+
 
     public async initialise() {
         await this.setupOrder();

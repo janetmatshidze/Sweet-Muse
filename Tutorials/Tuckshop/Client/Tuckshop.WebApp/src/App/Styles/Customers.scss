@@ -94,15 +94,17 @@
   height: 34px !important;
   min-width: 34px !important;
   padding: 0 !important;
-  border: 0 !important;
+  border: none !important;
   border-radius: 9px !important;
   background: $coffee-brown-100;
-  color: $coffee-brown-500;
+  color: $coffee-brown-400;
 }
 
 .wallet-icon:hover {
   background-color: $coffee-brown-200 !important;
-  color:$coffee-brown-50;
+  color:$coffee-brown-600 !important;
+  border: none !important;
+
 }
 
 

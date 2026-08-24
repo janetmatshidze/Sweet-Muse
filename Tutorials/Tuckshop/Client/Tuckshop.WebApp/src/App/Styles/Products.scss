@@ -88,27 +88,41 @@
   background: $blush-petal-600;
 }
 
-.sweet-muse .products-filter-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 10;
-  min-width: 190px;
-  padding: 6px;
-  border: 1px solid $rosewood-100;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 10px 28px rgba(96, 55, 60, 0.14);
+.products-filter-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 20;
+    min-width: 220px;
+    max-height: 320px;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 8px;
+
+    // nicer scrollbar than the browser default
+    scrollbar-width: thin;
+    scrollbar-color: #e5c2cc transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #e5c2cc;
+        border-radius: 3px;
+    }
 }
 
 .sweet-muse .filter-option {
   display: block;
   width: 100%;
   padding: 9px 12px;
-  border: 0;
+  border: 0 !important;
   border-radius: 8px;
-  background: transparent;
-  color: $rosewood-800;
+  background: transparent !important;
+  color: $rosewood-800 !important;
   font-family: "DM Sans", "Inter", sans-serif;
   font-size: 13px;
   font-weight: 500;
@@ -118,12 +132,12 @@
 }
 
 .sweet-muse .filter-option:hover {
-  background: $blush-petal-50;
+  background: $blush-petal-50 !important;
 }
 
 .sweet-muse .filter-option.active {
-  background: $blush-petal-100;
-  color: $blush-petal-800;
+  background: $blush-petal-100 !important;
+  color: $blush-petal-800 !important;
   font-weight: 700;
 }
 
@@ -138,7 +152,7 @@
   width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-  background: #ffffff !important;
+  background: white !important;
   border: 1px solid $rosewood-200 !important;
   border-radius: 18px !important;
   border-collapse: separate !important;
@@ -175,7 +189,7 @@
 }
 
 .sweet-muse .table-grid table.table>tbody>tr:hover {
-  background: $blush-petal-100 !important;
+  background: $misty-sky-50 !important;
 }
 
 .sweet-muse .table-grid table.table>tbody>tr>td {
@@ -234,46 +248,6 @@
 
 }
 
-/* ---------- Pagination ---------- */
-
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  width: 100%;
-  margin-top: 20px;
-}
-
-.pagination-btn {
-  min-width: 100px !important;
-  padding: 9px 16px !important;
-  border: 1px solid $rosewood-200 !important;
-  border-radius: 9px !important;
-  background: #ffffff !important;
-  color: $rosewood-700 !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  box-shadow: none !important;
-  transition: all 0.15s ease;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: $rosewood-50 !important;
-  border-color: $rosewood-300 !important;
-  color: $rosewood-900 !important;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination-info {
-  color: $rosewood-700;
-  font-size: 13px;
-  font-weight: 600;
-}
 
 /* ---------- Cell content ---------- */
 
@@ -331,7 +305,7 @@
 
 .sweet-muse .product-stock {
   font-size: 15px;
-  color: $sage-leaf-800 !important;
+  // color: $sage-leaf-800 !important;
   font-weight: 600 !important;
 }
 
@@ -710,6 +684,21 @@
   border-color: $blush-petal-800 !important;
 }
 
+.filter-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 0.25rem 0;
+}
+
+.stock-low {
+    color: $blush-petal-800 !important;
+    font-weight: 600;
+}
+
+.stock-high {
+    color: $sage-leaf-600 !important;
+    font-weight: 600;
+}
 /* ---------- Responsive ---------- */
 
 @media (max-width: 768px) {

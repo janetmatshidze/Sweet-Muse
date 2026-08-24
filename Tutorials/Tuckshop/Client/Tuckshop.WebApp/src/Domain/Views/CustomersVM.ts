@@ -8,6 +8,7 @@ import UpdateCustomerDetails from '../Models/Customers/Commands/UpdateCustomerDe
 import WalletAmountInput from '../Models/WalletAmountInput';
 import DeleteCustomer from '../Models/Customers/Commands/DeleteCustomer';
 import CreateCustomer from '../Models/Customers/Commands/CreateCustomer';
+import PaginationHelper from '../../App/Models/Helpers/PaginationHelper';
 
 export default class CustomersVM extends Views.ViewModelBase {
 
@@ -39,11 +40,13 @@ export default class CustomersVM extends Views.ViewModelBase {
 
     public newCustomer: CreateCustomer | null = null;
 
+    public pagination = new PaginationHelper(() => this.filteredCustomers, 6);
+
     public searchTerm: string = "";
 
     public setSearchTerm(value: string) {
         this.searchTerm = value;
-        this.currentPage = 1;
+        this.pagination.reset();
     }
 
     public openWallet(customer: Customer) {
@@ -126,51 +129,7 @@ export default class CustomersVM extends Views.ViewModelBase {
         return result;
     }
 
-    public readonly pageSize = 6;
 
-    public currentPage: number = 1;
-
-    public get totalPages() {
-
-        return Math.max(
-            1,
-            Math.ceil(this.filteredCustomers.length / this.pageSize)
-        );
-    }
-
-    public get pagedCustomers() {
-        const start = (this.currentPage - 1) * this.pageSize;
-
-        return this.filteredCustomers.slice(start, start + this.pageSize);
-    }
-
-    public goToPage(page: number) {
-
-        if (page < 1 || page > this.totalPages) {
-
-            return;
-        }
-
-        this.currentPage = page;
-    }
-
-    public nextPage() {
-
-        this.goToPage(this.currentPage + 1);
-    }
-
-    public previousPage() {
-
-        this.goToPage(this.currentPage - 1);
-    }
-
-    private clampCurrentPage() {
-
-        if (this.currentPage > this.totalPages) {
-
-            this.currentPage = this.totalPages;
-        }
-    }
 
     public async initialise() {
         const response = await this.taskRunner.waitFor(
@@ -213,7 +172,7 @@ export default class CustomersVM extends Views.ViewModelBase {
                 this.customers.remove(existing);
             }
 
-            this.clampCurrentPage();
+            this.pagination.clamp();
 
             this.notifications.addSuccess(
                 "Customer deleted",

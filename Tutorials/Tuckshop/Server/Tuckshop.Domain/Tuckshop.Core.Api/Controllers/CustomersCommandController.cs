@@ -3,7 +3,7 @@
   using Microsoft.AspNetCore.Mvc;
   using System.Threading.Tasks;
   using Tuckshop.Core.App.Services;
-  using Tuckshop.Core.Models;
+  using Tuckshop.Core.Models.Customers;
   using Tuckshop.Core.Models.Customers.Commands;
   using Tuckshop.Core.Models.Wallets.Commands;
 

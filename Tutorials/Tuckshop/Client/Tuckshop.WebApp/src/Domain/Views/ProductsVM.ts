@@ -38,7 +38,7 @@ export default class ProductsVM extends Views.ViewModelBase {
 
     public stockFilter: 'all' | 'low' | 'high' = 'all';
 
-    public pagination = new PaginationHelper(() => this.filteredProducts, 5);
+    public pagination = new PaginationHelper(() => this.filteredProducts, 3);
 
 
     public markSubmitAttempted() {

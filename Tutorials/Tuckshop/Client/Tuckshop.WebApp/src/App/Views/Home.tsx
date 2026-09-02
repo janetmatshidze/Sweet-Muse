@@ -136,8 +136,9 @@ export default class Home extends Views.ViewBase<DashboardVM, HomeParams> {
             <div className="sweet-muse mt-3">
                 <h1 className="title mb-3">Dashboard</h1>
 
-                <Neo.GridLayout lg={3} className="mb-3">
-                    <Neo.Card title="Sales today">
+                <Neo.GridLayout lg={3}>
+                    <Neo.Card title="Sales today" className="sales-card">
+                        <Neo.Icon name="trending_up" className="sales-icon" />
                         <div className="dashboard-stat">
                             R{this.viewModel.totalSalesToday.toFixed(2)}
                         </div>
@@ -146,7 +147,8 @@ export default class Home extends Views.ViewBase<DashboardVM, HomeParams> {
                         </div>
                     </Neo.Card>
 
-                    <Neo.Card title="Sales this month">
+                    <Neo.Card title="Sales this month" className="sales-month-card">
+                        <Neo.Icon name="bar_chart" className="sales_month-icon" />
                         <div className="dashboard-stat">
                             R{this.viewModel.totalSalesMonth.toFixed(2)}
                         </div>
@@ -155,7 +157,8 @@ export default class Home extends Views.ViewBase<DashboardVM, HomeParams> {
                         </div>
                     </Neo.Card>
 
-                    <Neo.Card title="Average order value">
+                    <Neo.Card title="Average order value" className="average-order-card">
+                        <Neo.Icon name="avg_pace" className="average_order-icon" />
                         <div className="dashboard-stat">
                             R{this.viewModel.averageOrderValue.toFixed(2)}
                         </div>
@@ -167,7 +170,7 @@ export default class Home extends Views.ViewBase<DashboardVM, HomeParams> {
 
                 <div className="dashboard-row mb-3">
 
-                    <Neo.Card className="sales-overview-card">
+                    <Neo.Card className="sales-overview-card mb-3">
 
                         <div className="sales-overview-header">
                             <h2>Sales Overview</h2>
@@ -244,7 +247,7 @@ export default class Home extends Views.ViewBase<DashboardVM, HomeParams> {
 
                 </div>
 
-                <Neo.Card title="Top 10 Customers" className="top-customers-card">
+                <Neo.Card title="Top 10 Customers" className="top-customers-card ">
                     {topCustomers.length === 0 ? (
                         <div className="dashboard-empty-state">
                             No customer sales yet.

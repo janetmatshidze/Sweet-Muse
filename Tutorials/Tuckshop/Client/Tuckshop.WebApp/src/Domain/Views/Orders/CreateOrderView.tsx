@@ -78,12 +78,12 @@ export default class CreateOrderView extends Views.ViewBase<
                                             <SearchableSelect
                                                 items={this.viewModel.customers}
                                                 valueMember="customerId"
-                                                displayMember="firstName"
+                                                displayMember="fullName"
                                                 value={order.customerId}
                                                 nullText="Select a customer"
                                                 onSelect={(item) => {
                                                     order.customerId = item ? item.customerId : null;
-                                                    order.customerName = item ? item.firstName : "";
+                                                    order.customerName = item ? item.fullName : "";
                                                 }}
                                             />
 
@@ -221,6 +221,8 @@ export default class CreateOrderView extends Views.ViewBase<
                                             totalPages={this.viewModel.pagination.totalPages}
                                             onNext={() => this.viewModel.pagination.nextPage()}
                                             onPrevious={() => this.viewModel.pagination.previousPage()}
+                                            onPageSelect={(page) => this.viewModel.pagination.currentPage = page}
+
                                         />
                                     </div>
 
@@ -460,7 +462,7 @@ export default class CreateOrderView extends Views.ViewBase<
                         onClose={() => this.viewModel.closeInsufficientFundsModal()}
                     >
                         <p className="customer">
-                            {this.viewModel.selectedCustomer?.firstName} needs R
+                            {this.viewModel.selectedCustomer?.firstName + " " + this.viewModel.selectedCustomer?.lastName} needs R
                             {this.viewModel.walletShortfall.toFixed(2)} more to cover this order.
                         </p>
 

@@ -8,7 +8,7 @@
     font-family: "DM Sans", "Inter", sans-serif;
 }
 
-.sweet-muse-orders .orders-search-card {
+.orders-search-card {
     margin-bottom: 18px;
     padding: 24px 26px !important;
     background: #ffffff !important;
@@ -17,7 +17,7 @@
     box-shadow: 0 4px 18px rgba(96, 55, 60, 0.05) !important;
 }
 
-.sweet-muse-orders .orders-list-card {
+.orders-list-card {
     padding: 24px 26px 20px !important;
     background: #ffffff !important;
     border: 1px solid $rosewood-100 !important;
@@ -25,14 +25,14 @@
     box-shadow: 0 4px 18px rgba(96, 55, 60, 0.05) !important;
 }
 
-.sweet-muse-orders .orders-section-heading {
+.orders-section-heading {
     display: flex;
     align-items: center;
     gap: 13px;
     margin-bottom: 22px;
 }
 
-.sweet-muse-orders .orders-heading-icon {
+.orders-heading-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -44,13 +44,13 @@
     border-radius: 12px;
 }
 
-.sweet-muse-orders .orders-heading-symbol {
+.orders-heading-symbol {
     font-size: 20px;
     font-weight: 600;
     line-height: 1;
 }
 
-.sweet-muse-orders .orders-section-heading h2 {
+ .orders-section-heading h2 {
     margin: 0;
     color: $rosewood-900;
     font-family: "DM Sans", "Inter", sans-serif;
@@ -59,14 +59,14 @@
     line-height: 1.2;
 }
 
-.sweet-muse-orders .orders-section-heading p {
+.orders-section-heading p {
     margin: 4px 0 0;
     color: $rosewood-500;
     font-size: 13px;
     line-height: 1.4;
 }
 
-.sweet-muse-orders .orders-search-grid {
+.orders-search-grid {
     display: grid;
     grid-template-columns:
         minmax(180px, 1.1fr)
@@ -77,18 +77,18 @@
     gap: 18px;
 }
 
-.sweet-muse-orders .orders-search-card .form-group {
+.orders-search-card .form-group {
     margin-bottom: 0 !important;
 }
 
-.sweet-muse-orders .orders-search-card label {
+.orders-search-card label {
     margin-bottom: 7px;
     color: $rosewood-900;
     font-size: 12px;
     font-weight: 600;
 }
 
-.sweet-muse-orders .orders-search-card .form-control {
+.orders-search-card .form-control {
     height: 42px !important;
     border: 1px solid $rosewood-100 !important;
     border-radius: 9px !important;
@@ -100,20 +100,20 @@
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.sweet-muse-orders .orders-search-card .form-control:focus {
+.orders-search-card .form-control:focus {
     border-color: $blush-petal-500 !important;
     box-shadow: 0 0 0 3px rgba(228, 96, 124, 0.1) !important;
     outline: none !important;
 }
 
-.sweet-muse-orders .orders-search-btn {
-    width: 100% !important;
+.orders-search-btn {
+    gap: 5px;
     height: 42px !important;
     min-width: 0 !important;
-    padding: 9px 20px !important;
-    border: 1px solid $blush-petal-600 !important;
+    padding: 0px 0px !important;
+    border: 1px solid $rosewood-100 !important;
     border-radius: 9px !important;
-    background: $blush-petal-600 !important;
+    background: $rosewood-600 !important;
     color: #ffffff !important;
     font-size: 13px !important;
     font-weight: 600 !important;
@@ -121,18 +121,18 @@
     transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
-.sweet-muse-orders .orders-search-btn:hover {
+.orders-search-btn:hover {
     background: $blush-petal-700 !important;
     border-color: $blush-petal-700 !important;
     transform: translateY(-1px);
 }
 
-.sweet-muse-orders .orders-table-wrapper {
+.orders-table-wrapper {
     width: 100%;
     overflow-x: auto;
 }
 
-.sweet-muse-orders .orders-table-wrapper table.table {
+.orders-table-wrapper table.table {
     width: 100% !important;
     margin: 0 !important;
     border-collapse: separate !important;
@@ -143,11 +143,11 @@
     overflow: hidden !important;
 }
 
-.sweet-muse-orders .orders-table-wrapper table.table > thead {
+.orders-table-wrapper table.table > thead {
     background: transparent !important;
 }
 
-.sweet-muse-orders .orders-table-wrapper table.table > thead > tr > th {
+.orders-table-wrapper table.table > thead > tr > th {
     height: 46px;
     padding: 11px 14px !important;
     background: $blush-petal-50 !important;
@@ -157,6 +157,8 @@
     font-weight: 700 !important;
     vertical-align: middle;
     white-space: nowrap;
+    text-transform: uppercase;
+
 }
 
 .sweet-muse-orders .orders-table-wrapper table.table > tbody > tr {
@@ -222,102 +224,44 @@
     box-shadow: none !important;
 }
 
-.sweet-muse-orders .cancel-order-btn {
-    border: 1px solid $blush-petal-500 !important;
-    background: #ffffff !important;
+.cancel-order-btn {
+    border: 1px solid $blush-petal-600 !important;
+    background: $blush-petal-100 !important;
     color: $blush-petal-700 !important;
 }
 
-.sweet-muse-orders .cancel-order-btn:hover {
-    background: $blush-petal-50 !important;
+.cancel-order-btn:hover {
+    background: $blush-petal-200 !important;
     border-color: $blush-petal-600 !important;
 }
 
-.sweet-muse-orders .complete-order-btn {
+.complete-order-btn {
     border: 1px solid $sage-leaf-500 !important;
-    background: #ffffff !important;
+    background: $sage-leaf-100 !important;
     color: $sage-leaf-800 !important;
 }
 
-.sweet-muse-orders .complete-order-btn:hover {
-    background: $sage-leaf-100 !important;
+.complete-order-btn:hover {
+    background: $sage-leaf-300 !important;
     border-color: $sage-leaf-600 !important;
 }
 
-.sweet-muse-orders .order-details-container {
-    margin: 2px 10px 10px 45px;
-    overflow: hidden;
-    border: 1px solid $rosewood-100;
-    border-radius: 10px;
-    background: #ffffff;
-}
-
-.sweet-muse-orders .order-details-header {
-    display: grid;
-    grid-template-columns:
-        minmax(200px, 1fr)
-        120px
-        150px;
-    align-items: center;
-    min-height: 40px;
-    padding: 0 14px;
-    background: $coffee-brown-50;
-    border-bottom: 1px solid $rosewood-100;
-    color: $coffee-brown-500;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.sweet-muse-orders .order-details-container table.table {
-    width: 100% !important;
-    margin: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-}
-
-.sweet-muse-orders .order-details-container table.table > thead {
-    display: none !important;
-}
-
-.sweet-muse-orders .order-details-container table.table > tbody > tr {
-    background: #ffffff !important;
-}
-
-.sweet-muse-orders .order-details-container table.table > tbody > tr:hover {
-    background: $blush-petal-50 !important;
-}
-
-.sweet-muse-orders .order-details-container table.table > tbody > tr > td {
-    padding: 11px 14px !important;
-    border-bottom: 1px solid $rosewood-100 !important;
-    background: transparent !important;
-    color: $rosewood-900;
-    font-size: 13px;
-}
-
-.sweet-muse-orders .order-details-container table.table > tbody > tr:last-child > td {
-    border-bottom: 0 !important;
-}
-
-.sweet-muse-orders .order-product-column {
+.order-product-column {
     font-weight: 500 !important;
 }
 
-.sweet-muse-orders .order-vat-column {
+.order-vat-column {
     color: $rosewood-600 !important;
     font-size: 12px !important;
 }
 
-.sweet-muse-orders .order-value-column {
+.order-value-column {
     color: $coffee-brown-500 !important;
     font-weight: 600 !important;
 }
 
 @media (max-width: 1100px) {
-    .sweet-muse-orders .orders-search-grid {
+    .orders-search-grid {
         grid-template-columns:
             repeat(2, minmax(180px, 1fr));
     }
@@ -328,38 +272,40 @@
         padding: 4px 2px 40px;
     }
 
-    .sweet-muse-orders .orders-search-card,
-    .sweet-muse-orders .orders-list-card {
+    .orders-search-card,
+    .orders-list-card {
         padding: 18px !important;
     }
 
-    .sweet-muse-orders .orders-search-grid {
+    .orders-search-grid {
         grid-template-columns: 1fr;
     }
 
-    .sweet-muse-orders .orders-section-heading {
+    .orders-section-heading {
         margin-bottom: 18px;
     }
 
-    .sweet-muse-orders .orders-heading-icon {
+    .orders-heading-icon {
         width: 38px;
         height: 38px;
         flex-basis: 38px;
     }
 
-    .sweet-muse-orders .order-details-container {
+    .order-details-container {
         margin-left: 10px;
     }
 
-    .sweet-muse-orders .order-actions {
+    .order-actions {
         justify-content: flex-start;
         flex-wrap: wrap;
     }
 
-    .sweet-muse-orders .order-details-header {
+    .order-details-header {
         grid-template-columns:
             minmax(150px, 1fr)
             80px
             100px;
     }
 }
+
+

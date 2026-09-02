@@ -1,4 +1,5 @@
 
+
 .pagination {
   display: flex;
   align-items: center;
@@ -8,12 +9,38 @@
   margin-top: 20px;
 }
 
+.pagination-pages {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 20px;
+}
+
 .pagination-btn {
-  min-width: 100px !important;
-  padding: 9px 16px !important;
-  border: 1px solid $rosewood-200 !important;
-  border-radius: 9px !important;
-  background: #ffffff !important;
+  min-width: 88px !important;
+  height: 38px;
+  padding: 0px 6px !important;
+  border: 1px solid $blush-petal-600 !important;
+  border-radius: 6px !important;
+  background: $blush-petal-100 !important;
+  color: $blush-petal-700 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: $rosewood-100 !important;
+  border-color: $rosewood-500 !important;
+  color: $rosewood-900 !important;
+}
+
+.pagination-page-btn {
+  min-width: 28px !important;
+  height: 28px;
+  border: none;
+  border-radius: 6px !important;
+  background: transparent !important;
   color: $rosewood-700 !important;
   font-size: 13px !important;
   font-weight: 600 !important;
@@ -21,10 +48,17 @@
   transition: all 0.15s ease;
 }
 
-.pagination-btn:hover:not(:disabled) {
+.pagination-page-btn:hover:not(:disabled) {
+      background-color: $rosewood-200 !important;
+}
+
+
+.pagination-page-btn:disabled {
   background: $rosewood-50 !important;
   border-color: $rosewood-300 !important;
   color: $rosewood-900 !important;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .pagination-btn:disabled {
@@ -33,6 +67,17 @@
   color: $rosewood-900 !important;
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.pagination-page-active {
+    background-color: $rosewood-500 !important; /* match your existing accent color */
+    color: $rosewood-500  !important;
+    font-weight: 600;
+}
+
+.pagination-ellipsis {
+    padding: 0 6px;
+    color: $rosewood-500;
 }
 
 .pagination-info {

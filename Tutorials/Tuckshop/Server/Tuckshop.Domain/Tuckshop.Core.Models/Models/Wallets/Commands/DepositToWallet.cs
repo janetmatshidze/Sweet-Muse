@@ -1,6 +1,7 @@
 ﻿namespace Tuckshop.Core.Models.Wallets.Commands
 {
   using Neo.Model;
+  using Neo.Model.Validation;
   using System.ComponentModel.DataAnnotations;
   using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,10 +22,10 @@
     [Column(TypeName = "money")]
     public decimal Amount { get; set; }
 
-    //// <inheritdoc/>
-    //protected override void AddBusinessRules(ValidationRules<DepositToWallet> rules)
-    //{
-    //  rules.FailWhen(c => c.Amount <= 0, "Deposit amount must be greater than zero.");
-    //}
+    /// <inheritdoc/>
+    protected override void AddBusinessRules(ValidationRules<DepositToWallet> rules)
+    {
+      rules.FailWhen(c => c.Amount > 500m, "Deposit amount cannot exceed R500 per transaction.");
+    }
   }
 }

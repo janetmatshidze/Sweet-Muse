@@ -34,6 +34,7 @@
   using System.Reflection;
   using Tuckshop.Core.App.Services;
   using Tuckshop.Core.Models;
+  using Tuckshop.Core.Models.Customers;
   using Tuckshop.Core.Models.Files;
   using Tuckshop.Core.Models.Identity;
   using Tuckshop.Core.Models.Initializers;

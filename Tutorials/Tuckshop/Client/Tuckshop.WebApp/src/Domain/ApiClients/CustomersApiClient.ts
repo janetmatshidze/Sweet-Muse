@@ -1,7 +1,7 @@
 import { Data } from '@singularsystems/neo-core';
 import { injectable } from 'inversify';
 import { AppService, Types } from '../DomainTypes';
-import Customer from '../Models/Customer';
+import Customer from '../Models/Customers/Customer';
 
 export interface ICustomersApiClient extends Data.IUpdateableApiClient<Customer, number> {
 

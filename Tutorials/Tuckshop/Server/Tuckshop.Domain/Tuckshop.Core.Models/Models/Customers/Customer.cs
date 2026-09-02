@@ -1,4 +1,4 @@
-﻿namespace Tuckshop.Core.Models
+﻿namespace Tuckshop.Core.Models.Customers
 {
   using Neo.Model;
   using Neo.Model.Exceptions;

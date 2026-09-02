@@ -7,6 +7,7 @@
   using System;
   using System.Threading.Tasks;
   using Tuckshop.Core.Models;
+  using Tuckshop.Core.Models.Customers;
   using Tuckshop.Core.Models.Customers.Commands;
   using Tuckshop.Core.Models.Identity;
   using Tuckshop.Core.Models.Wallets.Commands;

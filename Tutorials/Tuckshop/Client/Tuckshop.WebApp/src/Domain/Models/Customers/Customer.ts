@@ -1,5 +1,5 @@
 import { Attributes, List, ModelBase, Rules, Validation } from '@singularsystems/neo-core';
-import WalletTransaction from './Wallets/WalletTransaction';
+import WalletTransaction from '../Wallets/WalletTransaction';
 
 export default class Customer extends ModelBase {
     static typeName = "Customer";
@@ -29,6 +29,10 @@ export default class Customer extends ModelBase {
 
     @Attributes.Float()
     public walletBalance: number = 0;
+
+    public get fullName() {
+        return `${this.firstName} ${this.lastName}`
+    }
 
     public walletTransactions = new List(WalletTransaction);
 

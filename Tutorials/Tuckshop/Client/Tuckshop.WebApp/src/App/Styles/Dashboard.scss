@@ -1,5 +1,15 @@
 .sweet-muse {
 
+    .neo-card {
+        border-radius: 16px;
+    }
+
+    .card-body {
+        position: relative;
+        bottom: 15px;    
+    }
+
+    }
     .sales-overview-card {
         background: $blush-petal-50;
         border: 1px solid $coffee-brown-100;
@@ -114,7 +124,7 @@
             background: #e0b8a8;
         }
     }
-}
+
 
 .payment-split-card .card-header-title {
     font-size: 1.1rem;
@@ -167,11 +177,45 @@
     color: #666;
 }
 
+.sales-icon {
+    font-size: 34px;
+    color: green;
+    border-radius: 100%;
+}
+
+.sales-card {
+    background: $rosewood-50;
+    border: 2px solid $rosewood-100 !important;
+}
+
+.sales_month-icon {
+    font-size: 34px;
+    color: $blush-petal-600;
+    border-radius: 100%;
+}
+
+.sales-month-card {
+    background: $blush-petal-100;
+    border: 2px solid $blush-petal-300 !important;
+
+}
+
+.average-order-card {
+    background: $coffee-brown-50;
+    border: 2px solid $coffee-brown-100 !important;
+}
+
+.average_order-icon {
+    font-size: 34px;
+    color: $coffee-brown-500;
+    border-radius: 100%;
+}
+
 .sweet-muse {
 
     .dashboard-row {
         display: grid;
-        grid-template-columns: 2fr 1fr; // sales overview gets 2x the width of cash vs wallet
+        grid-template-columns: 2fr 1fr; 
         gap: 1.5rem;
         align-items: stretch; // makes both cards match height automatically
 
@@ -193,6 +237,17 @@
         align-items: center;
         justify-content: center;
         position: relative;
+    }
+
+    .dashboard-stat {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $coffee-brown-500;
+    }
+
+    .dashboard-stat-sub {
+        font-size: 1.25rem;
+        color: $coffee-brown-400;
     }
 
     @media (max-width: 900px) {

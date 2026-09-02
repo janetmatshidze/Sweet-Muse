@@ -7,6 +7,7 @@
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Tuckshop.Core.Models.Customers;
 
   /// <summary>
   /// One-time backfill that creates Customer records from legacy free-text

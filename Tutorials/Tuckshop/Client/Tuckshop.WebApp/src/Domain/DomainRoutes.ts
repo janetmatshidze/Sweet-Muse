@@ -6,7 +6,7 @@ import CategoriesView from './Views/CategoriesView';
 import CustomersView from './Views/CustomersView';
 
 
-export const viewOrdersRoute = { name: "View orders", path: '/viewOrders', component: ViewOrdersView, icon: "search" };
+export const viewOrdersRoute = { name: "View orders", path: '/viewOrders', component: ViewOrdersView, icon: "receipt_long" };
 
 export const customersRoute = { name: "Customers", path: "/customers", icon: "face", component: CustomersView};
 
@@ -19,11 +19,11 @@ const MenuRoutes: IAppMenuItem[] =
                         name: "Products", path: "/products", icon: "bakery_dining", component: ProductsView
                     },
                     customersRoute,
+                    // {
+                    //     name: "Categories", path: "/categories", icon: "category", component: CategoriesView
+                    // },
                     {
-                        name: "Categories", path: "/categories", icon: "category", component: CategoriesView
-                    },
-                    {
-                        name: "Create Order", path: "/order/create", icon: "receipt-long", component: CreateOrderView
+                        name: "Create Order", path: "/order/create", icon: "heart_plus", component: CreateOrderView
                     },
                     viewOrdersRoute,
 

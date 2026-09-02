@@ -3,7 +3,7 @@ import { AxiosPromise } from 'axios';
 import { injectable } from 'inversify';
 import { AppService, Types } from '../DomainTypes';
 import DepositToWallet from '../Models/Wallets/Commands/DepositToWallet';
-import Customer from '../Models/Customer';
+import Customer from '../Models/Customers/Customer';
 import WithdrawFromWallet from '../Models/Wallets/Commands/WithdrawFromWallet';
 import UpdateCustomerDetails from '../Models/Customers/Commands/UpdateCustomerDetails';
 import DeleteCustomer from '../Models/Customers/Commands/DeleteCustomer';

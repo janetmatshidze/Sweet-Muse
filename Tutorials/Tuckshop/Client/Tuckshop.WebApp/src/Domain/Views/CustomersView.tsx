@@ -3,7 +3,7 @@ import { Neo, Views } from '@singularsystems/neo-react';
 import CustomersVM from './CustomersVM';
 import { observer } from 'mobx-react';
 import { ModalUtils } from '@singularsystems/neo-core';
-import Customer from '../Models/Customer';
+import Customer from '../Models/Customers/Customer';
 import Pagination from '../../App/Components/Pagination';
 
 class CustomersParams {
@@ -163,6 +163,8 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                  totalPages={this.viewModel.pagination.totalPages}
                  onNext={() => this.viewModel.pagination.nextPage()}
                  onPrevious={() => this.viewModel.pagination.previousPage()}
+                 onPageSelect={(page) => this.viewModel.pagination.currentPage = page}
+
                  />
 
                 {activeCustomer && (

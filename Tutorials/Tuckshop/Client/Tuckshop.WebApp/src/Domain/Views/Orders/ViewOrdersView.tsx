@@ -6,6 +6,7 @@ import { Data, Misc, ModalUtils } from '@singularsystems/neo-core';
 import { OrderStatus } from '../../Models/Orders/Enums/OrderStatus';
 import OrderLookup from '../../Models/Orders/Queries/OrderLookup';
 import CancelOrder from '../../Models/Orders/Commands/CancelOrder';
+import Pagination from '../../../App/Components/Pagination';
 
 class ViewOrdersParams {
 }
@@ -26,8 +27,8 @@ export default class ViewOrdersView extends Views.ViewBase<
 
     public render() {
 
-        const pagedOrders = this.viewModel.pagedOrders;
-        const emptySlots = this.viewModel.pageSize - pagedOrders.length;
+        const pagedOrders = this.viewModel.pagination.pagedItems;
+        const emptySlots = this.viewModel.pagination.pageSize - pagedOrders.length;
 
         return (
             <div className="sweet-muse-orders">
@@ -72,10 +73,13 @@ export default class ViewOrdersView extends Views.ViewBase<
                                 />
 
                                 <Neo.Button
-                                    icon="search"
-                                    className="orders-search-btn"
+                                    variant="primary"
+                                    className=" orders-search-btn"
                                     isSubmit
                                 >
+                                    <Neo.Icon
+                                    name="search"
+                                    />
                                     Search
                                 </Neo.Button>
 
@@ -84,22 +88,8 @@ export default class ViewOrdersView extends Views.ViewBase<
                     </Neo.Form>
                 </Neo.Card>
 
-                <Neo.Card className="orders-list-card">
 
-                    <div className="orders-section-heading">
-                        <div className="orders-heading-icon">
-                            <span className="orders-heading-symbol">
-                                <Neo.Icon name="orders"/>
-                            </span>
-                        </div>
-
-                        <div>
-                            <h2>Orders</h2>
-                            <p>View and manage customer orders.</p>
-                        </div>
-                    </div>
-
-                    <div className="orders-table-wrapper">
+                    <div className="table-grid">
 
                         <NeoGrid.Grid
                             items={pagedOrders}
@@ -123,6 +113,27 @@ export default class ViewOrdersView extends Views.ViewBase<
                                                 formatString: "dd MMM yyyy - HH:mm"
                                             }}
                                         />
+                                        
+                                         {this.viewModel.criteria.orderStatus !== OrderStatus.Cancelled && (
+                                         <NeoGrid.Column
+                                            headers="Completed On"
+                                            className="order-date-column"
+                                            display={orderMeta.completedOn}
+                                            dateProps={{
+                                                formatString: "dd MMM yyyy - HH:mm"}}
+                                        />
+                                         )}
+                                                
+
+                                         {this.viewModel.criteria.orderStatus !== OrderStatus.Completed && (
+                                         <NeoGrid.Column
+                                            headers="Cancelled On"
+                                            className="order-date-column"
+                                            display={orderMeta.cancelledOn}
+                                            dateProps={{
+                                                formatString: "dd MMM yyyy - HH:mm"}}
+                                        />
+                                         )}
 
                                         <NeoGrid.Column
                                             className="order-total-column"
@@ -170,13 +181,6 @@ export default class ViewOrdersView extends Views.ViewBase<
 
                                     <NeoGrid.ChildRow>
 
-                                        <div className="order-details-container">
-
-                                            <div className="order-details-header">
-                                                <span>Product</span>
-                                                <span>VAT</span>
-                                                <span>Value</span>
-                                            </div>
 
                                             <NeoGrid.Grid
                                                 items={order.items}
@@ -209,13 +213,20 @@ export default class ViewOrdersView extends Views.ViewBase<
                                                 )}
                                             </NeoGrid.Grid>
 
-                                        </div>
 
                                     </NeoGrid.ChildRow>
 
                                 </NeoGrid.RowGroup>
                             )}
                         </NeoGrid.Grid>
+
+                         {pagedOrders.length === 0 && (
+                                <tr className="filler-row">
+                                    <td colSpan={6} className="message">
+                                        No Orders found
+                                    </td>
+                                </tr>
+                            )}
 
                         {emptySlots > 0 && (
                             <div className="orders-empty-slots">
@@ -229,34 +240,15 @@ export default class ViewOrdersView extends Views.ViewBase<
 
                    
 
-                </Neo.Card>
 
-                 <div className="sweet-muse pagination">
+               <Pagination
+                    currentPage={this.viewModel.pagination.currentPage}
+                    totalPages={this.viewModel.pagination.totalPages}
+                    onNext={() => this.viewModel.pagination.nextPage()}
+                    onPrevious={() => this.viewModel.pagination.previousPage()}
+                    onPageSelect={(page) => this.viewModel.pagination.currentPage = page}
 
-                       <Neo.Button
-                        className=" pagination-btn"
-                        icon="keyboard_double_arrow_left"
-                        disabled={this.viewModel.currentPage === 1}
-                        onClick={() => this.viewModel.previousPage()}
-                    >
-                    </Neo.Button>
-
-                        <span className="pagination-info">
-                        Page {this.viewModel.currentPage} of {this.viewModel.totalPages}
-                    </span>
-
-                       <Neo.Button
-                        className="pagination-btn"
-                        icon="keyboard_double_arrow_right"
-                        disabled={
-                            this.viewModel.currentPage === this.viewModel.totalPages
-                        }
-                        onClick={() => this.viewModel.nextPage()}
-                    >
-                    </Neo.Button>
-
-                    </div>
-
+                />
             </div>
         );
     }

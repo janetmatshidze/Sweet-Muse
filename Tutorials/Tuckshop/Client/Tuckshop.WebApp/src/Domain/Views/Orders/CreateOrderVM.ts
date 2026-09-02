@@ -2,7 +2,7 @@ import { Views } from "@singularsystems/neo-react";
 import { AppService, Types } from "../../DomainTypes";
 import { CreateOrder } from "../../Models/Orders/Commands/CreateOrder";
 import { List } from "@singularsystems/neo-core";
-import Customer from "../../Models/Customer";
+import Customer from "../../Models/Customers/Customer";
 import PaginationHelper from "../../../App/Models/Helpers/PaginationHelper";
 
 export default class CreateOrderVM extends Views.ViewModelBase {

@@ -64,7 +64,7 @@ export default class ProductsView extends Views.ViewBase<
                     </div>
 
                     <div className="products-filter-wrapper">
-                        <button
+                        <Neo.Button
                             type="button"
                             className="products-filter-btn"
                             onClick={() => this.viewModel.toggleCategoryFilter()}
@@ -74,7 +74,7 @@ export default class ProductsView extends Views.ViewBase<
                             {this.viewModel.selectedCategoryId !== null && (
                                 <span className="filter-active-dot" />
                             )}
-                        </button>
+                        </Neo.Button>
 
                         {this.viewModel.showCategoryFilter && (
                             <div className="products-filter-dropdown">
@@ -215,6 +215,7 @@ export default class ProductsView extends Views.ViewBase<
                     totalPages={this.viewModel.pagination.totalPages}
                     onNext={() => this.viewModel.pagination.nextPage()}
                     onPrevious={() => this.viewModel.pagination.previousPage()}
+                    onPageSelect={(page) => this.viewModel.pagination.currentPage = page}
                 />
 
                 {this.viewModel.editingProduct && (

@@ -163,3 +163,17 @@
   border: 1px solid $misty-sky-700 !important;
 }
 
+.btn-light {
+  min-width: 145px;
+  padding: 10px 20px;
+  background-color: $blush-petal-100 !important;
+  color: $blush-petal-800 !important;
+  border: 1px solid $blush-petal-700 !important;
+  border-radius: 9px;
+}
+
+.btn-light:hover {
+   background-color: $blush-petal-800 !important;
+   color: $blush-petal-50 !important;
+} 
+

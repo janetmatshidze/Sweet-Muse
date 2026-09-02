@@ -1,6 +1,6 @@
 import { Views } from '@singularsystems/neo-react';
 import { AppService, Types } from '../DomainTypes';
-import Customer from '../Models/Customer';
+import Customer from '../Models/Customers/Customer';
 import { List } from '@singularsystems/neo-core';
 import DepositToWallet from '../Models/Wallets/Commands/DepositToWallet';
 import WithdrawFromWallet from '../Models/Wallets/Commands/WithdrawFromWallet';

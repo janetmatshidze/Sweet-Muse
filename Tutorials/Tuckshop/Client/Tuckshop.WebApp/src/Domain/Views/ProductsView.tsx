@@ -37,6 +37,7 @@ export default class ProductsView extends Views.ViewBase<
                         <h1 className="title">
                             Products
                         </h1>
+                        <h5 className="mt-2">{this.viewModel.totalProducts()} Total Products</h5>
                     </div>
 
                     <Neo.Button

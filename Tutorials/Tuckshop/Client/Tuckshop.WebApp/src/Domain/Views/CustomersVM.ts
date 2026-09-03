@@ -44,6 +44,10 @@ export default class CustomersVM extends Views.ViewModelBase {
 
     public searchTerm: string = "";
 
+    public totalCustomers() {  
+        return this.filteredCustomers.length;
+    }
+
     public setSearchTerm(value: string) {
         this.searchTerm = value;
         this.pagination.reset();

@@ -51,7 +51,7 @@ export class RouteService {
             {
                 name: "Dashboard", path: '/', component: Home, icon: "dashboard" , exact: true, allowAnonymous: true
             },
-            ...ReportingRoutes.MenuRoutes,
+            // ...ReportingRoutes.MenuRoutes,
 			...DomainRoutes.MenuRoutes,
             { name: "Notifications", children: [
                 { name: "Templates", path: "/templates", icon: "format_image_left", component: TemplatesView, role: NotificationsRoles.SetupTemplates },
@@ -82,7 +82,7 @@ export class RouteService {
                 path: AppConfig.loginRedirectRoute, component: OidcLoginRedirect, allowAnonymous: true
             },
 			...DomainRoutes.PureRoutes,
-            ...ReportingRoutes.PureRoutes,
+            // ...ReportingRoutes.PureRoutes,
         ];
 
         if (!this.config.isDevelopment) {

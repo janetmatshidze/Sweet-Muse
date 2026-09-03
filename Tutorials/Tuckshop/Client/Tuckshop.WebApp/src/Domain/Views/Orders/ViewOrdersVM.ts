@@ -66,4 +66,5 @@ export default class ViewOrdersVM extends Views.ViewModelBase {
             (order as any).cancelledReason = reason;
         })
     }
+    
 }

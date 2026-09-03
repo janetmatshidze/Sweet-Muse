@@ -34,10 +34,14 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
 
         return (
             <div className="sweet-muse mt-3">
+
                 <div className="page-header">
+                     <div>
                     <h1 className="title">
                         Customers
                     </h1>
+                  <h5 className="mt-2">{this.viewModel.totalCustomers()} Total Customers</h5>
+                   </div>
 
                     <Neo.Button
                         variant="primary"
@@ -48,7 +52,8 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
 
                         Add Customer
                     </Neo.Button>
-                </div>
+                   </div>
+               
 
 
                 <div className="search-bar mb-3">

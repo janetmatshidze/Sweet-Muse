@@ -71,17 +71,6 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         this.newOrder = newOrder;
     }
 
-    //  private getProduct(productId: number) {
-    //     return this.products.find(p => p.productId === productId);
-    // }
-
-    // private getCartQuantity(productId: number) {
-    //     const existing = this.newOrder?.orderDetails.find(
-    //         detail => detail.productId === productId
-    //     );
-        
-    //     return existing ? existing.quantity : 0;
-    // }
 
     public increaseProductQuantity(productId: number) {
         const currentQuantity = this.productQuantities[productId] || 1;

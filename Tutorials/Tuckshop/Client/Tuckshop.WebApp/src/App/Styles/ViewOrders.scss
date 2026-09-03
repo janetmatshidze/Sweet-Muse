@@ -8,6 +8,7 @@
     font-family: "DM Sans", "Inter", sans-serif;
 }
 
+
 .orders-search-card {
     margin-bottom: 18px;
     padding: 24px 26px !important;
@@ -107,13 +108,16 @@
 }
 
 .orders-search-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 5px;
     height: 42px !important;
     min-width: 0 !important;
     padding: 0px 0px !important;
     border: 1px solid $rosewood-100 !important;
     border-radius: 9px !important;
-    background: $rosewood-600 !important;
+    background: $rosewood-500 !important;
     color: #ffffff !important;
     font-size: 13px !important;
     font-weight: 600 !important;
@@ -122,8 +126,9 @@
 }
 
 .orders-search-btn:hover {
-    background: $blush-petal-700 !important;
-    border-color: $blush-petal-700 !important;
+    border: none !important;
+    background-color: $rosewood-600 !important;
+    border-color: $rosewood-600 !important;
     transform: translateY(-1px);
 }
 

@@ -44,6 +44,10 @@ export default class ProductsVM extends Views.ViewModelBase {
     public markSubmitAttempted() {
         this.submitAttempted = true;
     }
+    
+    public totalProducts() {
+        return this.filteredProducts.length;
+    }
 
     public toggleCategoryFilter() {
         this.showCategoryFilter = !this.showCategoryFilter;
